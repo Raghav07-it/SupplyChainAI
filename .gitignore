@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+backend/venv/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+
+# Node
+node_modules/
+
+# Build
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
