@@ -1,9 +1,28 @@
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, select, text
 from sqlalchemy.orm import Session
+from disruptions.router import router as disruptions_router
+from vector_memory.router import router as vector_memory_router
+from agents.agent_router import router as agent_router
 
-from database import Base, SessionLocal, engine
-from models import Inventory, Product, Shipment, Supplier, Warehouse
+
+
+from live_intelligence.router import (
+    router as live_intelligence_router,
+)
+
+from database import Base, engine, get_db
+from models import (
+    Disruption,
+    Inventory,
+    Port,
+    Product,
+    Route,
+    Shipment,
+    Supplier,
+    Warehouse,
+)
 from schemas import (
     InventoryCreate,
     InventoryResponse,
@@ -16,20 +35,35 @@ from schemas import (
     WarehouseCreate,
     WarehouseResponse,
 )
-
+from routing.router import router as routing_router
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="SupplyChainAI API")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5175",
+        "http://127.0.0.1:5175",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
+app.include_router(routing_router)
+
+app.include_router(disruptions_router)
+
+app.include_router(vector_memory_router)
+
+app.include_router(live_intelligence_router)
+
+app.include_router(agent_router)
 
 @app.get("/")
 def home():

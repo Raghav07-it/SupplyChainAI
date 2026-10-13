@@ -1,0 +1,16 @@
+
+C:\AiMl project\SupplyChainAI\frontend\src\pages\AIAgents.jsx
+   380:16  error  'AlertTriangle' is not defined  no-undef
+  1235:25  error  'AlertTriangle' is not defined  no-undef
+  1265:16  error  'AlertTriangle' is not defined  no-undef
+
+C:\AiMl project\SupplyChainAI\frontend\src\pages\Disruptions.jsx
+   3:3   error  'AlertCircle' is defined but never used       no-unused-vars
+  19:10  error  'summary' is assigned a value but never used  no-unused-vars
+  21:10  error  'loading' is assigned a value but never used  no-unused-vars
+
+C:\AiMl project\SupplyChainAI\frontend\src\pages\routes.jsx
+  2:10  error  'Link' is defined but never used  no-unused-vars
+
+✖ 7 problems (7 errors, 0 warnings)
+

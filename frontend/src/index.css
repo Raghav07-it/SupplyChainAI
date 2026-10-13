@@ -1,0 +1,231 @@
+@import "tailwindcss";
+
+/* =========================================================
+   SUPPLYCHAINAI — GOOGLE STITCH & LANGGRAPH COMMAND CENTER
+   Aesthetic: Ultra-crisp Cyber Dark Mode & Mission Control
+   ========================================================= */
+
+:root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', "Geist Mono", monospace;
+
+  /* Theme Variables — Cyber Dark (Default) */
+  --bg-main: #0B0F17;
+  --bg-topbar: rgba(11, 15, 23, 0.85);
+  --bg-sidebar: #080C13;
+  --bg-panel: #0E1420;
+  --bg-panel-soft: #121B2B;
+  --bg-card: rgba(15, 23, 42, 0.75);
+  --bg-card-subtle: rgba(18, 27, 43, 0.6);
+  --bg-pill: rgba(30, 41, 59, 0.6);
+  --bg-pill-active: rgba(56, 189, 248, 0.15);
+
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-accent: rgba(56, 189, 248, 0.35);
+  --border-purple: rgba(168, 85, 247, 0.35);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-pill: #CBD5E1;
+
+  --accent-cyan: #38BDF8;
+  --accent-blue: #0284C7;
+  --accent-purple: #A855F7;
+  --accent-indigo: #6366F1;
+  --accent-teal: #14B8A6;
+
+  --status-success: #34D399;
+  --status-warning: #F59E0B;
+  --status-danger: #EF4444;
+
+  --sidebar-width: 256px;
+
+  color-scheme: dark;
+}
+
+/* Light theme support */
+.light-theme {
+  --bg-main: #F1F5F9;
+  --bg-topbar: rgba(255, 255, 255, 0.9);
+  --bg-sidebar: #FFFFFF;
+  --bg-panel: #FFFFFF;
+  --bg-panel-soft: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-card-subtle: #F1F5F9;
+  --bg-pill: #E2E8F0;
+  --bg-pill-active: #BAE6FD;
+
+  --border-color: #CBD5E1;
+  --border-strong: #94A3B8;
+  --border-accent: #0284C7;
+  --border-purple: #7C3AED;
+
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-pill: #334155;
+
+  --accent-cyan: #0284C7;
+  --accent-blue: #0369A1;
+  --accent-purple: #7C3AED;
+  --accent-indigo: #4F46E5;
+  --accent-teal: #0D9488;
+
+  --status-success: #059669;
+  --status-warning: #D97706;
+  --status-danger: #E11D48;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Cyber Glass Card */
+.stitch-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  position: relative;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stitch-card:hover {
+  border-color: var(--border-strong);
+}
+
+/* Monospace Pill Badge styling */
+.stitch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: var(--bg-pill);
+  color: var(--text-pill);
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.stitch-pill-blue {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.28);
+}
+
+.stitch-pill-purple {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.stitch-pill-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.stitch-pill-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.stitch-pill-success {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+/* Micro-label style */
+.stitch-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+/* Table styling */
+.stitch-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.stitch-table th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(14, 20, 32, 0.4);
+  text-align: left;
+}
+
+.stitch-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.stitch-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Glow effects */
+.glow-cyan {
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+.glow-purple {
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 15px rgba(52, 211, 153, 0.3);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

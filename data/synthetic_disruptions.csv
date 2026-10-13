@@ -1,0 +1,481 @@
+event_code,port_code,disruption_type,severity,status,started_at,ended_at,estimated_delay_hours,estimated_cost_impact_usd,capacity_impact_percent,description,source,is_synthetic
+SYN-INMUM-001,INMUM,severe_weather,medium,monitoring,2024-07-17T07:00:00,,20.04,21149.71,29.81,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-002,INMUM,equipment_failure,medium,resolved,2025-05-14T01:00:00,2025-05-14T14:04:12,13.07,28959.65,27.04,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-003,INMUM,customs_delay,medium,active,2025-05-09T07:00:00,,28.17,63565.83,15.13,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-004,INMUM,customs_delay,high,resolved,2025-05-15T10:00:00,2025-05-18T12:40:48,74.68,290372.94,46.78,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-005,INMUM,severe_weather,low,resolved,2025-01-05T11:00:00,2025-01-05T19:02:24,8.04,11216.25,8.97,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-006,INMUM,geopolitical_conflict,critical,monitoring,2023-06-11T17:00:00,,207.33,704146.5,91.14,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-007,INMUM,port_congestion,low,resolved,2024-08-15T02:00:00,2024-08-15T12:33:00,10.55,6321.77,7.89,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-008,INMUM,port_congestion,high,active,2025-01-28T11:00:00,,68.11,232909.57,58.92,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-009,INMUM,customs_delay,low,resolved,2023-12-17T17:00:00,2023-12-18T02:17:24,9.29,7471.64,5.51,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-010,INMUM,customs_delay,critical,resolved,2024-03-25T21:00:00,2024-04-03T19:03:00,214.05,460333.65,70.96,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-011,INMUM,labor_strike,low,monitoring,2023-05-16T06:00:00,,11.13,13269.15,6.09,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-012,INMUM,geopolitical_conflict,medium,resolved,2025-07-28T04:00:00,2025-07-29T01:32:24,21.54,59699.34,25.78,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-013,INMUM,geopolitical_conflict,high,resolved,2025-03-28T11:00:00,2025-03-31T08:03:00,69.05,189643.42,38.18,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-014,INMUM,severe_weather,low,monitoring,2023-11-10T20:00:00,,3.6,6910.24,2.83,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-015,INMUM,geopolitical_conflict,medium,resolved,2025-12-19T08:00:00,2025-12-21T06:57:36,46.96,55817.0,17.29,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-016,INMUM,labor_strike,high,resolved,2024-11-27T03:00:00,2024-11-30T07:10:48,76.18,177087.83,68.38,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-017,INMUM,labor_strike,high,resolved,2025-10-22T05:00:00,2025-10-26T05:44:24,96.74,270866.68,45.45,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-018,INMUM,equipment_failure,medium,resolved,2024-02-12T04:00:00,2024-02-13T05:27:36,25.46,47362.74,30.57,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-019,INMUM,severe_weather,medium,active,2024-10-25T15:00:00,,12.7,67723.31,31.63,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-020,INMUM,severe_weather,low,resolved,2024-05-08T18:00:00,2024-05-09T05:28:12,11.47,11246.71,12.61,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-021,INMUM,equipment_failure,critical,resolved,2023-09-15T04:00:00,2023-09-27T02:30:36,286.51,485539.64,96.17,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-022,INMUM,port_congestion,medium,monitoring,2024-02-16T22:00:00,,23.22,53992.68,23.76,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-023,INMUM,severe_weather,medium,resolved,2024-05-22T07:00:00,2024-05-22T21:18:00,14.3,50298.52,19.6,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-024,INMUM,severe_weather,low,resolved,2023-05-01T07:00:00,2023-05-01T09:40:12,2.67,13034.9,2.92,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-025,INMUM,customs_delay,low,monitoring,2025-09-21T06:00:00,,7.39,14097.2,9.42,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-026,INMUM,geopolitical_conflict,medium,monitoring,2025-04-13T06:00:00,,15.4,40863.07,23.47,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-027,INMUM,customs_delay,medium,monitoring,2023-04-21T21:00:00,,35.52,20905.07,23.05,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-028,INMUM,severe_weather,low,active,2024-05-24T06:00:00,,3.9,2962.55,4.39,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-029,INMUM,severe_weather,medium,monitoring,2025-06-26T17:00:00,,15.52,74956.95,31.72,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-030,INMUM,port_congestion,critical,resolved,2023-12-07T13:00:00,2023-12-17T21:54:00,248.9,905255.28,97.07,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-031,INMUM,severe_weather,low,active,2025-03-10T08:00:00,,11.27,4993.49,11.06,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-032,INMUM,equipment_failure,high,resolved,2025-09-23T04:00:00,2025-09-25T22:13:48,66.23,292959.61,55.27,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-033,INMUM,customs_delay,medium,active,2024-10-04T01:00:00,,13.81,45171.02,32.05,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-034,INMUM,equipment_failure,low,resolved,2023-06-14T05:00:00,2023-06-14T07:41:24,2.69,10452.98,5.06,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-035,INMUM,equipment_failure,low,monitoring,2024-05-19T18:00:00,,7.95,2147.77,10.55,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-036,INMUM,labor_strike,medium,active,2024-06-18T06:00:00,,36.11,29321.16,22.92,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-037,INMUM,labor_strike,medium,resolved,2025-07-25T10:00:00,2025-07-27T07:26:24,45.44,15558.93,27.42,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-038,INMUM,severe_weather,medium,active,2023-05-31T17:00:00,,19.67,22947.39,21.98,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-039,INMUM,port_congestion,low,monitoring,2025-01-26T09:00:00,,3.58,10849.56,9.95,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-040,INMUM,customs_delay,critical,monitoring,2025-12-19T00:00:00,,288.26,952229.23,73.11,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-041,INMUM,labor_strike,high,resolved,2023-08-25T03:00:00,2023-08-30T02:16:12,119.27,136278.35,56.17,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-042,INMUM,port_congestion,high,resolved,2024-06-24T16:00:00,2024-06-28T14:54:00,94.9,95767.16,49.83,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-043,INMUM,severe_weather,low,active,2024-11-14T04:00:00,,8.37,3262.15,7.74,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-044,INMUM,equipment_failure,high,monitoring,2023-01-20T03:00:00,,55.22,278383.93,54.1,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-045,INMUM,equipment_failure,high,active,2023-10-31T13:00:00,,60.23,157046.59,67.66,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-046,INMUM,severe_weather,critical,resolved,2025-01-02T06:00:00,2025-01-14T09:19:48,291.33,547575.04,86.8,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-047,INMUM,equipment_failure,high,resolved,2023-11-13T07:00:00,2023-11-18T18:00:00,131.0,273318.65,35.87,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-048,INMUM,labor_strike,high,resolved,2025-04-23T21:00:00,2025-04-29T07:57:00,130.95,135031.28,62.56,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-049,INMUM,severe_weather,low,active,2025-08-21T07:00:00,,4.0,5895.22,12.67,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-050,INMUM,port_congestion,high,active,2023-02-18T21:00:00,,66.54,137685.69,37.43,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-051,INMUM,labor_strike,high,monitoring,2025-11-09T12:00:00,,113.23,149508.72,35.97,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-052,INMUM,labor_strike,high,active,2024-01-01T18:00:00,,140.4,83607.87,55.88,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-053,INMUM,labor_strike,low,resolved,2025-06-12T19:00:00,2025-06-13T06:50:24,11.84,6392.74,9.5,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-054,INMUM,customs_delay,low,monitoring,2025-06-12T00:00:00,,7.2,10616.0,14.22,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-055,INMUM,port_congestion,high,monitoring,2025-01-15T13:00:00,,54.72,282173.44,56.81,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-056,INMUM,severe_weather,medium,active,2024-09-07T16:00:00,,23.13,34570.97,28.94,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-057,INMUM,port_congestion,medium,monitoring,2025-05-11T21:00:00,,45.85,59888.07,18.48,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-058,INMUM,geopolitical_conflict,medium,active,2023-01-01T09:00:00,,22.33,62145.53,27.13,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-059,INMUM,geopolitical_conflict,low,active,2025-06-24T21:00:00,,4.14,12112.3,14.48,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-060,INMUM,customs_delay,high,monitoring,2023-06-23T09:00:00,,97.48,214333.68,38.27,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-061,INMUM,port_congestion,critical,resolved,2024-09-27T07:00:00,2024-10-10T13:13:12,318.22,317097.77,77.35,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-062,INMUM,severe_weather,medium,monitoring,2025-07-21T13:00:00,,43.9,26666.11,28.93,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-063,INMUM,port_congestion,medium,resolved,2023-10-30T20:00:00,2023-11-01T08:45:00,36.75,61705.22,19.38,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-064,INMUM,customs_delay,high,resolved,2025-11-26T14:00:00,2025-11-28T18:49:12,52.82,281430.75,39.25,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-065,INMUM,geopolitical_conflict,low,active,2025-12-23T17:00:00,,7.95,9577.13,11.35,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-066,INMUM,equipment_failure,medium,active,2025-07-02T05:00:00,,38.77,42004.19,30.04,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-067,INMUM,labor_strike,high,active,2025-12-03T15:00:00,,108.17,173971.33,59.97,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-068,INMUM,labor_strike,low,resolved,2024-10-16T17:00:00,2024-10-16T19:48:36,2.81,4237.66,11.02,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-069,INMUM,severe_weather,high,active,2025-04-29T13:00:00,,79.76,168549.2,42.24,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-070,INMUM,equipment_failure,medium,resolved,2023-02-10T18:00:00,2023-02-11T19:41:24,25.69,71564.5,20.97,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-071,INMUM,geopolitical_conflict,medium,active,2024-03-27T15:00:00,,19.9,44138.52,22.78,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-072,INMUM,geopolitical_conflict,medium,monitoring,2023-12-05T14:00:00,,45.1,47047.42,33.14,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-073,INMUM,customs_delay,medium,resolved,2023-02-25T02:00:00,2023-02-26T13:08:24,35.14,67011.08,18.63,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-074,INMUM,labor_strike,low,active,2024-03-09T14:00:00,,5.27,4895.59,14.37,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-075,INMUM,severe_weather,medium,resolved,2025-08-21T00:00:00,2025-08-22T14:57:36,38.96,74994.47,22.0,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-076,INMUM,customs_delay,medium,resolved,2023-03-24T00:00:00,2023-03-25T22:11:24,46.19,65353.73,27.43,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-077,INMUM,geopolitical_conflict,low,active,2023-08-23T18:00:00,,11.48,10792.51,11.97,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-078,INMUM,equipment_failure,low,resolved,2023-08-23T05:00:00,2023-08-23T16:39:00,11.65,9101.59,14.08,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-079,INMUM,geopolitical_conflict,medium,monitoring,2025-03-23T22:00:00,,19.14,56436.86,27.54,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-080,INMUM,labor_strike,low,active,2023-09-05T18:00:00,,9.83,8458.43,10.6,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-081,INMUM,customs_delay,low,active,2024-11-29T00:00:00,,10.5,2477.54,14.49,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-082,INMUM,geopolitical_conflict,medium,monitoring,2023-11-10T13:00:00,,18.34,72928.42,20.4,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-083,INMUM,equipment_failure,high,monitoring,2025-09-17T14:00:00,,89.82,208306.79,46.28,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-084,INMUM,severe_weather,low,active,2024-07-25T14:00:00,,4.44,8977.9,10.69,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-085,INMUM,geopolitical_conflict,low,active,2024-10-27T05:00:00,,6.88,12169.65,6.42,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-086,INMUM,customs_delay,high,resolved,2024-07-19T17:00:00,2024-07-21T17:58:12,48.97,94262.92,60.2,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-087,INMUM,port_congestion,medium,active,2025-09-02T20:00:00,,37.63,62575.97,16.86,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-088,INMUM,customs_delay,low,active,2024-05-13T09:00:00,,8.64,7625.65,8.9,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-089,INMUM,customs_delay,medium,active,2024-11-08T11:00:00,,37.3,33397.38,19.61,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-090,INMUM,labor_strike,high,monitoring,2023-09-02T23:00:00,,99.44,116658.71,42.57,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-091,INMUM,customs_delay,medium,resolved,2025-12-10T19:00:00,2025-12-11T17:11:24,22.19,64957.7,20.92,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-092,INMUM,labor_strike,medium,active,2023-01-29T22:00:00,,31.23,17730.94,16.09,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-093,INMUM,port_congestion,low,monitoring,2025-10-02T03:00:00,,10.73,4980.75,8.22,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-094,INMUM,severe_weather,low,resolved,2024-06-01T15:00:00,2024-06-01T18:08:24,3.14,6609.9,2.96,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-095,INMUM,severe_weather,medium,active,2023-11-07T04:00:00,,41.2,20110.85,19.96,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-096,INMUM,geopolitical_conflict,medium,active,2024-04-07T16:00:00,,25.69,32841.19,26.77,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-097,INMUM,equipment_failure,medium,resolved,2023-05-04T19:00:00,2023-05-06T17:33:36,46.56,71855.41,19.16,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-098,INMUM,customs_delay,low,monitoring,2023-06-16T05:00:00,,4.4,2050.91,2.03,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-099,INMUM,equipment_failure,medium,active,2025-08-20T09:00:00,,13.18,57417.35,29.06,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-100,INMUM,customs_delay,medium,monitoring,2024-04-23T08:00:00,,40.36,50387.38,31.08,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-101,INMUM,severe_weather,low,active,2024-04-05T20:00:00,,3.49,12572.84,2.93,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-102,INMUM,labor_strike,low,monitoring,2024-08-14T14:00:00,,3.24,5257.28,7.23,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-103,INMUM,equipment_failure,low,resolved,2025-10-08T14:00:00,2025-10-08T16:48:00,2.8,13451.92,11.55,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-104,INMUM,severe_weather,medium,monitoring,2023-07-07T07:00:00,,46.63,50227.38,15.41,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-105,INMUM,labor_strike,high,monitoring,2023-03-24T05:00:00,,93.17,174501.62,44.74,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-106,INMUM,geopolitical_conflict,critical,monitoring,2025-10-04T02:00:00,,245.52,533315.88,90.1,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-107,INMUM,labor_strike,high,monitoring,2025-04-23T22:00:00,,95.57,287668.55,63.47,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-108,INMUM,geopolitical_conflict,medium,resolved,2023-06-30T10:00:00,2023-07-01T07:05:24,21.09,73211.08,23.08,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-INMUM-109,INMUM,severe_weather,medium,monitoring,2025-08-04T13:00:00,,13.95,36706.76,30.13,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-110,INMUM,severe_weather,medium,active,2024-02-21T08:00:00,,31.77,41286.97,28.97,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-111,INMUM,customs_delay,low,monitoring,2024-05-05T22:00:00,,3.58,1191.44,7.3,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-112,INMUM,severe_weather,low,resolved,2025-08-03T03:00:00,2025-08-03T11:28:48,8.48,7977.26,11.32,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-INMUM-113,INMUM,labor_strike,medium,resolved,2025-04-30T15:00:00,2025-05-02T14:17:24,47.29,42407.19,17.89,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-114,INMUM,equipment_failure,low,resolved,2025-11-06T23:00:00,2025-11-07T09:47:24,10.79,4867.46,12.27,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-115,INMUM,equipment_failure,medium,active,2024-07-01T00:00:00,,22.18,65248.56,26.6,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-INMUM-116,INMUM,port_congestion,medium,active,2025-07-03T17:00:00,,29.44,48115.05,25.87,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-117,INMUM,labor_strike,medium,active,2024-01-22T22:00:00,,20.6,29013.75,30.51,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-INMUM-118,INMUM,customs_delay,low,active,2025-08-26T22:00:00,,11.13,6405.1,10.63,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-INMUM-119,INMUM,port_congestion,high,monitoring,2025-10-11T01:00:00,,60.12,149698.81,38.51,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-INMUM-120,INMUM,severe_weather,high,resolved,2025-12-13T14:00:00,2025-12-15T15:28:12,49.47,167245.19,57.92,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-001,AEDXB,geopolitical_conflict,low,active,2024-06-26T10:00:00,,8.23,10097.71,13.07,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-002,AEDXB,equipment_failure,high,active,2025-02-17T10:00:00,,108.17,271286.18,36.26,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-003,AEDXB,customs_delay,low,active,2024-08-11T07:00:00,,9.47,14696.73,11.88,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-004,AEDXB,severe_weather,high,resolved,2025-06-27T05:00:00,2025-07-01T23:37:12,114.62,85347.97,62.87,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-005,AEDXB,labor_strike,low,active,2025-06-01T04:00:00,,4.44,8922.99,12.3,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-006,AEDXB,severe_weather,low,active,2025-02-22T19:00:00,,8.83,13779.61,3.86,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-007,AEDXB,labor_strike,medium,active,2025-07-30T08:00:00,,36.01,69072.57,28.55,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-008,AEDXB,geopolitical_conflict,low,active,2024-12-08T18:00:00,,4.99,10664.39,7.94,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-009,AEDXB,geopolitical_conflict,low,monitoring,2025-09-16T03:00:00,,4.37,6025.43,5.85,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-010,AEDXB,severe_weather,medium,monitoring,2025-03-21T08:00:00,,12.29,61698.7,34.47,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-011,AEDXB,customs_delay,high,resolved,2025-10-14T09:00:00,2025-10-19T11:28:12,122.47,211589.62,47.33,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-012,AEDXB,equipment_failure,medium,monitoring,2024-05-28T21:00:00,,39.2,55851.31,17.74,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-013,AEDXB,customs_delay,low,resolved,2023-03-22T09:00:00,2023-03-22T18:53:24,9.89,9114.03,11.52,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-014,AEDXB,labor_strike,low,resolved,2024-10-31T23:00:00,2024-11-01T05:09:36,6.16,2850.24,9.01,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-015,AEDXB,equipment_failure,critical,monitoring,2025-10-24T08:00:00,,323.38,939834.27,98.33,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-016,AEDXB,labor_strike,critical,resolved,2024-11-24T03:00:00,2024-12-04T08:09:36,245.16,398529.91,99.0,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-017,AEDXB,customs_delay,high,active,2025-03-24T17:00:00,,83.11,78131.7,53.78,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-018,AEDXB,customs_delay,medium,monitoring,2024-06-20T18:00:00,,25.72,71417.51,17.17,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-019,AEDXB,severe_weather,low,resolved,2024-11-02T19:00:00,2024-11-02T23:12:36,4.21,9895.65,8.04,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-020,AEDXB,customs_delay,high,resolved,2025-04-16T03:00:00,2025-04-18T16:25:12,61.42,143482.03,52.24,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-021,AEDXB,equipment_failure,low,monitoring,2023-10-05T12:00:00,,6.54,14291.33,11.05,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-022,AEDXB,equipment_failure,medium,active,2023-11-13T13:00:00,,35.58,51939.13,33.78,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-023,AEDXB,customs_delay,low,resolved,2025-01-28T06:00:00,2025-01-28T12:25:48,6.43,12976.3,3.29,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-024,AEDXB,equipment_failure,medium,resolved,2025-01-04T01:00:00,2025-01-05T03:19:48,26.33,73092.41,33.98,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-025,AEDXB,severe_weather,high,resolved,2024-03-10T20:00:00,2024-03-15T09:23:24,109.39,86380.16,46.67,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-026,AEDXB,equipment_failure,critical,resolved,2024-02-25T02:00:00,2024-03-09T13:14:24,323.24,710468.16,94.39,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-027,AEDXB,port_congestion,low,resolved,2023-01-06T08:00:00,2023-01-06T18:34:48,10.58,14825.38,9.02,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-028,AEDXB,severe_weather,high,resolved,2023-02-22T04:00:00,2023-02-24T05:25:48,49.43,207491.91,35.55,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-029,AEDXB,port_congestion,low,resolved,2025-05-12T16:00:00,2025-05-12T19:08:24,3.14,7667.44,12.11,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-030,AEDXB,severe_weather,medium,monitoring,2025-07-14T16:00:00,,19.98,17601.9,30.66,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-031,AEDXB,equipment_failure,high,resolved,2024-09-09T14:00:00,2024-09-14T03:45:36,109.76,88685.72,51.76,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-032,AEDXB,customs_delay,medium,active,2023-08-10T15:00:00,,37.65,19409.44,16.62,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-033,AEDXB,severe_weather,medium,monitoring,2023-09-16T08:00:00,,34.48,47901.39,21.5,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-034,AEDXB,equipment_failure,critical,monitoring,2024-08-26T14:00:00,,253.2,369424.92,91.05,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-035,AEDXB,customs_delay,high,resolved,2024-03-16T13:00:00,2024-03-20T08:21:00,91.35,168108.05,63.96,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-036,AEDXB,customs_delay,medium,monitoring,2023-07-14T10:00:00,,27.36,30293.39,34.07,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-037,AEDXB,geopolitical_conflict,medium,resolved,2023-05-18T02:00:00,2023-05-19T19:56:24,41.94,40912.59,29.89,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-038,AEDXB,port_congestion,medium,monitoring,2023-05-03T18:00:00,,46.44,34778.76,17.44,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-039,AEDXB,customs_delay,medium,active,2025-05-16T23:00:00,,13.85,51024.61,22.03,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-040,AEDXB,port_congestion,medium,resolved,2023-11-13T21:00:00,2023-11-15T02:21:36,29.36,36006.84,26.13,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-041,AEDXB,labor_strike,low,monitoring,2024-04-08T13:00:00,,10.45,9590.03,10.36,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-042,AEDXB,customs_delay,low,monitoring,2024-07-01T00:00:00,,3.8,11673.73,13.98,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-043,AEDXB,port_congestion,medium,resolved,2023-10-21T18:00:00,2023-10-23T05:39:36,35.66,23512.48,27.66,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-044,AEDXB,customs_delay,low,active,2025-12-22T06:00:00,,5.76,5772.54,6.81,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-045,AEDXB,equipment_failure,high,monitoring,2023-06-23T01:00:00,,62.94,86196.56,37.86,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-046,AEDXB,geopolitical_conflict,medium,active,2025-09-21T19:00:00,,27.91,27934.14,25.25,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-047,AEDXB,severe_weather,low,active,2024-08-03T21:00:00,,8.78,8377.08,6.01,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-048,AEDXB,equipment_failure,low,resolved,2023-04-23T00:00:00,2023-04-23T04:02:24,4.04,11742.89,11.93,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-049,AEDXB,severe_weather,low,resolved,2023-01-16T15:00:00,2023-01-17T00:28:12,9.47,2808.6,8.92,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-050,AEDXB,equipment_failure,low,monitoring,2024-12-26T02:00:00,,5.97,1592.23,2.24,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-051,AEDXB,labor_strike,critical,monitoring,2025-05-29T18:00:00,,231.36,502660.64,82.15,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-052,AEDXB,port_congestion,critical,resolved,2025-07-31T22:00:00,2025-08-15T04:40:12,342.67,605698.25,73.18,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-053,AEDXB,geopolitical_conflict,medium,active,2025-12-09T02:00:00,,26.25,59748.29,19.43,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-054,AEDXB,severe_weather,high,monitoring,2025-11-11T20:00:00,,58.95,118628.33,62.17,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-055,AEDXB,customs_delay,medium,active,2023-10-30T07:00:00,,15.7,26836.31,27.05,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-056,AEDXB,customs_delay,high,monitoring,2023-06-04T05:00:00,,139.32,186176.33,61.41,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-057,AEDXB,geopolitical_conflict,high,active,2024-10-23T20:00:00,,78.35,90364.41,50.48,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-058,AEDXB,labor_strike,low,active,2023-04-26T11:00:00,,7.07,7464.39,2.49,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-059,AEDXB,labor_strike,medium,resolved,2023-06-07T20:00:00,2023-06-09T15:06:36,43.11,51900.5,25.14,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-060,AEDXB,equipment_failure,medium,monitoring,2023-03-26T14:00:00,,44.73,54110.25,21.43,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-061,AEDXB,port_congestion,medium,active,2023-05-07T14:00:00,,15.73,73943.13,16.69,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-062,AEDXB,severe_weather,medium,active,2024-05-22T22:00:00,,27.76,46444.11,27.2,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-063,AEDXB,labor_strike,medium,monitoring,2025-03-04T13:00:00,,39.88,50873.15,30.78,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-064,AEDXB,severe_weather,medium,active,2024-11-06T03:00:00,,32.09,32048.82,29.47,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-065,AEDXB,equipment_failure,medium,monitoring,2023-11-04T10:00:00,,14.93,23485.7,22.0,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-066,AEDXB,customs_delay,critical,resolved,2025-03-13T04:00:00,2025-03-24T12:31:48,272.53,516707.32,81.3,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-067,AEDXB,port_congestion,high,active,2025-12-14T02:00:00,,110.02,189409.91,35.64,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-068,AEDXB,port_congestion,low,resolved,2024-11-30T15:00:00,2024-11-30T18:55:12,3.92,3169.23,5.85,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-069,AEDXB,equipment_failure,high,monitoring,2025-12-14T01:00:00,,111.55,104486.03,48.19,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-070,AEDXB,customs_delay,low,active,2023-12-06T23:00:00,,6.38,6100.19,11.35,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-071,AEDXB,equipment_failure,critical,resolved,2024-08-06T23:00:00,2024-08-20T00:18:00,313.3,673807.8,79.28,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-072,AEDXB,geopolitical_conflict,high,monitoring,2024-02-02T11:00:00,,113.12,296498.95,51.16,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-073,AEDXB,geopolitical_conflict,low,resolved,2025-10-26T16:00:00,2025-10-26T22:11:24,6.19,12436.48,12.42,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-074,AEDXB,labor_strike,low,active,2023-04-17T20:00:00,,6.81,8763.57,3.33,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-075,AEDXB,severe_weather,high,active,2024-08-06T02:00:00,,121.26,176096.82,52.97,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-076,AEDXB,severe_weather,high,resolved,2024-03-30T14:00:00,2024-04-05T02:55:12,132.92,168351.8,48.88,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-077,AEDXB,geopolitical_conflict,medium,active,2023-06-17T11:00:00,,20.08,70849.55,31.78,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-078,AEDXB,port_congestion,medium,active,2023-10-09T01:00:00,,22.33,56764.32,17.78,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-079,AEDXB,geopolitical_conflict,high,resolved,2023-01-11T02:00:00,2023-01-13T03:49:12,49.82,262866.7,54.21,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-080,AEDXB,equipment_failure,high,resolved,2025-05-16T03:00:00,2025-05-21T05:30:36,122.51,142759.02,36.67,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-081,AEDXB,equipment_failure,medium,active,2025-07-25T02:00:00,,15.99,50804.34,15.33,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-082,AEDXB,port_congestion,medium,monitoring,2023-10-22T09:00:00,,27.45,36168.96,26.41,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-083,AEDXB,customs_delay,low,resolved,2023-06-25T16:00:00,2023-06-26T03:45:00,11.75,14347.65,9.07,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-084,AEDXB,equipment_failure,high,resolved,2023-02-11T12:00:00,2023-02-16T23:50:24,131.84,218025.93,69.34,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-085,AEDXB,severe_weather,low,monitoring,2025-01-01T02:00:00,,5.45,10199.46,3.35,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-086,AEDXB,labor_strike,medium,active,2023-10-01T01:00:00,,24.68,63810.53,18.5,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-087,AEDXB,geopolitical_conflict,high,resolved,2025-09-07T20:00:00,2025-09-10T13:30:00,65.5,89197.62,62.17,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-088,AEDXB,labor_strike,medium,resolved,2024-02-17T01:00:00,2024-02-18T17:28:48,40.48,33935.75,21.2,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-089,AEDXB,equipment_failure,medium,monitoring,2025-08-27T08:00:00,,13.32,26466.21,22.14,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-090,AEDXB,customs_delay,high,active,2024-11-10T08:00:00,,59.95,173314.06,49.0,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-091,AEDXB,geopolitical_conflict,medium,active,2024-11-25T05:00:00,,29.86,37040.82,30.95,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-092,AEDXB,severe_weather,low,resolved,2025-05-19T02:00:00,2025-05-19T08:18:36,6.31,8636.64,6.18,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-093,AEDXB,customs_delay,low,monitoring,2024-08-28T09:00:00,,6.46,6965.63,10.97,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-094,AEDXB,severe_weather,medium,active,2024-12-23T19:00:00,,47.93,53368.16,30.83,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-095,AEDXB,customs_delay,low,monitoring,2025-04-11T11:00:00,,7.13,10511.75,14.39,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-096,AEDXB,equipment_failure,low,resolved,2025-06-16T01:00:00,2025-06-16T04:15:36,3.26,11899.22,6.76,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-097,AEDXB,equipment_failure,medium,active,2023-03-08T19:00:00,,17.52,71929.41,22.44,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-098,AEDXB,equipment_failure,high,active,2023-10-09T16:00:00,,83.23,221151.17,43.74,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-099,AEDXB,customs_delay,low,monitoring,2024-01-17T15:00:00,,7.18,2648.65,12.07,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-100,AEDXB,port_congestion,high,active,2024-08-07T22:00:00,,135.98,120040.13,39.75,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-101,AEDXB,port_congestion,low,active,2025-06-30T02:00:00,,10.11,10349.76,11.22,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-102,AEDXB,labor_strike,medium,monitoring,2024-09-06T05:00:00,,37.63,53262.0,30.87,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-103,AEDXB,severe_weather,medium,active,2024-02-16T04:00:00,,20.52,16577.04,26.08,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-104,AEDXB,equipment_failure,medium,resolved,2023-09-23T19:00:00,2023-09-25T14:49:48,43.83,33557.44,34.99,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-105,AEDXB,equipment_failure,high,resolved,2025-04-21T13:00:00,2025-04-26T20:02:24,127.04,103198.53,46.1,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-106,AEDXB,geopolitical_conflict,low,monitoring,2025-11-25T11:00:00,,3.28,9957.12,4.37,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-107,AEDXB,geopolitical_conflict,critical,resolved,2025-10-26T01:00:00,2025-11-08T12:34:48,323.58,512887.18,74.86,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-108,AEDXB,port_congestion,critical,resolved,2024-12-09T16:00:00,2024-12-23T17:18:00,337.3,475423.72,89.05,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-109,AEDXB,port_congestion,medium,monitoring,2024-09-12T19:00:00,,31.21,53459.25,26.84,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-110,AEDXB,port_congestion,medium,resolved,2024-11-22T18:00:00,2024-11-23T07:28:48,13.48,19873.37,33.97,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-111,AEDXB,labor_strike,high,monitoring,2024-03-07T18:00:00,,87.99,81814.33,66.11,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-112,AEDXB,customs_delay,medium,monitoring,2024-09-10T15:00:00,,20.82,39365.55,24.07,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-113,AEDXB,port_congestion,medium,resolved,2025-06-19T13:00:00,2025-06-20T18:25:48,29.43,35411.55,17.87,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-114,AEDXB,labor_strike,high,active,2024-12-08T12:00:00,,60.55,190870.53,38.72,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-AEDXB-115,AEDXB,severe_weather,low,resolved,2024-07-01T14:00:00,2024-07-01T18:28:48,4.48,1708.47,14.29,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-AEDXB-116,AEDXB,geopolitical_conflict,high,monitoring,2024-05-23T05:00:00,,126.09,237253.9,41.64,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-AEDXB-117,AEDXB,equipment_failure,low,active,2025-08-14T15:00:00,,10.79,1324.47,14.29,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-AEDXB-118,AEDXB,port_congestion,medium,resolved,2024-03-16T18:00:00,2024-03-17T18:42:00,24.7,31881.38,26.95,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-AEDXB-119,AEDXB,customs_delay,high,resolved,2025-08-21T09:00:00,2025-08-25T12:31:12,99.52,171958.75,65.89,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-AEDXB-120,AEDXB,geopolitical_conflict,high,monitoring,2025-01-19T01:00:00,,86.46,201408.79,47.69,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-001,SGSIN,geopolitical_conflict,low,active,2025-10-29T14:00:00,,9.64,12554.36,10.1,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-002,SGSIN,port_congestion,medium,active,2023-07-18T12:00:00,,25.44,48469.91,22.31,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-003,SGSIN,equipment_failure,low,resolved,2025-11-08T12:00:00,2025-11-08T19:00:00,7.0,1544.8,11.28,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-004,SGSIN,equipment_failure,high,monitoring,2025-07-24T04:00:00,,106.2,106450.72,67.6,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-005,SGSIN,geopolitical_conflict,low,monitoring,2024-09-04T18:00:00,,5.36,8452.76,11.21,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-006,SGSIN,severe_weather,low,active,2025-01-24T10:00:00,,8.74,9171.83,12.36,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-007,SGSIN,customs_delay,high,monitoring,2023-02-24T19:00:00,,93.56,251153.4,62.17,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-008,SGSIN,customs_delay,medium,monitoring,2023-04-16T18:00:00,,29.3,52741.51,27.39,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-009,SGSIN,port_congestion,high,monitoring,2024-05-11T01:00:00,,102.97,99726.49,35.66,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-010,SGSIN,port_congestion,low,monitoring,2025-04-25T22:00:00,,4.04,11849.61,13.97,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-011,SGSIN,customs_delay,high,resolved,2023-05-08T22:00:00,2023-05-11T11:15:36,61.26,201199.52,69.93,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-012,SGSIN,geopolitical_conflict,medium,monitoring,2024-10-04T05:00:00,,28.55,35539.62,22.09,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-013,SGSIN,customs_delay,high,resolved,2024-06-25T19:00:00,2024-06-29T17:28:48,94.48,137776.44,45.45,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-014,SGSIN,labor_strike,critical,monitoring,2024-08-14T22:00:00,,188.77,521928.52,80.46,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-015,SGSIN,customs_delay,critical,monitoring,2024-07-14T09:00:00,,170.32,927032.32,81.84,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-016,SGSIN,port_congestion,low,monitoring,2024-08-17T01:00:00,,4.88,2106.41,14.01,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-017,SGSIN,customs_delay,medium,monitoring,2025-09-08T06:00:00,,19.27,31267.96,26.24,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-018,SGSIN,severe_weather,low,monitoring,2024-05-05T07:00:00,,2.51,4159.4,5.03,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-019,SGSIN,labor_strike,low,resolved,2025-08-25T03:00:00,2025-08-25T11:48:36,8.81,1072.54,9.15,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-020,SGSIN,geopolitical_conflict,critical,monitoring,2025-09-01T15:00:00,,284.52,524817.39,89.38,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-021,SGSIN,severe_weather,high,resolved,2024-04-20T17:00:00,2024-04-25T15:54:36,118.91,280476.69,41.13,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-022,SGSIN,port_congestion,high,resolved,2023-03-16T12:00:00,2023-03-21T15:38:24,123.64,285736.97,68.67,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-023,SGSIN,severe_weather,critical,resolved,2023-01-19T09:00:00,2023-01-30T11:40:48,266.68,949918.39,80.05,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-024,SGSIN,customs_delay,medium,resolved,2025-12-09T15:00:00,2025-12-11T11:00:36,44.01,66063.58,24.36,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-025,SGSIN,severe_weather,low,monitoring,2024-11-08T05:00:00,,9.31,4601.71,4.42,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-026,SGSIN,labor_strike,high,monitoring,2024-01-31T05:00:00,,106.65,276834.62,63.94,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-027,SGSIN,severe_weather,medium,resolved,2025-03-31T21:00:00,2025-04-01T12:25:48,15.43,43647.25,33.72,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-028,SGSIN,geopolitical_conflict,low,active,2024-04-27T14:00:00,,9.54,5227.24,11.4,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-029,SGSIN,customs_delay,low,monitoring,2025-01-06T22:00:00,,4.36,2655.15,5.99,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-030,SGSIN,equipment_failure,medium,active,2024-09-28T22:00:00,,16.23,37052.63,19.42,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-031,SGSIN,geopolitical_conflict,critical,monitoring,2023-11-10T14:00:00,,305.51,591091.93,86.48,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-032,SGSIN,equipment_failure,medium,monitoring,2024-03-23T07:00:00,,36.49,67388.1,16.64,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-033,SGSIN,customs_delay,medium,resolved,2025-01-10T02:00:00,2025-01-11T23:01:12,45.02,18705.48,25.95,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-034,SGSIN,equipment_failure,medium,monitoring,2023-11-03T05:00:00,,23.81,41510.43,28.61,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-035,SGSIN,geopolitical_conflict,high,resolved,2023-07-06T16:00:00,2023-07-10T10:46:12,90.77,177022.27,52.96,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-036,SGSIN,severe_weather,medium,monitoring,2025-08-04T21:00:00,,41.05,16306.23,20.09,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-037,SGSIN,port_congestion,low,monitoring,2023-05-30T01:00:00,,6.24,1892.64,14.92,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-038,SGSIN,severe_weather,critical,resolved,2025-08-24T01:00:00,2025-09-01T15:00:36,206.01,838280.44,92.97,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-039,SGSIN,customs_delay,critical,monitoring,2025-05-10T11:00:00,,358.46,613975.99,97.51,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-040,SGSIN,severe_weather,medium,resolved,2023-09-30T20:00:00,2023-10-02T14:58:12,42.97,25708.42,25.75,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-041,SGSIN,customs_delay,medium,active,2024-04-01T00:00:00,,39.22,42780.23,29.38,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-042,SGSIN,geopolitical_conflict,medium,resolved,2024-04-15T07:00:00,2024-04-16T11:34:48,28.58,31538.98,33.75,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-043,SGSIN,severe_weather,high,resolved,2023-03-07T21:00:00,2023-03-11T13:15:00,88.25,129149.92,37.36,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-044,SGSIN,geopolitical_conflict,medium,active,2023-04-10T07:00:00,,38.66,41337.77,25.8,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-045,SGSIN,severe_weather,high,resolved,2023-10-14T16:00:00,2023-10-20T15:22:12,143.37,258551.91,60.6,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-046,SGSIN,equipment_failure,low,resolved,2024-10-18T07:00:00,2024-10-18T12:01:12,5.02,14799.74,8.78,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-047,SGSIN,labor_strike,medium,monitoring,2023-05-05T17:00:00,,46.15,69694.66,27.52,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-048,SGSIN,geopolitical_conflict,medium,monitoring,2023-04-07T11:00:00,,45.9,37869.28,25.49,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-049,SGSIN,geopolitical_conflict,medium,monitoring,2023-11-02T09:00:00,,25.55,43411.13,31.99,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-050,SGSIN,customs_delay,low,monitoring,2023-10-23T14:00:00,,11.15,6777.48,7.41,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-051,SGSIN,geopolitical_conflict,medium,monitoring,2024-05-12T08:00:00,,19.32,19744.23,24.0,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-052,SGSIN,equipment_failure,medium,monitoring,2024-01-26T01:00:00,,21.66,51298.17,15.79,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-053,SGSIN,equipment_failure,low,active,2024-03-20T15:00:00,,4.09,5244.63,13.82,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-054,SGSIN,port_congestion,low,active,2023-08-29T23:00:00,,12.0,13802.18,11.04,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-055,SGSIN,geopolitical_conflict,high,active,2024-05-05T17:00:00,,78.88,160648.89,53.68,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-056,SGSIN,labor_strike,medium,active,2025-01-06T16:00:00,,43.78,20916.49,34.63,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-057,SGSIN,labor_strike,medium,resolved,2024-02-21T11:00:00,2024-02-22T10:16:12,23.27,48751.48,19.43,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-058,SGSIN,labor_strike,low,active,2025-05-05T09:00:00,,3.52,4220.26,9.41,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-059,SGSIN,equipment_failure,low,active,2024-11-22T08:00:00,,9.63,14531.12,10.34,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-060,SGSIN,port_congestion,medium,monitoring,2024-12-22T05:00:00,,17.04,44298.98,33.34,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-061,SGSIN,customs_delay,medium,resolved,2023-05-01T16:00:00,2023-05-02T05:13:12,13.22,71711.29,28.36,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-062,SGSIN,geopolitical_conflict,high,monitoring,2023-10-09T20:00:00,,70.22,108981.67,42.66,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-063,SGSIN,severe_weather,medium,resolved,2025-09-16T21:00:00,2025-09-18T02:33:36,29.56,46932.75,23.23,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-064,SGSIN,customs_delay,low,resolved,2024-07-16T17:00:00,2024-07-17T04:46:12,11.77,8031.02,11.07,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-065,SGSIN,port_congestion,medium,resolved,2023-08-08T03:00:00,2023-08-09T09:52:48,30.88,26515.92,25.53,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-066,SGSIN,labor_strike,high,active,2025-03-23T02:00:00,,83.81,178274.49,43.51,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-067,SGSIN,labor_strike,medium,monitoring,2023-06-15T20:00:00,,47.7,60575.15,16.87,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-068,SGSIN,equipment_failure,medium,monitoring,2025-09-01T01:00:00,,34.92,25283.01,25.0,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-069,SGSIN,labor_strike,medium,resolved,2023-07-15T16:00:00,2023-07-17T13:05:24,45.09,27685.02,32.36,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-070,SGSIN,geopolitical_conflict,high,monitoring,2024-07-09T01:00:00,,136.72,283256.58,66.48,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-071,SGSIN,severe_weather,medium,resolved,2024-01-03T10:00:00,2024-01-03T22:33:36,12.56,50222.17,30.05,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-072,SGSIN,geopolitical_conflict,high,resolved,2023-06-07T09:00:00,2023-06-10T00:36:00,63.6,202506.58,64.73,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-073,SGSIN,equipment_failure,medium,resolved,2024-11-10T12:00:00,2024-11-12T03:12:00,39.2,62429.89,28.79,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-074,SGSIN,customs_delay,low,resolved,2024-12-09T01:00:00,2024-12-09T03:58:48,2.98,12741.45,6.43,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-075,SGSIN,equipment_failure,high,active,2025-03-23T10:00:00,,50.84,251298.33,50.77,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-076,SGSIN,equipment_failure,low,monitoring,2025-02-07T13:00:00,,3.86,10249.41,3.11,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-077,SGSIN,port_congestion,medium,active,2023-05-31T02:00:00,,21.65,57700.63,27.68,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-078,SGSIN,labor_strike,high,active,2025-01-08T03:00:00,,56.79,175065.57,61.65,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-079,SGSIN,severe_weather,low,monitoring,2024-01-19T13:00:00,,6.49,8174.17,3.34,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-080,SGSIN,equipment_failure,low,active,2023-07-10T19:00:00,,7.98,13092.05,2.16,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-081,SGSIN,severe_weather,medium,monitoring,2024-05-12T18:00:00,,30.76,37843.92,17.78,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-082,SGSIN,geopolitical_conflict,low,active,2023-10-26T02:00:00,,3.67,6895.43,8.3,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-083,SGSIN,labor_strike,low,monitoring,2024-05-20T23:00:00,,8.25,9633.36,7.95,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-084,SGSIN,severe_weather,low,active,2025-03-21T10:00:00,,10.42,12257.07,6.28,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-085,SGSIN,customs_delay,low,monitoring,2023-10-06T09:00:00,,5.21,3811.92,6.08,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-086,SGSIN,labor_strike,critical,monitoring,2024-08-19T23:00:00,,294.11,977434.16,93.46,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-087,SGSIN,labor_strike,low,monitoring,2025-03-15T11:00:00,,3.14,3797.2,14.96,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-088,SGSIN,equipment_failure,low,monitoring,2023-02-25T23:00:00,,6.62,3935.08,12.37,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-089,SGSIN,severe_weather,high,monitoring,2025-04-17T21:00:00,,95.93,143137.34,43.84,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-090,SGSIN,geopolitical_conflict,low,monitoring,2025-02-11T02:00:00,,6.49,7709.29,7.21,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-091,SGSIN,customs_delay,medium,active,2025-05-06T17:00:00,,13.32,57098.06,31.25,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-092,SGSIN,severe_weather,medium,active,2023-08-12T07:00:00,,35.67,24980.31,27.25,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-093,SGSIN,customs_delay,medium,active,2025-03-29T10:00:00,,46.77,21356.67,16.97,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-094,SGSIN,customs_delay,low,monitoring,2025-11-28T17:00:00,,7.81,4094.44,6.86,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-095,SGSIN,customs_delay,medium,resolved,2025-10-21T04:00:00,2025-10-22T04:25:12,24.42,43966.27,20.91,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-096,SGSIN,severe_weather,critical,monitoring,2023-08-26T23:00:00,,174.6,540146.68,93.53,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-097,SGSIN,labor_strike,medium,monitoring,2025-09-02T03:00:00,,27.77,42146.83,16.34,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-098,SGSIN,customs_delay,low,monitoring,2023-08-24T00:00:00,,10.49,2531.08,12.4,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-099,SGSIN,customs_delay,critical,resolved,2024-05-14T16:00:00,2024-05-22T05:40:48,181.68,531692.76,82.79,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-100,SGSIN,geopolitical_conflict,medium,active,2024-01-13T05:00:00,,35.06,38734.94,29.75,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-101,SGSIN,geopolitical_conflict,high,resolved,2025-05-29T12:00:00,2025-05-31T12:25:48,48.43,121301.51,61.33,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-102,SGSIN,severe_weather,high,active,2023-07-28T17:00:00,,65.95,119341.71,38.99,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-103,SGSIN,geopolitical_conflict,medium,active,2025-12-16T20:00:00,,23.28,51678.51,26.74,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-104,SGSIN,geopolitical_conflict,low,active,2023-12-20T21:00:00,,9.06,13861.56,9.67,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-105,SGSIN,labor_strike,medium,resolved,2023-08-30T07:00:00,2023-08-31T05:59:24,22.99,37398.36,17.83,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-106,SGSIN,equipment_failure,medium,resolved,2023-10-10T18:00:00,2023-10-11T19:48:36,25.81,44200.21,25.75,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-107,SGSIN,port_congestion,high,resolved,2023-12-08T15:00:00,2023-12-11T18:43:48,75.73,145780.5,50.79,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-108,SGSIN,labor_strike,low,active,2023-01-20T15:00:00,,3.37,14493.61,8.57,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-109,SGSIN,customs_delay,medium,active,2025-10-04T13:00:00,,37.57,44321.97,16.65,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-110,SGSIN,port_congestion,low,monitoring,2024-08-21T01:00:00,,4.75,5041.38,12.15,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-111,SGSIN,geopolitical_conflict,medium,active,2025-11-12T03:00:00,,32.62,61506.78,31.47,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-112,SGSIN,severe_weather,medium,active,2025-06-22T17:00:00,,19.87,21144.99,31.6,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-SGSIN-113,SGSIN,labor_strike,high,resolved,2023-03-08T14:00:00,2023-03-11T15:13:48,73.23,173790.73,69.79,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-SGSIN-114,SGSIN,port_congestion,high,active,2024-03-05T23:00:00,,104.44,268735.96,56.36,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-115,SGSIN,equipment_failure,medium,resolved,2023-10-13T06:00:00,2023-10-14T23:17:24,41.29,49204.46,25.65,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-SGSIN-116,SGSIN,port_congestion,medium,monitoring,2024-10-24T22:00:00,,22.53,31040.58,32.16,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-117,SGSIN,customs_delay,critical,monitoring,2023-07-15T04:00:00,,351.96,943138.1,99.77,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-SGSIN-118,SGSIN,port_congestion,high,active,2023-09-29T07:00:00,,62.04,261408.41,61.65,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-SGSIN-119,SGSIN,geopolitical_conflict,medium,monitoring,2023-10-19T18:00:00,,34.77,39853.51,24.04,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-SGSIN-120,SGSIN,severe_weather,medium,monitoring,2025-04-05T16:00:00,,38.99,71180.17,22.38,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-001,NLRTM,labor_strike,critical,monitoring,2023-01-06T23:00:00,,164.12,744388.38,90.92,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-002,NLRTM,equipment_failure,high,resolved,2025-03-25T06:00:00,2025-03-31T02:56:24,140.94,186310.86,46.3,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-003,NLRTM,equipment_failure,low,active,2023-09-25T18:00:00,,10.52,13518.17,11.91,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-004,NLRTM,customs_delay,low,resolved,2025-07-30T00:00:00,2025-07-30T03:14:24,3.24,7178.0,2.01,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-005,NLRTM,port_congestion,critical,monitoring,2023-09-28T20:00:00,,209.2,365337.99,80.81,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-006,NLRTM,customs_delay,low,active,2023-12-05T01:00:00,,5.96,11163.84,11.82,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-007,NLRTM,severe_weather,medium,resolved,2023-07-14T00:00:00,2023-07-14T19:40:48,19.68,22961.99,19.52,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-008,NLRTM,severe_weather,medium,resolved,2023-01-17T22:00:00,2023-01-18T22:22:12,24.37,74289.29,23.45,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-009,NLRTM,severe_weather,low,resolved,2024-04-13T12:00:00,2024-04-13T14:53:24,2.89,2444.82,6.78,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-010,NLRTM,geopolitical_conflict,low,resolved,2023-09-30T20:00:00,2023-10-01T07:55:48,11.93,1957.76,9.32,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-011,NLRTM,port_congestion,medium,monitoring,2025-06-20T11:00:00,,38.01,59896.13,33.4,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-012,NLRTM,geopolitical_conflict,medium,resolved,2024-03-20T02:00:00,2024-03-21T22:16:48,44.28,60146.74,26.79,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-013,NLRTM,geopolitical_conflict,medium,monitoring,2024-10-06T04:00:00,,20.92,20054.92,26.07,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-014,NLRTM,equipment_failure,medium,monitoring,2024-08-06T22:00:00,,12.97,67549.63,19.11,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-015,NLRTM,port_congestion,medium,resolved,2025-03-13T09:00:00,2025-03-14T20:15:36,35.26,44693.26,17.25,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-016,NLRTM,equipment_failure,medium,resolved,2023-05-26T16:00:00,2023-05-28T11:59:24,43.99,74212.95,33.68,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-017,NLRTM,equipment_failure,low,resolved,2025-05-11T11:00:00,2025-05-11T18:27:36,7.46,11678.16,14.41,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-018,NLRTM,severe_weather,high,resolved,2023-05-19T00:00:00,2023-05-22T01:10:12,73.17,282580.34,68.2,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-019,NLRTM,labor_strike,medium,active,2025-10-23T13:00:00,,27.25,19945.67,25.73,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-020,NLRTM,labor_strike,medium,resolved,2023-06-21T09:00:00,2023-06-21T23:50:24,14.84,73458.8,18.11,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-021,NLRTM,equipment_failure,low,monitoring,2023-05-16T09:00:00,,8.99,14347.99,5.1,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-022,NLRTM,geopolitical_conflict,low,resolved,2023-08-26T14:00:00,2023-08-26T22:07:12,8.12,5330.06,11.64,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-023,NLRTM,severe_weather,high,resolved,2023-01-26T22:00:00,2023-01-29T11:10:12,61.17,111862.34,68.36,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-024,NLRTM,customs_delay,medium,monitoring,2024-06-14T05:00:00,,25.39,61867.44,20.38,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-025,NLRTM,severe_weather,high,resolved,2024-11-17T13:00:00,2024-11-20T15:06:36,74.11,134163.67,69.13,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-026,NLRTM,geopolitical_conflict,medium,active,2025-07-21T16:00:00,,24.96,66561.59,18.34,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-027,NLRTM,severe_weather,low,resolved,2023-08-25T07:00:00,2023-08-25T16:24:36,9.41,1616.53,13.22,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-028,NLRTM,geopolitical_conflict,low,resolved,2025-01-15T12:00:00,2025-01-15T23:12:00,11.2,14036.24,13.15,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-029,NLRTM,customs_delay,medium,active,2025-05-08T07:00:00,,23.58,69951.29,21.4,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-030,NLRTM,equipment_failure,high,resolved,2025-02-02T03:00:00,2025-02-06T03:12:00,96.2,115352.48,63.15,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-031,NLRTM,geopolitical_conflict,critical,monitoring,2023-05-22T14:00:00,,331.06,529110.65,86.59,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-032,NLRTM,port_congestion,low,monitoring,2024-08-20T18:00:00,,9.85,9718.05,8.03,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-033,NLRTM,geopolitical_conflict,medium,resolved,2024-02-05T23:00:00,2024-02-07T19:25:12,44.42,24033.98,33.65,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-034,NLRTM,equipment_failure,low,resolved,2024-12-10T20:00:00,2024-12-11T06:24:00,10.4,14313.86,2.02,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-035,NLRTM,customs_delay,medium,resolved,2024-09-21T03:00:00,2024-09-21T22:23:24,19.39,40188.95,34.22,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-036,NLRTM,port_congestion,critical,resolved,2024-07-27T02:00:00,2024-08-02T11:28:48,153.48,928101.23,85.59,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-037,NLRTM,labor_strike,high,resolved,2025-07-27T23:00:00,2025-07-30T07:09:00,56.15,188721.25,57.3,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-038,NLRTM,equipment_failure,medium,resolved,2023-05-08T13:00:00,2023-05-10T00:51:00,35.85,29206.3,20.22,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-039,NLRTM,geopolitical_conflict,low,resolved,2024-10-30T10:00:00,2024-10-30T16:31:48,6.53,2045.62,4.64,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-040,NLRTM,equipment_failure,high,active,2023-08-12T04:00:00,,58.14,179862.4,49.23,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-041,NLRTM,port_congestion,medium,resolved,2025-07-14T09:00:00,2025-07-15T13:40:48,28.68,20425.25,31.15,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-042,NLRTM,customs_delay,low,active,2023-03-24T06:00:00,,10.36,3076.53,11.25,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-043,NLRTM,geopolitical_conflict,critical,monitoring,2025-11-17T01:00:00,,290.27,874062.73,75.22,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-044,NLRTM,geopolitical_conflict,critical,resolved,2024-05-26T03:00:00,2024-06-05T06:48:00,243.8,385017.28,71.85,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-045,NLRTM,port_congestion,high,active,2023-09-25T06:00:00,,127.07,229414.18,67.82,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-046,NLRTM,equipment_failure,low,resolved,2024-06-14T02:00:00,2024-06-14T04:13:12,2.22,3768.5,10.4,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-047,NLRTM,severe_weather,high,active,2024-11-10T03:00:00,,52.1,86393.48,67.34,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-048,NLRTM,customs_delay,medium,monitoring,2025-03-19T15:00:00,,13.06,40599.84,22.08,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-049,NLRTM,labor_strike,high,resolved,2024-07-27T14:00:00,2024-08-02T02:48:36,132.81,213173.98,56.59,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-050,NLRTM,geopolitical_conflict,medium,resolved,2025-04-23T17:00:00,2025-04-24T22:15:00,29.25,31786.56,17.74,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-051,NLRTM,equipment_failure,low,monitoring,2024-05-25T20:00:00,,11.94,12127.85,14.86,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-052,NLRTM,labor_strike,high,active,2025-09-09T17:00:00,,123.02,280352.33,52.58,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-053,NLRTM,port_congestion,medium,resolved,2023-02-23T10:00:00,2023-02-24T19:30:00,33.5,68745.89,30.57,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-054,NLRTM,geopolitical_conflict,low,resolved,2025-12-20T11:00:00,2025-12-20T20:40:12,9.67,14635.72,3.3,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-055,NLRTM,labor_strike,medium,resolved,2025-12-28T23:00:00,2025-12-29T13:00:36,14.01,49541.53,34.65,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-056,NLRTM,port_congestion,medium,monitoring,2023-12-27T07:00:00,,33.33,56857.59,33.28,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-057,NLRTM,customs_delay,low,monitoring,2024-12-21T18:00:00,,7.64,14277.16,12.88,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-058,NLRTM,geopolitical_conflict,high,resolved,2024-09-24T05:00:00,2024-09-28T04:04:48,95.08,87637.79,56.06,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-059,NLRTM,geopolitical_conflict,low,resolved,2023-01-02T10:00:00,2023-01-02T21:10:48,11.18,12290.24,6.43,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-060,NLRTM,labor_strike,low,monitoring,2023-05-02T00:00:00,,3.48,13841.14,12.07,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-061,NLRTM,labor_strike,high,monitoring,2023-05-29T11:00:00,,115.64,164009.0,38.54,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-062,NLRTM,port_congestion,low,monitoring,2023-11-19T23:00:00,,11.49,14449.27,10.44,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-063,NLRTM,equipment_failure,low,resolved,2024-12-31T07:00:00,2024-12-31T15:39:36,8.66,6297.38,11.54,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-064,NLRTM,port_congestion,low,active,2023-01-04T22:00:00,,11.49,12910.6,12.02,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-065,NLRTM,port_congestion,medium,monitoring,2024-10-13T19:00:00,,19.95,21246.61,24.92,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-066,NLRTM,severe_weather,low,resolved,2024-05-02T11:00:00,2024-05-02T22:49:12,11.82,9906.61,14.52,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-067,NLRTM,customs_delay,high,resolved,2024-11-18T14:00:00,2024-11-20T15:05:24,49.09,131146.69,37.37,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-068,NLRTM,severe_weather,low,monitoring,2023-01-03T01:00:00,,5.86,6875.15,4.16,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-069,NLRTM,geopolitical_conflict,medium,active,2024-12-20T17:00:00,,25.51,62323.8,26.56,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-070,NLRTM,port_congestion,high,resolved,2023-11-30T14:00:00,2023-12-02T21:04:48,55.08,141354.44,46.16,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-071,NLRTM,severe_weather,critical,resolved,2024-12-01T05:00:00,2024-12-15T04:47:24,335.79,812389.56,86.41,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-072,NLRTM,severe_weather,high,active,2024-11-23T19:00:00,,142.59,233513.55,50.1,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-073,NLRTM,equipment_failure,medium,active,2025-06-08T05:00:00,,13.93,27333.03,18.8,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-074,NLRTM,customs_delay,medium,resolved,2024-06-27T21:00:00,2024-06-28T19:07:48,22.13,20754.96,22.86,Synthetic customs processing backlog delayed cargo clearance.,synthetic_phase4,true
+SYN-NLRTM-075,NLRTM,geopolitical_conflict,medium,active,2023-11-11T01:00:00,,24.99,20257.7,31.48,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-076,NLRTM,geopolitical_conflict,medium,resolved,2024-02-13T03:00:00,2024-02-13T15:55:48,12.93,53291.44,34.54,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-077,NLRTM,severe_weather,medium,monitoring,2024-09-23T12:00:00,,28.95,30900.26,27.84,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-078,NLRTM,labor_strike,medium,resolved,2025-02-20T11:00:00,2025-02-21T05:43:12,18.72,30797.76,24.3,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-079,NLRTM,labor_strike,low,monitoring,2023-05-07T04:00:00,,9.52,2353.84,10.69,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-080,NLRTM,geopolitical_conflict,high,active,2024-04-10T17:00:00,,53.85,259141.17,49.65,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-081,NLRTM,geopolitical_conflict,medium,active,2024-04-27T15:00:00,,22.76,69166.63,29.29,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-082,NLRTM,equipment_failure,medium,active,2023-10-29T03:00:00,,46.17,25372.74,34.69,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-083,NLRTM,port_congestion,critical,monitoring,2023-09-16T01:00:00,,235.45,441343.5,94.68,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-084,NLRTM,equipment_failure,low,resolved,2024-06-12T10:00:00,2024-06-12T21:06:36,11.11,2218.38,9.23,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-085,NLRTM,labor_strike,medium,resolved,2025-11-30T14:00:00,2025-12-02T11:01:12,45.02,62193.04,27.46,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-086,NLRTM,geopolitical_conflict,medium,monitoring,2023-08-19T13:00:00,,17.39,50276.05,30.17,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-087,NLRTM,severe_weather,critical,monitoring,2023-07-26T09:00:00,,331.37,914525.49,77.92,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-088,NLRTM,equipment_failure,medium,active,2025-08-26T01:00:00,,18.2,23631.16,27.17,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-089,NLRTM,severe_weather,medium,resolved,2025-03-21T10:00:00,2025-03-22T22:51:36,36.86,59744.99,33.42,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-090,NLRTM,severe_weather,high,active,2024-11-22T09:00:00,,77.85,268102.83,58.97,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-091,NLRTM,port_congestion,critical,monitoring,2023-10-03T09:00:00,,354.43,841821.63,79.63,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-092,NLRTM,equipment_failure,high,active,2023-07-02T06:00:00,,90.4,241712.58,61.58,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-093,NLRTM,severe_weather,high,monitoring,2025-11-21T05:00:00,,54.3,189028.94,39.75,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-094,NLRTM,equipment_failure,high,resolved,2023-03-01T05:00:00,2023-03-03T23:30:36,66.51,263319.75,43.73,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-095,NLRTM,labor_strike,medium,active,2024-02-12T08:00:00,,25.26,45307.58,27.71,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-096,NLRTM,severe_weather,low,active,2024-05-10T11:00:00,,6.89,3486.17,13.32,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-097,NLRTM,labor_strike,medium,active,2024-12-06T05:00:00,,42.16,59937.67,28.78,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-098,NLRTM,geopolitical_conflict,low,resolved,2023-04-12T05:00:00,2023-04-12T15:32:24,10.54,12999.56,10.42,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-099,NLRTM,labor_strike,medium,monitoring,2025-04-18T16:00:00,,12.72,15533.88,33.23,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-100,NLRTM,equipment_failure,medium,active,2023-01-18T07:00:00,,21.09,57764.43,29.19,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-101,NLRTM,geopolitical_conflict,low,active,2024-12-15T14:00:00,,4.52,5230.03,8.77,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-102,NLRTM,equipment_failure,medium,monitoring,2023-07-29T00:00:00,,30.41,72989.13,31.79,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-103,NLRTM,equipment_failure,medium,active,2024-08-01T09:00:00,,36.64,18830.22,34.77,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-104,NLRTM,labor_strike,medium,monitoring,2024-06-18T20:00:00,,37.6,32927.47,18.0,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-105,NLRTM,severe_weather,high,resolved,2025-04-07T21:00:00,2025-04-11T03:40:48,78.68,237288.72,57.94,Synthetic severe weather conditions reduced terminal operations.,synthetic_phase4,true
+SYN-NLRTM-106,NLRTM,labor_strike,critical,resolved,2025-05-07T12:00:00,2025-05-16T23:52:12,227.87,708116.59,99.84,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-107,NLRTM,labor_strike,high,active,2024-03-31T21:00:00,,99.32,278968.46,58.52,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-108,NLRTM,port_congestion,medium,resolved,2024-01-06T09:00:00,2024-01-07T00:30:36,15.51,59455.13,29.5,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-109,NLRTM,port_congestion,medium,active,2024-11-18T20:00:00,,15.21,28399.68,32.43,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-110,NLRTM,labor_strike,medium,active,2025-01-31T08:00:00,,33.08,66072.83,24.41,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-111,NLRTM,equipment_failure,high,monitoring,2023-05-26T15:00:00,,133.38,101958.59,58.82,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-112,NLRTM,geopolitical_conflict,medium,resolved,2023-04-21T04:00:00,2023-04-21T20:57:00,16.95,35560.19,34.74,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-113,NLRTM,geopolitical_conflict,high,resolved,2023-10-21T10:00:00,2023-10-26T20:47:24,130.79,250261.76,52.07,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-114,NLRTM,port_congestion,medium,active,2024-10-03T20:00:00,,14.09,31411.67,30.22,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-115,NLRTM,port_congestion,low,active,2025-09-29T02:00:00,,3.29,9868.83,7.24,Synthetic vessel backlog created elevated berth waiting times.,synthetic_phase4,true
+SYN-NLRTM-116,NLRTM,geopolitical_conflict,critical,monitoring,2023-01-10T01:00:00,,259.3,965048.03,96.76,Synthetic regional security conditions affected shipping operations.,synthetic_phase4,true
+SYN-NLRTM-117,NLRTM,equipment_failure,high,monitoring,2024-01-26T00:00:00,,112.97,240060.73,42.92,Synthetic terminal equipment outage slowed container handling.,synthetic_phase4,true
+SYN-NLRTM-118,NLRTM,labor_strike,high,monitoring,2023-09-22T03:00:00,,84.82,143875.9,37.29,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-119,NLRTM,labor_strike,low,monitoring,2025-07-22T23:00:00,,7.2,5729.69,13.54,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true
+SYN-NLRTM-120,NLRTM,labor_strike,critical,resolved,2025-09-30T11:00:00,2025-10-13T05:01:12,306.02,963659.05,97.55,Synthetic labor action reduced terminal handling capacity.,synthetic_phase4,true

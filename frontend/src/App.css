@@ -1,0 +1,151 @@
+/* =========================================================
+   SUPPLYCHAINAI APPLICATION-LEVEL STYLES
+   ========================================================= */
+
+/*
+ * The application-wide visual system lives in index.css.
+ *
+ * This file intentionally stays lightweight so individual
+ * pages can use Tailwind utilities without fighting a large
+ * collection of legacy Vite styles.
+ */
+
+.app-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.page-heading {
+  margin-bottom: 24px;
+}
+
+.page-eyebrow {
+  margin-bottom: 6px;
+
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.page-title {
+  color: #f1f5f9;
+  font-size: clamp(20px, 2vw, 27px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.page-description {
+  max-width: 760px;
+  margin-top: 7px;
+
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+/* Small reusable section heading */
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 13px;
+}
+
+.section-heading-title {
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.section-heading-description {
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 10px;
+}
+
+/* Empty state */
+
+.sc-empty-state {
+  display: flex;
+  min-height: 180px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  border: 1px dashed rgba(148, 163, 184, 0.14);
+  border-radius: 12px;
+
+  color: #64748b;
+  text-align: center;
+}
+
+.sc-empty-icon {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 10px;
+
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 10px;
+
+  color: #475569;
+  background: rgba(148, 163, 184, 0.03);
+}
+
+/* Error state */
+
+.sc-error {
+  padding: 14px 16px;
+
+  border: 1px solid rgba(251, 113, 133, 0.15);
+  border-radius: 10px;
+
+  color: #fda4af;
+  background: rgba(251, 113, 133, 0.045);
+
+  font-size: 11px;
+}
+
+/* Loading skeleton */
+
+.sc-skeleton {
+  position: relative;
+  overflow: hidden;
+
+  border-radius: 7px;
+  background: rgba(148, 163, 184, 0.07);
+}
+
+.sc-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  transform: translateX(-100%);
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.035),
+    transparent
+  );
+
+  animation: skeleton-shimmer 1.7s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
