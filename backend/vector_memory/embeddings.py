@@ -1,31 +1,23 @@
-from sentence_transformers import SentenceTransformer
-
 from .config import EMBEDDING_MODEL_NAME
-
 
 _model = None
 
-
 def get_embedding_model():
     """
-    Load the SentenceTransformer model once and reuse it.
+    Load the SentenceTransformer model only when needed.
     """
-
     global _model
 
     if _model is None:
-        print(
-            f"Loading embedding model: {EMBEDDING_MODEL_NAME}"
-        )
+        from sentence_transformers import SentenceTransformer
 
-        _model = SentenceTransformer(
-            EMBEDDING_MODEL_NAME
-        )
+        print(f"Loading embedding model: {EMBEDDING_MODEL_NAME}")
+
+        _model = SentenceTransformer(EMBEDDING_MODEL_NAME)
 
         print("Embedding model loaded successfully.")
 
     return _model
-
 
 def generate_embeddings(
     texts: list[str],

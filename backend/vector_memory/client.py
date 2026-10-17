@@ -1,20 +1,13 @@
 from pathlib import Path
 
-import chromadb
 
 from .config import (
     CHROMA_COLLECTION_NAME,
     CHROMA_PERSIST_DIRECTORY,
 )
 
-
 def get_chroma_client():
-    """
-    Return a persistent ChromaDB client.
-
-    The database is stored locally inside:
-    data/chroma
-    """
+    import chromadb
 
     Path(CHROMA_PERSIST_DIRECTORY).mkdir(
         parents=True,
@@ -26,7 +19,6 @@ def get_chroma_client():
     )
 
     return client
-
 
 def get_disruptions_collection():
     """

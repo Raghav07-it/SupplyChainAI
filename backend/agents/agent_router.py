@@ -3,9 +3,6 @@ from typing import Any, Dict
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from agents.agents import multi_agent_engine
-from routing.autonomous import run_autonomous_routing
-
 
 router = APIRouter(
     prefix="/agents",
@@ -99,6 +96,7 @@ def run_workflow(
         # ====================================================
         # PHASE 8
         # ====================================================
+        from agents.agents import multi_agent_engine
 
         result = multi_agent_engine.invoke(
             initial_state
@@ -151,7 +149,7 @@ def run_workflow(
                 0.45,
             )
         )
-
+        from routing.autonomous import run_autonomous_routing
         autonomous_routing = (
             run_autonomous_routing(
                 origin_port_code=origin,

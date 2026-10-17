@@ -6,12 +6,6 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 
-from .embeddings import get_embedding_dimension
-from .store import (
-    get_vector_memory_stats,
-    index_historical_disruptions,
-    search_disruption_memory,
-)
 
 
 router = APIRouter(
