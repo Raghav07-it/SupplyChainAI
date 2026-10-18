@@ -39,7 +39,7 @@ from routing.router import router as routing_router
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="SupplyChainAI API")
+app = FastAPI(title="ChainSight-AI API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -67,7 +67,7 @@ app.include_router(agent_router)
 
 @app.get("/")
 def home():
-    return {"message": "SupplyChainAI API is running"}
+    return {"message": "ChainSight-AI API is running"}
 
 
 @app.get("/health/database")

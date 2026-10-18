@@ -249,7 +249,7 @@ export default function SystemHealth() {
     databaseStatus?.database === "connected";
 
   const backendOperational =
-    apiStatus?.message === "SupplyChainAI API is running";
+    apiStatus?.message === "ChainSight-AI API is running";
 
   const tablesOperational =
     tables.length > 0;
@@ -289,7 +289,7 @@ export default function SystemHealth() {
              </div>
            </div>
            <p className="text-[13px] text-slate-400 max-w-2xl">
-             Monitor the availability of the SupplyChainAI backend and the system capabilities exposed through its APIs.
+             Monitor the availability of the ChainSight-AI backend and the system capabilities exposed through its APIs.
            </p>
         </div>
 

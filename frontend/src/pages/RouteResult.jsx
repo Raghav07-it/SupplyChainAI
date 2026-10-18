@@ -282,7 +282,7 @@ function RouteResult() {
           Operator Decision
         </h2>
         <p className="text-xs font-mono text-[var(--text-muted)]">
-          SupplyChainAI never reroutes automatically. Please choose an action for the dispatch team to log:
+          ChainSight-AI never reroutes automatically. Please choose an action for the dispatch team to log:
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

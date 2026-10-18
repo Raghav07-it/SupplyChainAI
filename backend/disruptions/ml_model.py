@@ -1,5 +1,5 @@
 """
-Phase 5 ML Prediction Pipeline for SupplyChainAI.
+Phase 5 ML Prediction Pipeline for ChainSight-AI.
 
 DEMONSTRATION NOTICE:
 This module trains a machine learning classifier on synthetic disruption records

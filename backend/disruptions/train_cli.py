@@ -19,7 +19,7 @@ from disruptions.ml_model import train_and_evaluate
 
 def main():
     print("=" * 60)
-    print(" SupplyChainAI - Phase 5 ML Model Retraining Pipeline")
+    print(" ChainSight-AI - Phase 5 ML Model Retraining Pipeline")
     print(" (Synthetic-Data Demonstration)")
     print("=" * 60)
 

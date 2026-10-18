@@ -3,7 +3,7 @@ function PlaceholderPage({ title, description }) {
     <div className="flex min-h-[60vh] items-center justify-center">
       <div className="max-w-lg text-center">
         <p className="text-sm font-medium uppercase tracking-wider text-blue-400">
-          SupplyChainAI
+          ChainSight-AI
         </p>
 
         <h1 className="mt-3 text-3xl font-semibold text-white">

@@ -125,14 +125,14 @@ function MainLayout() {
             <div className="relative group shrink-0">
               <img
                 src="/emblem.png"
-                alt="SupplyChainAI Emblem"
+                alt="ChainSight-AI Emblem"
                 className="w-10 h-10 rounded-xl object-contain shadow-[0_0_20px_rgba(56,189,248,0.3)] border border-slate-700/60 group-hover:border-cyan-400 transition-all"
               />
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#080C13] shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-[13px] tracking-wider text-white leading-tight font-mono">
-                SUPPLYCHAINAI
+                CHAINSIGHT-AI
               </span>
               <span className="text-[9px] font-mono tracking-widest text-cyan-400/90 font-semibold uppercase mt-0.5">
                 INTELLIGENCE PLATFORM
@@ -220,11 +220,11 @@ function MainLayout() {
                 <div className="flex items-center gap-3">
                   <img
                     src="/emblem.png"
-                    alt="SupplyChainAI Emblem"
+                    alt="ChainSight-AI Emblem"
                     className="w-8 h-8 rounded-lg object-contain shadow-md border border-slate-700/60"
                   />
                   <div>
-                    <div className="font-extrabold text-xs text-white font-mono">SUPPLYCHAINAI</div>
+                    <div className="font-extrabold text-xs text-white font-mono">CHAINSIGHT-AI</div>
                     <div className="text-[8px] font-mono text-cyan-400">INTELLIGENCE PLATFORM</div>
                   </div>
                 </div>

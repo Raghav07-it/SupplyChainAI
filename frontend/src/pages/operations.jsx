@@ -266,7 +266,7 @@ function Operations() {
       {/* Integrity notice */}
       <div className="stitch-card p-4 font-mono text-[11px] text-slate-400 flex items-center justify-between">
         <span>
-          <strong className="text-slate-300">Data integrity:</strong> This page displays operational records returned by the SupplyChainAI backend.
+          <strong className="text-slate-300">Data integrity:</strong> This page displays operational records returned by the ChainSight-AI backend.
         </span>
         <span className="text-emerald-400 font-bold">PostgreSQL Verified</span>
       </div>
