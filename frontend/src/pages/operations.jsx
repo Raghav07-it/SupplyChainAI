@@ -185,13 +185,13 @@ function Operations() {
           return (
             <div
               key={stat.label}
-              className="stitch-card p-4 flex flex-col justify-between"
+              className="cs-card p-4 flex flex-col justify-between"
             >
               <div className="flex items-center justify-between">
                 <div className="rounded-lg border border-slate-800 bg-[#080d16] p-2 text-cyan-400">
                   <Icon size={16} />
                 </div>
-                <span className="stitch-pill text-[9px]">
+                <span className="cs-pill text-[9px]">
                   {stat.tag}
                 </span>
               </div>
@@ -264,7 +264,7 @@ function Operations() {
       />
 
       {/* Integrity notice */}
-      <div className="stitch-card p-4 font-mono text-[11px] text-slate-400 flex items-center justify-between">
+      <div className="cs-card p-4 font-mono text-[11px] text-slate-400 flex items-center justify-between">
         <span>
           <strong className="text-slate-300">Data integrity:</strong> This page displays operational records returned by the ChainSight-AI backend.
         </span>
@@ -282,7 +282,7 @@ function DataCard({
   large = false,
 }) {
   return (
-    <section className="stitch-card p-5 flex flex-col justify-between">
+    <section className="cs-card p-5 flex flex-col justify-between">
       <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3 mb-3">
         <div className="flex items-center gap-2.5">
           <div className="rounded-lg border border-slate-800 bg-[#080d16] p-1.5 text-cyan-400">
@@ -296,7 +296,7 @@ function DataCard({
           </div>
         </div>
 
-        <span className="stitch-pill text-[10px]">
+        <span className="cs-pill text-[10px]">
           {data.length} record{data.length === 1 ? "" : "s"}
         </span>
       </div>
@@ -307,7 +307,7 @@ function DataCard({
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="stitch-table font-mono text-xs">
+          <table className="cs-table font-mono text-xs">
             <thead>
               <tr>
                 {columns.map((column) => (

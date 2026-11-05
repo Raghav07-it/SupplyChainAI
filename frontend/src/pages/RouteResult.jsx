@@ -35,7 +35,7 @@ function RouteResult() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="stitch-pill stitch-pill-blue text-[10px]">● DISRUPTION ADVISORY ACTIVE</span>
+            <span className="cs-pill cs-pill cs-pill-blue text-[10px]">● DISRUPTION ADVISORY ACTIVE</span>
           </div>
           <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
             Route Evaluation: Singapore → Rotterdam
@@ -46,11 +46,11 @@ function RouteResult() {
         </div>
 
         <div className="flex items-center gap-2 font-mono text-xs">
-          <span className="stitch-pill bg-slate-900 border-slate-700 text-slate-300">
+          <span className="cs-pill bg-slate-900 border-slate-700 text-slate-300">
             Primary Passage: Red Sea / Suez
           </span>
-          <span className="stitch-pill stitch-pill-blue">
-            Vessel Telemetry: 19.4 kts • On Course
+          <span className="cs-pill cs-pill cs-pill-blue">
+            Vessel sensor tracking: 19.4 kts • On Course
           </span>
         </div>
       </div>
@@ -58,13 +58,13 @@ function RouteResult() {
       {/* =========================================================
           STEP 1: WHAT HAPPENED? (IMAGE 5 MATCH)
           ========================================================= */}
-      <div className="stitch-card p-6 flex flex-col gap-3">
+      <div className="cs-card p-6 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-500/20 text-[#38bdf8] flex items-center justify-center text-xs font-mono">1</span>
             What happened?
           </h2>
-          <span className="stitch-pill stitch-pill-blue text-[10px]">⚡ External Maritime Signal</span>
+          <span className="cs-pill cs-pill cs-pill-blue text-[10px]">⚡ External Maritime Signal</span>
         </div>
 
         <div className="bg-[var(--bg-panel-soft)] border border-[var(--border-color)] rounded-xl p-4 text-sm text-[var(--text-secondary)] leading-relaxed font-sans">
@@ -82,7 +82,7 @@ function RouteResult() {
       {/* =========================================================
           STEP 2: DOES IT AFFECT MY ROUTE? (IMAGE 5 MATCH)
           ========================================================= */}
-      <div className="stitch-card p-6 flex flex-col gap-4">
+      <div className="cs-card p-6 flex flex-col gap-4">
         <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
           <span className="w-6 h-6 rounded-full bg-blue-500/20 text-[#38bdf8] flex items-center justify-center text-xs font-mono">2</span>
           Does it affect my route?
@@ -123,7 +123,7 @@ function RouteResult() {
       {/* =========================================================
           STEP 3: WHAT CAN I DO? (IMAGE 5 MATCH SIDE-BY-SIDE CARDS)
           ========================================================= */}
-      <div className="stitch-card p-6 flex flex-col gap-6">
+      <div className="cs-card p-6 flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-500/20 text-[#38bdf8] flex items-center justify-center text-xs font-mono">3</span>
@@ -131,7 +131,7 @@ function RouteResult() {
           </h2>
           <div className="flex items-center gap-2 font-mono text-xs">
             <span className="text-[var(--text-muted)]">Compare your options</span>
-            <span className="stitch-pill">Fixed fuel index: $620 / MT</span>
+            <span className="cs-pill">Fixed fuel index: $620 / MT</span>
           </div>
         </div>
 
@@ -142,8 +142,8 @@ function RouteResult() {
           <div className="bg-[var(--bg-panel-soft)] border border-[var(--border-color)] rounded-xl p-5 flex flex-col justify-between gap-5 font-mono text-xs">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-label">OPTION A</span>
-                <span className="stitch-pill text-[10px]">Active scheduled route</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">OPTION A</span>
+                <span className="cs-pill text-[10px]">Active scheduled route</span>
               </div>
               <h3 className="text-xl font-bold text-[var(--text-primary)]">
                 Via Suez Canal
@@ -153,14 +153,14 @@ function RouteResult() {
 
             <div className="flex flex-col gap-3">
               <div className="bg-[var(--bg-panel)] border border-[var(--border-color)] p-3 rounded-lg">
-                <div className="stitch-label">Estimated Transit Time</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Estimated Transit Time</div>
                 <div className="text-2xl font-extrabold text-[var(--text-primary)] mt-0.5">
                   24 days <span className="text-xs font-semibold text-rose-400">(+4 to +6 days delay likely)</span>
                 </div>
               </div>
 
               <div className="bg-[var(--bg-panel)] border border-[var(--border-color)] p-3 rounded-lg">
-                <div className="stitch-label">Estimated Cost</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Estimated Cost</div>
                 <div className="text-2xl font-extrabold text-[var(--text-primary)] mt-0.5">
                   $148,000
                 </div>
@@ -170,7 +170,7 @@ function RouteResult() {
               </div>
 
               <div className="bg-[var(--bg-panel)] border border-[var(--border-color)] p-3 rounded-lg">
-                <div className="stitch-label">Predictability / Risk</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Predictability / Risk</div>
                 <div className="text-sm font-bold text-amber-400 flex items-center gap-1.5 mt-0.5">
                   <AlertTriangle size={14} />
                   <span>Elevated Risk</span>
@@ -190,8 +190,8 @@ function RouteResult() {
           <div className="bg-[var(--bg-panel-soft)] border-2 border-[#0284c7] rounded-xl p-5 flex flex-col justify-between gap-5 font-mono text-xs relative shadow-[0_0_25px_rgba(2,132,199,0.15)]">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-label text-[#38bdf8]">OPTION B</span>
-                <span className="stitch-pill stitch-pill-blue text-[10px] font-bold">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[#38bdf8]">OPTION B</span>
+                <span className="cs-pill cs-pill cs-pill-blue text-[10px] font-bold">
                   ★ Recommended alternative
                 </span>
               </div>
@@ -203,14 +203,14 @@ function RouteResult() {
 
             <div className="flex flex-col gap-3">
               <div className="bg-[var(--bg-panel)] border border-[var(--border-color)] p-3 rounded-lg">
-                <div className="stitch-label">Estimated Transit Time</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Estimated Transit Time</div>
                 <div className="text-2xl font-extrabold text-[var(--text-primary)] mt-0.5">
                   28 days <span className="text-xs font-semibold text-[var(--text-muted)]">(predictable schedule, open ocean passage)</span>
                 </div>
               </div>
 
               <div className="bg-[var(--bg-panel)] border border-[var(--border-color)] p-3 rounded-lg">
-                <div className="stitch-label">Estimated Cost</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Estimated Cost</div>
                 <div className="text-2xl font-extrabold text-[var(--text-primary)] mt-0.5">
                   $162,000
                 </div>
@@ -220,7 +220,7 @@ function RouteResult() {
               </div>
 
               <div className="bg-[var(--bg-panel)] border border-[var(--border-color)] p-3 rounded-lg">
-                <div className="stitch-label">Predictability / Risk</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Predictability / Risk</div>
                 <div className="text-sm font-bold text-emerald-400 flex items-center gap-1.5 mt-0.5">
                   <ShieldCheck size={14} />
                   <span>Low Risk</span>
@@ -250,21 +250,21 @@ function RouteResult() {
               <ChevronDown size={14} className={`transition-transform ${showDetails ? "rotate-180" : ""}`} />
               <span>More details (mileage, insurance differential, carbon index)</span>
             </div>
-            <span className="stitch-pill text-[9px]">Contract Metrics</span>
+            <span className="cs-pill text-[9px]">Contract Metrics</span>
           </button>
 
           {showDetails && (
             <div className="mt-3 p-4 bg-[var(--bg-panel-soft)] border border-[var(--border-color)] rounded-lg text-xs font-mono grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <span className="stitch-label">DISTANCE DIFFERENTIAL</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">DISTANCE DIFFERENTIAL</span>
                 <div className="font-bold text-[var(--text-primary)] mt-1">+3,500 nautical miles</div>
               </div>
               <div>
-                <span className="stitch-label">INSURANCE PREMIUM SAVINGS</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">INSURANCE PREMIUM SAVINGS</span>
                 <div className="font-bold text-emerald-400 mt-1">-$8,500 war-risk surcharge</div>
               </div>
               <div>
-                <span className="stitch-label">CARBON IMPACT</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">CARBON IMPACT</span>
                 <div className="font-bold text-[var(--text-primary)] mt-1">+12% CO2 total emissions</div>
               </div>
             </div>
@@ -276,7 +276,7 @@ function RouteResult() {
       {/* =========================================================
           STEP 4: OPERATOR DECISION (IMAGE 5 MATCH)
           ========================================================= */}
-      <div className="stitch-card p-6 flex flex-col gap-6">
+      <div className="cs-card p-6 flex flex-col gap-6">
         <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
           <span className="w-6 h-6 rounded-full bg-blue-500/20 text-[#38bdf8] flex items-center justify-center text-xs font-mono">4</span>
           Operator Decision

@@ -67,7 +67,7 @@ function RoutesPage() {
           <div>
             <div className="font-bold text-[var(--text-primary)] flex items-center gap-2">
               <span>A disruption may affect this route.</span>
-              <span className="stitch-pill text-[9px]">EXAMPLE DATA</span>
+              <span className="cs-pill text-[9px]">EXAMPLE DATA</span>
             </div>
             <div className="text-[11px] text-[var(--text-muted)] mt-0.5">
               Check active conditions between major ports to see if your transit is delayed.
@@ -77,7 +77,7 @@ function RoutesPage() {
 
         <div className="flex items-center gap-2">
           <span className="text-[var(--text-muted)]">Corridor Status:</span>
-          <span className="stitch-pill stitch-pill-blue">● Active Advisory</span>
+          <span className="cs-pill cs-pill cs-pill-blue">● Active Advisory</span>
         </div>
       </div>
 
@@ -93,10 +93,10 @@ function RoutesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* VOYAGE CONFIGURATION CARD */}
-        <div className="stitch-card p-6 flex flex-col justify-between gap-6">
+        <div className="cs-card p-6 flex flex-col justify-between gap-6">
           <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-4">
             <div>
-              <span className="stitch-label">VOYAGE CONFIGURATION</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">VOYAGE CONFIGURATION</span>
               <h2 className="text-xl font-bold text-[var(--text-primary)] mt-1">
                 Route Assessment
               </h2>
@@ -110,7 +110,7 @@ function RoutesPage() {
             
             {/* Origin Select */}
             <div className="bg-[var(--bg-panel-soft)] border border-[var(--border-color)] rounded-xl p-4 font-mono text-xs">
-              <div className="stitch-label mb-1">FROM (ORIGIN)</div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] mb-1">FROM (ORIGIN)</div>
               <select
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
@@ -136,7 +136,7 @@ function RoutesPage() {
               </button>
 
               <div className="bg-[var(--bg-panel-soft)] border border-[var(--border-color)] rounded-xl p-4 font-mono text-xs">
-                <div className="stitch-label mb-1">TO (DESTINATION)</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] mb-1">TO (DESTINATION)</div>
                 <select
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
@@ -174,15 +174,15 @@ function RoutesPage() {
         </div>
 
         {/* LANE GEOGRAPHY CARD */}
-        <div className="stitch-card p-6 flex flex-col justify-between gap-6">
+        <div className="cs-card p-6 flex flex-col justify-between gap-6">
           <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-4">
             <div>
-              <span className="stitch-label">LANE GEOGRAPHY</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">LANE GEOGRAPHY</span>
               <h2 className="text-xl font-bold text-[var(--text-primary)] mt-1">
                 Malacca — Suez — Gibraltar Corridor
               </h2>
             </div>
-            <span className="stitch-pill stitch-pill-blue font-mono text-[10px]">AIS Live Transit Stream</span>
+            <span className="cs-pill cs-pill cs-pill-blue font-mono text-[10px]">AIS Live Transit Stream</span>
           </div>
 
           <div className="relative bg-slate-900 border border-slate-800 rounded-xl overflow-hidden min-h-[160px] flex flex-col justify-end p-4">
@@ -191,24 +191,24 @@ function RoutesPage() {
               <div className="text-[10px] font-mono text-slate-400 uppercase">Critical Chokepoint</div>
               <div className="text-lg font-bold text-white flex items-center justify-between">
                 <span>Southern Red Sea Gateway</span>
-                <span className="stitch-pill stitch-pill-danger">Delay Zone</span>
+                <span className="cs-pill cs-pill cs-pill-red">Delay Zone</span>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4 font-mono text-xs">
             <div className="bg-[var(--bg-panel-soft)] border border-[var(--border-color)] rounded-lg p-3">
-              <div className="stitch-label">BASE TRANSIT</div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">BASE TRANSIT</div>
               <div className="text-lg font-extrabold text-[var(--text-primary)] mt-0.5">26 Days</div>
             </div>
 
             <div className="bg-[var(--bg-panel-soft)] border border-[var(--border-color)] rounded-lg p-3">
-              <div className="stitch-label">ACTIVE BOTTLENECKS</div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">ACTIVE BOTTLENECKS</div>
               <div className="text-lg font-extrabold text-rose-400 mt-0.5">2 Points</div>
             </div>
 
             <div className="bg-[var(--bg-panel-soft)] border border-[var(--border-color)] rounded-lg p-3">
-              <div className="stitch-label">LANE RELIABILITY</div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">LANE RELIABILITY</div>
               <div className="text-lg font-extrabold text-[#38bdf8] mt-0.5">64%</div>
             </div>
           </div>
@@ -221,7 +221,7 @@ function RoutesPage() {
           ========================================================= */}
       <div className="flex flex-col gap-4 border-t border-[var(--border-color)] pt-6">
         <div>
-          <div className="stitch-label">LIVE CONDITIONS INTELLIGENCE</div>
+          <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">LIVE CONDITIONS INTELLIGENCE</div>
           <h2 className="text-2xl font-bold text-[var(--text-primary)]">
             Recent alerts along this corridor
           </h2>
@@ -233,10 +233,10 @@ function RoutesPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {/* Alert 1 */}
-          <div className="stitch-card p-5 flex flex-col justify-between gap-4">
+          <div className="cs-card p-5 flex flex-col justify-between gap-4">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-pill stitch-pill-blue text-[9px]">Live weather/news signal</span>
+                <span className="cs-pill cs-pill cs-pill-blue text-[9px]">Live weather/news signal</span>
                 <AlertTriangle size={15} className="text-rose-400" />
               </div>
               <h3 className="text-sm font-bold text-[var(--text-primary)] leading-snug mb-2">
@@ -252,10 +252,10 @@ function RoutesPage() {
           </div>
 
           {/* Alert 2 */}
-          <div className="stitch-card p-5 flex flex-col justify-between gap-4">
+          <div className="cs-card p-5 flex flex-col justify-between gap-4">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-pill stitch-pill-blue text-[9px]">Live weather/news signal</span>
+                <span className="cs-pill cs-pill cs-pill-blue text-[9px]">Live weather/news signal</span>
                 <Clock size={15} className="text-amber-400" />
               </div>
               <h3 className="text-sm font-bold text-[var(--text-primary)] leading-snug mb-2">
@@ -271,10 +271,10 @@ function RoutesPage() {
           </div>
 
           {/* Alert 3 */}
-          <div className="stitch-card p-5 flex flex-col justify-between gap-4">
+          <div className="cs-card p-5 flex flex-col justify-between gap-4">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-pill text-[9px]">Example historical data</span>
+                <span className="cs-pill text-[9px]">Example historical data</span>
                 <Compass size={15} className="text-[var(--text-muted)]" />
               </div>
               <h3 className="text-sm font-bold text-[var(--text-primary)] leading-snug mb-2">
@@ -295,13 +295,13 @@ function RoutesPage() {
       {/* =========================================================
           IMPACT ANALYSIS READY BANNER (IMAGE 3 MATCH)
           ========================================================= */}
-      <div className="stitch-card p-6 bg-gradient-to-r from-blue-900/20 to-slate-900 border-blue-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="cs-card p-6 bg-gradient-to-r from-blue-900/20 to-slate-900 border-blue-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-[#38bdf8] shrink-0">
             <AlertTriangle size={24} />
           </div>
           <div>
-            <span className="stitch-pill stitch-pill-blue text-[10px] mb-1">IMPACT ANALYSIS READY</span>
+            <span className="cs-pill cs-pill cs-pill-blue text-[10px] mb-1">IMPACT ANALYSIS READY</span>
             <h3 className="text-lg font-bold text-[var(--text-primary)]">
               Disruptions detected in the Red Sea corridor may add 4–7 days to this voyage.
             </h3>

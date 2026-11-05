@@ -26,7 +26,7 @@ import { runAgentWorkflow } from "../api/agents";
 const PRESET_INCIDENTS = [
   {
     label: "Mumbai Berth Congestion (46h)",
-    text: "Heavy congestion has been reported at Mumbai (JNPT Term. 3) port and vessels are experiencing significant 46-hour berth waiting delays due to STS crane telemetry failure and monsoon surge.",
+    text: "Heavy congestion has been reported at Mumbai (JNPT Term. 3) port and vessels are experiencing significant 46-hour berth waiting delays due to STS crane sensor tracking failure and monsoon surge.",
     port: "INMUM",
     dest: "NLRTM",
   },
@@ -94,18 +94,18 @@ export default function AIAgents() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const terminalLogs = `--- BEGIN LANGGRAPH INVOCATION [run_id: f72a8c19-613b-4e1b-b4ce-3ec5f268ef1a] ---
+  const terminalLogs = `--- BEGIN AI Decision Pipeline INVOCATION [run_id: f72a8c19-613b-4e1b-b4ce-3ec5f268ef1a] ---
 01 [NODE: signal_ingestion_agent] Invoked with payload: "${eventText.slice(0, 75)}..."
-02 -> Tool: ais_marine_telemetry_query args: {"port_code": "INMUM", "radius_nm": 25} -> 19 vessels in roadstead, swell height 3.8m
+02 -> Tool: ais_marine_sensor tracking_query args: {"port_code": "INMUM", "radius_nm": 25} -> 19 vessels in roadstead, swell height 3.8m
 03 [NODE: risk_assessment_agent] Compiling Bayesian hazard distribution. Disruption likelihood: 0.942 | Severity: 72/100 (HIGH)
 04 -> State transition: risk_state = {"demurrage_exposure_usd": 112600, "affected_fleet_count": 6}
 05 [NODE: historical_vector_memory] pgvector similarity scan across 14,883 historical incident vectors...
 06 -> Vector Match: "Q3 2023 JNPT Monsoonal Surge & Crane Outage" (cos_sim: 0.9142, duration: 88h, precedent: "Singapore Transshipment Bypass", success_sla: 96%)
-07 [NODE: route_optimization_mcda] Multi-Criteria Decision Analysis evaluating Corridors [A: Wait Berth, B: Singapore Divert, C: INSTC Intermodal]
+07 [NODE: route_optimization_Multi-factor Scoring] Multi-Criteria Decision Analysis evaluating Corridors [A: Wait Berth, B: Singapore Divert, C: INSTC Intermodal]
 08 -> Weighting: Time 0.40, Cost 0.35, Carbon 0.15, Reliability 0.10. Score B: 0.892 (Optimal) vs Score A: 0.412, Score C: 0.526
 09 [NODE: decision_arbiter_agent] Autonomous consensus validated. Drafting execution order: ROUTE_CORRIDOR_B_DISPATCH
 10 -> GRAPH EXECUTION SUCCEEDED: Total runtime: 423ms | End state: COMPLETED | Dispatched notification to Master Mariners
---- END LANGGRAPH INVOCATION [status: 200 OK] ---`;
+--- END AI Decision Pipeline INVOCATION [status: 200 OK] ---`;
 
   const jsonPayload = JSON.stringify(
     {
@@ -119,7 +119,7 @@ export default function AIAgents() {
         exit_code: 0,
         consensus: "UNANIMOUS",
       },
-      telemetry: {
+      sensor_signals: {
         origin: "INMUM",
         destination: "NLRTM",
         risk_score: 72,
@@ -141,7 +141,7 @@ export default function AIAgents() {
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 pb-4 border-b border-[var(--border-color)]">
         <div>
           <div className="flex items-center gap-2 font-mono text-[10px] font-bold tracking-wider text-purple-400 uppercase mb-1">
-            <span>● LANGGRAPH MULTI-AGENT ORCHESTRATION PIPELINE · AUTONOMOUS AGENTS</span>
+            <span>● AI Decision Pipeline MULTI-AGENT ORCHESTRATION PIPELINE · AUTONOMOUS AGENTS</span>
             <span className="text-slate-600">|</span>
             <span className="text-slate-400">SESSION #LG-8942-B</span>
           </div>
@@ -158,7 +158,7 @@ export default function AIAgents() {
           <div className="px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             <div className="flex flex-col text-[10px]">
-              <span className="text-slate-500 uppercase font-semibold">LANGGRAPH STATE</span>
+              <span className="text-slate-500 uppercase font-semibold">AI Decision Pipeline STATE</span>
               <span className="text-white font-bold">Active (v2.4.0-prod)</span>
             </div>
           </div>
@@ -184,7 +184,7 @@ export default function AIAgents() {
       {/* =========================================================
           CARD 1: DISRUPTION & INCIDENT EVENT INGESTION (IMAGE 1)
           ========================================================= */}
-      <div className="stitch-card p-5 lg:p-6 flex flex-col gap-4">
+      <div className="cs-card p-5 lg:p-6 flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--border-color)] pb-3">
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
@@ -192,7 +192,7 @@ export default function AIAgents() {
               Disruption &amp; Incident Event Ingestion
             </h2>
             <span className="text-slate-500 text-xs font-mono hidden md:inline">
-              (Live telemetry, manual alert injection, or automated EDI parser feed)
+              (Live sensor tracking, manual alert injection, or automated EDI parser feed)
             </span>
           </div>
 
@@ -219,7 +219,7 @@ export default function AIAgents() {
         {/* Presets & Action Button */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="stitch-label text-[10px] mr-1">PRESET INCIDENTS:</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px] mr-1">PRESET INCIDENTS:</span>
             {PRESET_INCIDENTS.map((preset, idx) => (
               <button
                 key={preset.label}
@@ -243,7 +243,7 @@ export default function AIAgents() {
             className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(168,85,247,0.4)] whitespace-nowrap disabled:opacity-60"
           >
             <Sparkles size={14} className={loading ? "animate-spin" : ""} />
-            <span>{loading ? "Analyzing Graph..." : "Analyze Event via LangGraph"}</span>
+            <span>{loading ? "Analyzing Graph..." : "Analyze Event via AI Decision Pipeline"}</span>
           </button>
         </div>
       </div>
@@ -251,7 +251,7 @@ export default function AIAgents() {
       {/* =========================================================
           CARD 2: AGENT EXECUTION GRAPH (5 ACTIVE NODES) (IMAGE 1)
           ========================================================= */}
-      <div className="stitch-card p-5 lg:p-6 flex flex-col gap-4">
+      <div className="cs-card p-5 lg:p-6 flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--border-color)] pb-3">
           <div className="flex items-center gap-2">
             <Network size={16} className="text-cyan-400" />
@@ -274,7 +274,7 @@ export default function AIAgents() {
           <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-label text-[9px] text-emerald-400 font-bold">NODE #1</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-emerald-400 font-bold">NODE #1</span>
                 <span className="font-mono text-[10px] text-slate-500">{nodeState.node1.ms}</span>
               </div>
               <div className="font-bold text-xs text-white mb-1">
@@ -296,7 +296,7 @@ export default function AIAgents() {
           <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-label text-[9px] text-rose-400 font-bold">NODE #2</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-rose-400 font-bold">NODE #2</span>
                 <span className="font-mono text-[10px] text-slate-500">{nodeState.node2.ms}</span>
               </div>
               <div className="font-bold text-xs text-white mb-1">
@@ -318,7 +318,7 @@ export default function AIAgents() {
           <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-label text-[9px] text-cyan-400 font-bold">NODE #3</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-cyan-400 font-bold">NODE #3</span>
                 <span className="font-mono text-[10px] text-slate-500">{nodeState.node3.ms}</span>
               </div>
               <div className="font-bold text-xs text-white mb-1">
@@ -340,11 +340,11 @@ export default function AIAgents() {
           <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-label text-[9px] text-purple-400 font-bold">NODE #4</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-purple-400 font-bold">NODE #4</span>
                 <span className="font-mono text-[10px] text-slate-500">{nodeState.node4.ms}</span>
               </div>
               <div className="font-bold text-xs text-white mb-1">
-                Route Optimization MCDA
+                Route Optimization Multi-factor Scoring
               </div>
               <p className="text-[11px] text-slate-400 leading-snug">
                 Evaluated 3 candidate corridors: Suez direct, Malacca bypass via PSA, &amp; INSTC multimodal.
@@ -362,7 +362,7 @@ export default function AIAgents() {
           <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="stitch-label text-[9px] text-indigo-400 font-bold">NODE #5</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-indigo-400 font-bold">NODE #5</span>
                 <span className="font-mono text-[10px] text-slate-500">{nodeState.node5.ms}</span>
               </div>
               <div className="font-bold text-xs text-white mb-1">
@@ -389,11 +389,11 @@ export default function AIAgents() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         
         {/* Card 1: Event Detected */}
-        <div className="stitch-card p-5 flex flex-col justify-between">
+        <div className="cs-card p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="stitch-label text-[10px]">EVENT DETECTED</span>
-              <span className="stitch-pill stitch-pill-danger text-[9px] px-1.5 py-0.5">HIGH RISK</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px]">EVENT DETECTED</span>
+              <span className="cs-pill cs-pill cs-pill-red text-[9px] px-1.5 py-0.5">HIGH RISK</span>
             </div>
             <h3 className="font-bold text-sm text-white font-sans mt-1">
               Port Congestion &amp; Berth Paralysis
@@ -425,10 +425,10 @@ export default function AIAgents() {
         </div>
 
         {/* Card 2: Risk Assessment */}
-        <div className="stitch-card p-5 flex flex-col justify-between">
+        <div className="cs-card p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="stitch-label text-[10px]">RISK ASSESSMENT</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px]">RISK ASSESSMENT</span>
               <span className="font-mono text-xs font-bold text-cyan-400">Score: 72/100</span>
             </div>
             <div className="flex items-baseline gap-2 mt-1">
@@ -460,17 +460,17 @@ export default function AIAgents() {
         </div>
 
         {/* Card 3: pgvector Memory */}
-        <div className="stitch-card p-5 flex flex-col justify-between">
+        <div className="cs-card p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="stitch-label text-[10px]">PGVECTOR MEMORY</span>
-              <span className="stitch-pill stitch-pill-blue text-[9px] px-1.5 py-0.5">91.4% SIMILARITY</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px]">PGVECTOR MEMORY</span>
+              <span className="cs-pill cs-pill cs-pill-blue text-[9px] px-1.5 py-0.5">91.4% SIMILARITY</span>
             </div>
             <h3 className="font-bold text-sm text-white font-sans mt-1">
               Q3 2023 JNPT Monsoonal Surge &amp; Crane Outage
             </h3>
             <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-              Precedent match: Identical gantry power-distribution telemetry fault with 3.8m swells.
+              Precedent match: Identical gantry power-distribution sensor tracking fault with 3.8m swells.
             </p>
           </div>
 
@@ -496,11 +496,11 @@ export default function AIAgents() {
         </div>
 
         {/* Card 4: Recommended Action */}
-        <div className="stitch-card p-5 flex flex-col justify-between border-purple-500/30">
+        <div className="cs-card p-5 flex flex-col justify-between border-purple-500/30">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="stitch-label text-[10px] text-purple-300">RECOMMENDED ACTION</span>
-              <span className="stitch-pill stitch-pill-purple text-[9px] px-1.5 py-0.5">94.6% Conf</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px] text-purple-300">RECOMMENDED ACTION</span>
+              <span className="cs-pill cs-pill-purple text-[9px] px-1.5 py-0.5">94.6% Conf</span>
             </div>
             <h3 className="font-bold text-sm text-white font-sans mt-1">
               Corridor B: Singapore / Malacca Bypass
@@ -545,15 +545,15 @@ export default function AIAgents() {
       </div>
 
       {/* =========================================================
-          CARD 5: LANGGRAPH TRACE & AGENT COMMUNICATION STREAM (IMAGE 1)
+          CARD 5: AI Decision Pipeline TRACE & AGENT COMMUNICATION STREAM (IMAGE 1)
           ========================================================= */}
-      <div className="stitch-card p-5 lg:p-6 flex flex-col gap-4">
+      <div className="cs-card p-5 lg:p-6 flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
           <div className="flex items-center gap-2.5">
             <Terminal size={16} className="text-cyan-400" />
             <div>
               <h2 className="text-sm font-bold text-white font-mono">
-                LangGraph Trace &amp; Agent Communication Stream
+                AI Decision Pipeline Trace &amp; Agent Communication Stream
               </h2>
               <p className="text-[11px] text-slate-400 font-mono">
                 Real-time graph dispatch edge, node state diffs, and tool arguments
@@ -598,7 +598,7 @@ export default function AIAgents() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 border-t border-[var(--border-color)] font-mono text-xs">
           <div className="flex items-center gap-2 text-emerald-400 text-[11px] font-semibold">
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>ALL 5 LangGraph agent nodes converged with 0 retries</span>
+            <span>ALL 5 AI Decision Pipeline agent nodes converged with 0 retries</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -617,7 +617,7 @@ export default function AIAgents() {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = "langgraph-audit.json";
+                a.download = "AI Decision Pipeline-audit.json";
                 a.click();
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors text-[11px]"

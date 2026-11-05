@@ -1,231 +1,412 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 /* =========================================================
-   CHAINSIGHT-AI — GOOGLE STITCH & LANGGRAPH COMMAND CENTER
-   Aesthetic: Ultra-crisp Cyber Dark Mode & Mission Control
+   ChainSight-AI Orbital Logistics Design System
+   All colors driven by CSS custom properties
    ========================================================= */
-
 :root {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', "Geist Mono", monospace;
+  font-size: 14px;
+  line-height: 1.5;
 
-  /* Theme Variables — Cyber Dark (Default) */
-  --bg-main: #0B0F17;
-  --bg-topbar: rgba(11, 15, 23, 0.85);
-  --bg-sidebar: #080C13;
-  --bg-panel: #0E1420;
-  --bg-panel-soft: #121B2B;
-  --bg-card: rgba(15, 23, 42, 0.75);
-  --bg-card-subtle: rgba(18, 27, 43, 0.6);
-  --bg-pill: rgba(30, 41, 59, 0.6);
-  --bg-pill-active: rgba(56, 189, 248, 0.15);
+  /* Surfaces & Canvas */
+  --canvas-base: #0B0F17;
+  --surface-base: #111827;
+  --surface-elevated: #1E293B;
+  --surface-overlay: #26354A;
+  --surface-dim: #0F131C;
+  --surface-card: #141C2E;
 
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
-  --border-accent: rgba(56, 189, 248, 0.35);
-  --border-purple: rgba(168, 85, 247, 0.35);
+  /* Aliases for backwards compatibility */
+  --bg-main: var(--canvas-base);
+  --bg-sidebar: var(--surface-base);
+  --bg-topbar: rgba(17, 24, 39, 0.92);
+  --bg-card: var(--surface-elevated);
+  --bg-card-hover: var(--surface-overlay);
+  --bg-elevated: var(--surface-overlay);
+  --bg-input: #0E1626;
 
+  /* Borders */
+  --border-color: #273549;
+  --border-active: #3B4E6B;
+  --border-focus: #6366F1;
+  --border-accent: #6366F1;
+
+  /* Typography / Text Tokens (WCAG AA compliant contrast) */
+  --text-high-contrast: #F8FAFC;
   --text-primary: #F8FAFC;
+  --text-body: #E2E8F0;
   --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --text-pill: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
 
-  --accent-cyan: #38BDF8;
-  --accent-blue: #0284C7;
-  --accent-purple: #A855F7;
+  /* Accents & Signals */
+  --accent-primary: #6366F1;
+  --accent-primary-hover: #4F46E5;
+  --accent-primary-light: #818CF8;
+  --accent-primary-bg: rgba(99, 102, 241, 0.15);
+  --accent-primary-glow: 0 0 20px rgba(99, 102, 241, 0.25);
+
+  --accent-cyan: #06B6D4;
+  --accent-cyan-light: #38BDF8;
+  --accent-cyan-bg: rgba(6, 182, 212, 0.14);
+
+  --accent-blue: #3B82F6;
   --accent-indigo: #6366F1;
-  --accent-teal: #14B8A6;
+  --accent-purple: #8B5CF6;
 
-  --status-success: #34D399;
+  /* Status Tokens */
+  --status-success: #10B981;
+  --status-success-bg: rgba(16, 185, 129, 0.12);
+  --status-success-border: rgba(16, 185, 129, 0.3);
+
   --status-warning: #F59E0B;
-  --status-danger: #EF4444;
+  --status-warning-bg: rgba(245, 158, 11, 0.12);
+  --status-warning-border: rgba(245, 158, 11, 0.3);
 
-  --sidebar-width: 256px;
+  --status-critical: #EF4444;
+  --status-critical-bg: rgba(239, 68, 68, 0.12);
+  --status-critical-border: rgba(239, 68, 68, 0.3);
 
-  color-scheme: dark;
+  --color-success: var(--status-success);
+  --color-warning: var(--status-warning);
+  --color-danger: var(--status-critical);
+  --color-info: var(--accent-cyan);
+
+  /* Gradients */
+  --gradient-cta: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+  --gradient-card: linear-gradient(145deg, #1E293B 0%, #151F2E 100%);
+  --gradient-highlight: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%);
+
+  /* Elevation Shadows */
+  --shadow-card: 0 4px 14px -2px rgba(11, 15, 23, 0.65), 0 0 0 1px var(--border-color);
+  --shadow-card-elevated: 0 12px 28px -4px rgba(11, 15, 23, 0.8), 0 0 0 1px var(--border-active);
+  --shadow-glow-primary: 0 0 24px rgba(99, 102, 241, 0.3);
+  --shadow-glow-cyan: 0 0 20px rgba(6, 182, 212, 0.25);
+
+  /* Border Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
 }
 
-/* Light theme support */
-.light-theme {
-  --bg-main: #F1F5F9;
-  --bg-topbar: rgba(255, 255, 255, 0.9);
-  --bg-sidebar: #FFFFFF;
-  --bg-panel: #FFFFFF;
-  --bg-panel-soft: #F8FAFC;
-  --bg-card: #FFFFFF;
-  --bg-card-subtle: #F1F5F9;
-  --bg-pill: #E2E8F0;
-  --bg-pill-active: #BAE6FD;
-
-  --border-color: #CBD5E1;
-  --border-strong: #94A3B8;
-  --border-accent: #0284C7;
-  --border-purple: #7C3AED;
-
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #64748B;
-  --text-pill: #334155;
-
-  --accent-cyan: #0284C7;
-  --accent-blue: #0369A1;
-  --accent-purple: #7C3AED;
-  --accent-indigo: #4F46E5;
-  --accent-teal: #0D9488;
-
-  --status-success: #059669;
-  --status-warning: #D97706;
-  --status-danger: #E11D48;
-
-  color-scheme: light;
-}
-
-* {
+/* Global Reset */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
 html, body, #root {
-  min-height: 100%;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
-  background: var(--bg-main);
-  color: var(--text-primary);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  background: var(--canvas-base);
+  color: var(--text-body);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.font-mono {
-  font-family: var(--font-mono);
+/* Base Headings & Labels */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-high-contrast);
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 
-/* Cyber Glass Card */
-.stitch-card {
-  background: var(--bg-panel);
+label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-active);
+  border-radius: var(--radius-sm);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+/* =========================================================
+   Standard ChainSight Component Classes
+   ========================================================= */
+
+/* Cards */
+.cs-card {
+  background: var(--surface-elevated);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  position: relative;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.stitch-card:hover {
-  border-color: var(--border-strong);
+.cs-card:hover {
+  border-color: var(--border-active);
 }
 
-/* Monospace Pill Badge styling */
-.stitch-pill {
+.cs-card-active {
+  background: var(--surface-elevated);
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glow-primary);
+}
+
+/* Buttons */
+.cs-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 11px;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  background: var(--bg-pill);
-  color: var(--text-pill);
-  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
   white-space: nowrap;
 }
 
-.stitch-pill-blue {
-  background: rgba(56, 189, 248, 0.12);
-  color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.28);
+.cs-btn-primary {
+  background: var(--gradient-cta);
+  color: #FFFFFF;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
 }
 
-.stitch-pill-purple {
-  background: rgba(168, 85, 247, 0.12);
-  color: #c084fc;
-  border-color: rgba(168, 85, 247, 0.3);
+.cs-btn-primary:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+  box-shadow: 0 0 22px rgba(99, 102, 241, 0.5);
 }
 
-.stitch-pill-danger {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border-color: rgba(239, 68, 68, 0.3);
+.cs-btn-secondary {
+  background: var(--surface-base);
+  border-color: var(--border-color);
+  color: var(--text-high-contrast);
 }
 
-.stitch-pill-warning {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border-color: rgba(245, 158, 11, 0.3);
+.cs-btn-secondary:hover {
+  border-color: var(--border-active);
+  background: var(--surface-overlay);
 }
 
-.stitch-pill-success {
-  background: rgba(52, 211, 153, 0.15);
-  color: #34d399;
-  border-color: rgba(52, 211, 153, 0.3);
+.cs-btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
 }
 
-/* Micro-label style */
-.stitch-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
+.cs-btn-ghost:hover {
+  background: var(--surface-overlay);
+  color: var(--text-high-contrast);
 }
 
-/* Table styling */
-.stitch-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+.cs-btn-danger {
+  background: var(--status-critical-bg);
+  border-color: var(--status-critical-border);
+  color: var(--status-critical);
 }
 
-.stitch-table th {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border-color);
-  background: rgba(14, 20, 32, 0.4);
-  text-align: left;
+.cs-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.22);
 }
 
-.stitch-table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border-color);
+/* Pills / Badges */
+.cs-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
   font-size: 12px;
-  color: var(--text-primary);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--surface-overlay);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.cs-pill-cyan {
+  background: var(--accent-cyan-bg);
+  border-color: rgba(6, 182, 212, 0.3);
+  color: var(--accent-cyan-light);
+}
+
+.cs-pill-green {
+  background: var(--status-success-bg);
+  border-color: var(--status-success-border);
+  color: var(--status-success);
+}
+
+.cs-pill-amber {
+  background: var(--status-warning-bg);
+  border-color: var(--status-warning-border);
+  color: var(--status-warning);
+}
+
+.cs-pill-red {
+  background: var(--status-critical-bg);
+  border-color: var(--status-critical-border);
+  color: var(--status-critical);
+}
+
+.cs-pill-blue {
+  background: var(--accent-primary-bg);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: var(--accent-primary-light);
+}
+
+/* Inputs & Form Controls */
+.cs-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.85rem;
+  font-size: 14px;
+  color: var(--text-high-contrast);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.cs-input::placeholder {
+  color: var(--text-dim);
+}
+
+.cs-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.cs-select {
+  width: 100%;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 2.25rem 0.65rem 0.85rem;
+  font-size: 14px;
+  color: var(--text-high-contrast);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+}
+
+.cs-select:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Tables */
+.cs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.cs-table thead th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--surface-base);
+  white-space: nowrap;
+}
+
+.cs-table tbody td {
+  padding: 0.85rem 1rem;
+  color: var(--text-body);
+  border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
 }
 
-.stitch-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+.cs-table tbody tr {
+  transition: background-color 0.15s ease;
 }
 
-/* Glow effects */
-.glow-cyan {
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+.cs-table tbody tr:hover {
+  background: rgba(38, 53, 74, 0.4);
 }
 
-.glow-purple {
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.glow-emerald {
-  box-shadow: 0 0 15px rgba(52, 211, 153, 0.3);
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out;
 }
 
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+/* =========================================================
+   Compatibility Aliases for Previous Pages
+   ========================================================= */
+.stitch-card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.15);
+
+.stitch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--surface-overlay);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
 }
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 3px;
+.stitch-pill-blue { background: var(--accent-primary-bg); border-color: rgba(99, 102, 241, 0.3); color: var(--accent-primary-light); }
+.stitch-pill-success { background: var(--status-success-bg); border-color: var(--status-success-border); color: var(--status-success); }
+.stitch-pill-warning { background: var(--status-warning-bg); border-color: var(--status-warning-border); color: var(--status-warning); }
+.stitch-pill-danger { background: var(--status-critical-bg); border-color: var(--status-critical-border); color: var(--status-critical); }
+
+.stitch-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+
+.stitch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.stitch-btn-primary {
+  background: var(--gradient-cta);
+  color: #FFFFFF;
+}
+.stitch-table {
+  width: 100%;
+  border-collapse: collapse;
 }

@@ -61,7 +61,7 @@ const INITIAL_INCIDENTS = [
     corridors: "AEDXB-NLRTM",
     status: "Evaluating",
     primaryAction: {
-      text: "Analyze in LangGraph",
+      text: "Analyze AI Decisions",
       link: "/agents",
       variant: "purple",
     },
@@ -79,7 +79,7 @@ const INITIAL_INCIDENTS = [
     corridors: "Inland Rhine / Ruhr",
     status: "Active Disruption",
     primaryAction: {
-      text: "Analyze in LangGraph",
+      text: "Analyze AI Decisions",
       link: "/agents",
       variant: "purple",
     },
@@ -126,14 +126,14 @@ export default function Disruptions() {
       portCode: newPort,
       portName: `Port Code ${newPort}`,
       severity: newSeverity,
-      category: "Telemetry Anomaly",
+      category: "sensor tracking Anomaly",
       hoursDelay: parseFloat(newDelay) || 24.0,
       estLoss: `$${(parseFloat(newDelay || 24) * 2500).toLocaleString()}`,
       impactedRoutes: "3 Carriers",
       corridors: `${newPort}-Global`,
       status: "Active Disruption",
       primaryAction: {
-        text: "Analyze in LangGraph",
+        text: "Analyze AI Decisions",
         link: "/agents",
         variant: "purple",
       },
@@ -169,7 +169,7 @@ export default function Disruptions() {
         <div>
           <div className="flex items-center gap-2 font-mono text-[10px] font-bold tracking-wider text-rose-400 uppercase mb-1">
             <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)] animate-pulse" />
-            <span>DEFCON 2 · GLOBAL SURVEILLANCE &amp; CHOKEPOINT INCIDENT TELEMETRY</span>
+            <span>DEFCON 2 · GLOBAL SURVEILLANCE &amp; CHOKEPOINT INCIDENT sensor tracking</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
             Disruption Intelligence
@@ -210,7 +210,7 @@ export default function Disruptions() {
       {/* =========================================================
           FILTER / SEARCH TOOLBAR (IMAGE 5 MATCH)
           ========================================================= */}
-      <div className="stitch-card p-3 lg:p-4 flex flex-col lg:flex-row items-center justify-between gap-3">
+      <div className="cs-card p-3 lg:p-4 flex flex-col lg:flex-row items-center justify-between gap-3">
         <div className="flex flex-1 items-center gap-3 w-full">
           {/* Search Box */}
           <div className="relative flex-1">
@@ -263,7 +263,7 @@ export default function Disruptions() {
               const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(incidents, null, 2));
               const a = document.createElement("a");
               a.setAttribute("href", dataStr);
-              a.setAttribute("download", "geointelligence-telemetry.json");
+              a.setAttribute("download", "geointelligence-sensor tracking.json");
               document.body.appendChild(a);
               a.click();
               a.remove();
@@ -281,16 +281,16 @@ export default function Disruptions() {
           ========================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* LEFT 2 COLUMNS: Global Incident Telemetry Vector Table */}
-        <div className="lg:col-span-2 stitch-card p-5 lg:p-6 flex flex-col justify-between">
+        {/* LEFT 2 COLUMNS: Global Incident sensor tracking Vector Table */}
+        <div className="lg:col-span-2 cs-card p-5 lg:p-6 flex flex-col justify-between">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--border-color)] pb-3 mb-3">
               <div>
                 <h2 className="text-sm font-bold text-white font-mono">
-                  Global Incident Telemetry Vector
+                  Global Incident sensor tracking Vector
                 </h2>
                 <p className="text-[11px] text-slate-400 font-mono">
-                  Streaming AIS feeds, port authority bulletins, and meteorologic telemetry
+                  Streaming AIS feeds, port authority bulletins, and meteorologic sensor tracking
                 </p>
               </div>
               <span className="font-mono text-[10px] text-emerald-400 flex items-center gap-1">
@@ -300,7 +300,7 @@ export default function Disruptions() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="stitch-table font-mono text-xs">
+              <table className="cs-table font-mono text-xs">
                 <thead>
                   <tr>
                     <th>INCIDENT &amp; LOCATION</th>
@@ -340,8 +340,8 @@ export default function Disruptions() {
                         {/* Severity */}
                         <td>
                           <span
-                            className={`stitch-pill text-[9px] px-2 py-0.5 ${
-                              isCrit ? "stitch-pill-danger" : "stitch-pill-warning"
+                            className={`cs-pill text-[9px] px-2 py-0.5 ${
+                              isCrit ? "cs-pill cs-pill-red" : "cs-pill cs-pill-amber"
                             }`}
                           >
                             {inc.severity}
@@ -350,7 +350,7 @@ export default function Disruptions() {
 
                         {/* Category */}
                         <td>
-                          <span className="stitch-pill text-[10px] text-slate-300">
+                          <span className="cs-pill text-[10px] text-slate-300">
                             {inc.category}
                           </span>
                         </td>
@@ -405,7 +405,7 @@ export default function Disruptions() {
           </div>
 
           <div className="pt-3 border-t border-[var(--border-color)] flex items-center justify-between text-[11px] font-mono text-slate-400">
-            <span>Showing {filteredIncidents.length} active incident telemetry vectors</span>
+            <span>Showing {filteredIncidents.length} active incident sensor tracking vectors</span>
             <span className="text-slate-500">Autonomous Sentinel Scan 30s interval</span>
           </div>
         </div>
@@ -414,7 +414,7 @@ export default function Disruptions() {
         <div className="flex flex-col gap-6">
 
           {/* Card 1: Global Incident Surveillance */}
-          <div className="stitch-card p-5 flex flex-col justify-between">
+          <div className="cs-card p-5 flex flex-col justify-between">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3 mb-3">
               <div className="flex items-center gap-2">
                 <Radio size={16} className="text-cyan-400" />
@@ -422,7 +422,7 @@ export default function Disruptions() {
                   Global Incident Surveillance
                 </h3>
               </div>
-              <span className="stitch-pill stitch-pill-success text-[9px]">LIVE</span>
+              <span className="cs-pill cs-pill cs-pill-green text-[9px]">LIVE</span>
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-center font-mono my-2 py-2 border-y border-slate-800">
@@ -435,19 +435,19 @@ export default function Disruptions() {
                 <div className="text-base font-bold text-cyan-400 mt-0.5">182 Feeds</div>
               </div>
               <div>
-                <div className="text-[10px] text-slate-500">UPTIME</div>
-                <div className="text-base font-bold text-emerald-400 mt-0.5">99.98%</div>
+                <div className="text-[10px] text-slate-500">SYSTEM HEALTH</div>
+                <div className="text-base font-bold text-emerald-400 mt-0.5">Normal</div>
               </div>
             </div>
 
             <div className="text-[10px] font-mono text-slate-400 pt-1 flex items-center justify-between">
               <span>NOAA / MarineTraffic / Copernicus Synced</span>
-              <span className="text-cyan-400 font-bold">L-Band</span>
+              <span className="text-cyan-400 font-bold">Satellite</span>
             </div>
           </div>
 
           {/* Card 2: Delay Variance by Node (Horizontal Bars) */}
-          <div className="stitch-card p-5 flex flex-col justify-between">
+          <div className="cs-card p-5 flex flex-col justify-between">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3 mb-3">
               <div className="flex items-center gap-2">
                 <BarChart3 size={15} className="text-amber-400" />
@@ -502,12 +502,12 @@ export default function Disruptions() {
           </div>
 
           {/* Card 3: Cumulative Cost Exposure */}
-          <div className="stitch-card p-5 flex flex-col justify-between border-rose-500/30">
+          <div className="cs-card p-5 flex flex-col justify-between border-rose-500/30">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3 mb-2">
               <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
                 CUMULATIVE COST EXPOSURE
               </span>
-              <span className="stitch-pill stitch-pill-danger text-[9px]">CRITICAL</span>
+              <span className="cs-pill cs-pill cs-pill-red text-[9px]">CRITICAL</span>
             </div>
 
             <div>
@@ -565,7 +565,7 @@ export default function Disruptions() {
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Shanghai Typhoon Divergence"
+                  placeholder="e.g. Shanghai Typhoon route deviation"
                   className="w-full bg-[#080d16] border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-cyan-500"
                   required
                 />

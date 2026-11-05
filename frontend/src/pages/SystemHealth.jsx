@@ -69,8 +69,8 @@ const SYSTEMS = [
     icon: CloudSun,
   },
   {
-    key: "langgraph",
-    title: "LangGraph",
+    key: "AI Decision Pipeline",
+    title: "AI Decision Pipeline",
     description: "Multi-agent workflow engine",
     icon: GitBranch,
   },
@@ -502,7 +502,7 @@ export default function SystemHealth() {
           <div>
             <p className="text-[13px] font-bold text-amber-400">Health coverage notice</p>
             <p className="mt-2 text-[11px] font-medium leading-5 text-slate-400">
-              Vector Memory, News Intelligence, Weather Intelligence, LangGraph, and Routing Engine do not currently expose dedicated health endpoints in the verified backend interface. They are therefore shown as “Not Exposed” instead of being assigned a fabricated health status.
+              Vector Memory, News Intelligence, Weather Intelligence, AI Decision Pipeline, and Routing Engine do not currently expose dedicated health endpoints in the verified backend interface. They are therefore shown as “Not Exposed” instead of being assigned a fabricated health status.
             </p>
           </div>
         </div>

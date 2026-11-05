@@ -31,7 +31,7 @@ const PIPELINE_STEPS = [
   { id: "02", name: "RISK ASSESSED", sub: "Score: 72/100 (High)", done: true },
   { id: "03", name: "ROUTE EVALUATED", sub: "Schedule slip >48h", done: true },
   { id: "04", name: "ALTERNATIVES", sub: "3 Corridors synthesized", done: true },
-  { id: "05", name: "PARETO COMPARED", sub: "Frontier calculated", done: true },
+  { id: "05", name: "TRADE-OFF COMPARED", sub: "Frontier calculated", done: true },
   { id: "06", name: "STEP 06 · PENDING", sub: "AI DECISION ACTIVE", sub2: "CORRIDOR B", active: true },
 ];
 
@@ -68,7 +68,7 @@ export default function AutonomousRerouting() {
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 pb-4 border-b border-[var(--border-color)]">
         <div>
           <div className="flex flex-wrap items-center gap-2 font-mono text-[10px] font-bold tracking-wider text-sky-400 uppercase mb-1">
-            <span>● LANGGRAPH AUTONOMOUS PIPELINE · ACTIVE TRIGGER</span>
+            <span>● AI Decision Pipeline AUTONOMOUS PIPELINE · ACTIVE TRIGGER</span>
             <span className="text-slate-600">|</span>
             <span className="text-slate-400">ID: SC-9421-EVAL</span>
             <span className="text-slate-600">|</span>
@@ -88,7 +88,7 @@ export default function AutonomousRerouting() {
       {/* =========================================================
           6-STEP DAG PIPELINE STEPPER (IMAGE 2 MATCH)
           ========================================================= */}
-      <div className="stitch-card p-4 lg:p-5">
+      <div className="cs-card p-4 lg:p-5">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 relative">
           {PIPELINE_STEPS.map((step, idx) => (
             <div
@@ -125,17 +125,17 @@ export default function AutonomousRerouting() {
       {/* =========================================================
           RECOMMENDED AUTONOMOUS ACTION HERO CARD (IMAGE 2 MATCH)
           ========================================================= */}
-      <div className="stitch-card p-6 border-purple-500/30 bg-gradient-to-r from-[#0F172A] via-[#10192A] to-[#131128] relative overflow-hidden">
+      <div className="cs-card p-6 border-purple-500/30 bg-gradient-to-r from-[#0F172A] via-[#10192A] to-[#131128] relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 w-96 bg-gradient-to-l from-purple-500/5 to-transparent pointer-events-none" />
 
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <span className="px-3 py-1 rounded bg-indigo-600 text-white font-mono text-[10px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(99,102,241,0.5)]">
             RECOMMENDED AUTONOMOUS ACTION
           </span>
-          <span className="stitch-pill stitch-pill-success text-[10px]">
+          <span className="cs-pill cs-pill cs-pill-green text-[10px]">
             Confidence 94.6%
           </span>
-          <span className="stitch-pill bg-slate-900 border-slate-700 text-slate-400 text-[10px]">
+          <span className="cs-pill bg-slate-900 border-slate-700 text-slate-400 text-[10px]">
             <Clock size={11} className="text-amber-400" />
             HITL Override Window: 04:18:19
           </span>
@@ -199,13 +199,13 @@ export default function AutonomousRerouting() {
         <div className="flex flex-col gap-6">
 
           {/* Section: WHY WAS THIS DECISION MADE? */}
-          <div className="stitch-card p-5 lg:p-6 flex flex-col gap-4">
+          <div className="cs-card p-5 lg:p-6 flex flex-col gap-4">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
               <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
                 WHY WAS THIS DECISION MADE?
               </h3>
               <span className="font-mono text-[10px] text-purple-400">
-                LANGGRAPH SYNTHESIS V2.4
+                AI Decision Pipeline SYNTHESIS V2.4
               </span>
             </div>
 
@@ -292,10 +292,10 @@ export default function AutonomousRerouting() {
 
             </div>
 
-            {/* Pareto Evaluation Matrix Progress Bar */}
+            {/* Trade-off Evaluation Matrix Progress Bar */}
             <div className="mt-2 pt-3 border-t border-slate-800">
               <div className="flex items-center justify-between font-mono text-[10px] text-slate-400 mb-2">
-                <span>PARETO EVALUATION MATRIX (TRANSIT TIME VS TOTAL RISK VS COST VARIANCE)</span>
+                <span>Trade-off EVALUATION MATRIX (TRANSIT TIME VS TOTAL RISK VS COST VARIANCE)</span>
                 <span className="text-cyan-400 font-bold">Optimality Frontier 98.2%</span>
               </div>
               <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden flex">
@@ -322,7 +322,7 @@ export default function AutonomousRerouting() {
           </div>
 
           {/* Section: Autonomous Decision Log (Preceding 24h) */}
-          <div className="stitch-card p-5 lg:p-6 flex flex-col gap-3">
+          <div className="cs-card p-5 lg:p-6 flex flex-col gap-3">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
               <div className="flex items-center gap-2">
                 <RotateCw size={15} className="text-cyan-400" />
@@ -336,7 +336,7 @@ export default function AutonomousRerouting() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="stitch-table font-mono text-xs">
+              <table className="cs-table font-mono text-xs">
                 <thead>
                   <tr>
                     <th>SHIPMENT</th>
@@ -395,13 +395,13 @@ export default function AutonomousRerouting() {
         <div className="flex flex-col gap-6">
 
           {/* Section: Corridor Comparison */}
-          <div className="stitch-card p-5 lg:p-6 flex flex-col gap-4">
+          <div className="cs-card p-5 lg:p-6 flex flex-col gap-4">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
               <h3 className="text-sm font-bold text-white font-mono">
                 Corridor Comparison
               </h3>
-              <span className="stitch-pill stitch-pill-success text-[10px]">
-                Route B Dominates Pareto
+              <span className="cs-pill cs-pill cs-pill-green text-[10px]">
+                Route B Dominates Trade-off
               </span>
             </div>
 
@@ -483,7 +483,7 @@ export default function AutonomousRerouting() {
           </div>
 
           {/* Section: Arabian Sea Diversion Waypoint (GIS Map Graphic) */}
-          <div className="stitch-card p-5 lg:p-6 flex flex-col justify-between">
+          <div className="cs-card p-5 lg:p-6 flex flex-col justify-between">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
               <div className="flex items-center gap-2">
                 <Compass size={15} className="text-cyan-400" />
@@ -553,11 +553,11 @@ export default function AutonomousRerouting() {
             </div>
           </div>
 
-          {/* Section: LangGraph Node Trace */}
-          <div className="stitch-card p-5 flex flex-col gap-3">
+          {/* Section: AI Decision Pipeline Node Trace */}
+          <div className="cs-card p-5 flex flex-col gap-3">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2.5">
               <span className="font-mono text-xs font-bold text-white tracking-wider uppercase">
-                LANGGRAPH NODE TRACE
+                AI Decision Pipeline NODE TRACE
               </span>
               <span className="font-mono text-[10px] text-emerald-400 font-bold">
                 ALL NODES NOMINAL

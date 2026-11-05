@@ -37,7 +37,7 @@ function LiveIntelligence() {
         setNews(newsRes.value?.items || newsRes.value || []);
       }
     } catch (err) {
-      setError(err.message || "Failed to load live external telemetry.");
+      setError(err.message || "Failed to load live external sensor tracking.");
     } finally {
       setLoading(false);
     }
@@ -67,16 +67,16 @@ function LiveIntelligence() {
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#38bdf8] uppercase tracking-wider mb-1">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-              TELEMETRY STREAM ACTIVE
+              sensor tracking STREAM ACTIVE
             </span>
             <span>•</span>
-            <span className="text-[var(--text-muted)]">{loading ? "Syncing telemetry..." : "Feed Status: Connected • Sample Demonstration Data"}</span>
+            <span className="text-[var(--text-muted)]">{loading ? "Syncing sensor tracking..." : "Feed Status: Connected • Sample Demonstration Data"}</span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
             Live External Signals
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-1 font-mono">
-            Real-time telemetry, maritime notices, and meteorological feeds covering key logistics nodes: Mumbai, Dubai, Singapore, and Rotterdam.
+            Real-time sensor tracking, maritime notices, and meteorological feeds covering key logistics nodes: Mumbai, Dubai, Singapore, and Rotterdam.
           </p>
         </div>
 
@@ -111,9 +111,9 @@ function LiveIntelligence() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
         {/* Node 1 */}
-        <div className="stitch-card p-4 flex flex-col justify-between">
+        <div className="cs-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="stitch-pill bg-slate-900 border-slate-700 text-slate-300 text-[10px]">Node BDM-01</span>
+            <span className="cs-pill bg-slate-900 border-slate-700 text-slate-300 text-[10px]">Node BDM-01</span>
             <span className="w-2 h-2 rounded-full bg-blue-400" />
           </div>
           <div className="font-bold text-base text-[var(--text-primary)] mb-1">
@@ -123,9 +123,9 @@ function LiveIntelligence() {
         </div>
 
         {/* Node 2 */}
-        <div className="stitch-card p-4 flex flex-col justify-between">
+        <div className="cs-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="stitch-pill bg-slate-900 border-slate-700 text-slate-300 text-[10px]">Node DXB-04</span>
+            <span className="cs-pill bg-slate-900 border-slate-700 text-slate-300 text-[10px]">Node DXB-04</span>
             <span className="w-2 h-2 rounded-full bg-blue-400" />
           </div>
           <div className="font-bold text-base text-[var(--text-primary)] mb-1">
@@ -135,9 +135,9 @@ function LiveIntelligence() {
         </div>
 
         {/* Node 3 */}
-        <div className="stitch-card p-4 flex flex-col justify-between">
+        <div className="cs-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="stitch-pill bg-slate-900 border-slate-700 text-slate-300 text-[10px]">Node SIN-02</span>
+            <span className="cs-pill bg-slate-900 border-slate-700 text-slate-300 text-[10px]">Node SIN-02</span>
             <span className="w-2 h-2 rounded-full bg-blue-400" />
           </div>
           <div className="font-bold text-base text-[var(--text-primary)] mb-1">
@@ -147,9 +147,9 @@ function LiveIntelligence() {
         </div>
 
         {/* Node 4 */}
-        <div className="stitch-card p-4 flex flex-col justify-between">
+        <div className="cs-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="stitch-pill bg-slate-900 border-slate-700 text-slate-300 text-[10px]">Node RTM-01</span>
+            <span className="cs-pill bg-slate-900 border-slate-700 text-slate-300 text-[10px]">Node RTM-01</span>
             <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]" />
           </div>
           <div className="font-bold text-base text-[var(--text-primary)] mb-1">
@@ -237,12 +237,12 @@ function LiveIntelligence() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {/* Card 1 */}
-          <div className="stitch-card p-5 flex flex-col justify-between gap-4">
+          <div className="cs-card p-5 flex flex-col justify-between gap-4">
             <div>
               <div className="flex items-center justify-between mb-2 font-mono text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="stitch-pill stitch-pill-blue text-[9px]">Live external signal</span>
-                  <span className="stitch-pill stitch-pill-danger text-[9px]">Severe Severity</span>
+                  <span className="cs-pill cs-pill cs-pill-blue text-[9px]">Live external signal</span>
+                  <span className="cs-pill cs-pill cs-pill-red text-[9px]">Severe Severity</span>
                 </div>
                 <span className="text-[var(--text-muted)]">38 mins ago</span>
               </div>
@@ -274,12 +274,12 @@ function LiveIntelligence() {
           </div>
 
           {/* Card 2 */}
-          <div className="stitch-card p-5 flex flex-col justify-between gap-4">
+          <div className="cs-card p-5 flex flex-col justify-between gap-4">
             <div>
               <div className="flex items-center justify-between mb-2 font-mono text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="stitch-pill stitch-pill-blue text-[9px]">Live external signal</span>
-                  <span className="stitch-pill stitch-pill-warning text-[9px]">Moderate Severity</span>
+                  <span className="cs-pill cs-pill cs-pill-blue text-[9px]">Live external signal</span>
+                  <span className="cs-pill cs-pill cs-pill-amber text-[9px]">Moderate Severity</span>
                 </div>
                 <span className="text-[var(--text-muted)]">2 hrs ago</span>
               </div>
@@ -311,12 +311,12 @@ function LiveIntelligence() {
           </div>
 
           {/* Card 3 */}
-          <div className="stitch-card p-5 flex flex-col justify-between gap-4">
+          <div className="cs-card p-5 flex flex-col justify-between gap-4">
             <div>
               <div className="flex items-center justify-between mb-2 font-mono text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="stitch-pill stitch-pill-blue text-[9px]">Live external signal</span>
-                  <span className="stitch-pill stitch-pill-success text-[9px]">Low / Normal Severity</span>
+                  <span className="cs-pill cs-pill cs-pill-blue text-[9px]">Live external signal</span>
+                  <span className="cs-pill cs-pill cs-pill-green text-[9px]">Low / Normal Severity</span>
                 </div>
                 <span className="text-[var(--text-muted)]">4 hrs ago</span>
               </div>
@@ -348,12 +348,12 @@ function LiveIntelligence() {
           </div>
 
           {/* Card 4 */}
-          <div className="stitch-card p-5 flex flex-col justify-between gap-4">
+          <div className="cs-card p-5 flex flex-col justify-between gap-4">
             <div>
               <div className="flex items-center justify-between mb-2 font-mono text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="stitch-pill stitch-pill-blue text-[9px]">Live external signal</span>
-                  <span className="stitch-pill text-[9px]">Low / Informational</span>
+                  <span className="cs-pill cs-pill cs-pill-blue text-[9px]">Live external signal</span>
+                  <span className="cs-pill text-[9px]">Low / Informational</span>
                 </div>
                 <span className="text-[var(--text-muted)]">6 hrs ago</span>
               </div>
@@ -404,11 +404,11 @@ function LiveIntelligence() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {/* Feed Error Handling Example */}
-          <div className="stitch-card p-5 flex flex-col justify-between gap-4 border-rose-500/30">
+          <div className="cs-card p-5 flex flex-col justify-between gap-4 border-rose-500/30">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="stitch-label text-rose-400">FEED ERROR HANDLING EXAMPLE</span>
-                <span className="stitch-pill stitch-pill-danger text-[10px]">Degraded Link</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-rose-400">FEED ERROR HANDLING EXAMPLE</span>
+                <span className="cs-pill cs-pill cs-pill-red text-[10px]">Degraded Link</span>
               </div>
               <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 flex items-start gap-3 text-xs font-mono text-rose-400 mb-3">
                 <AlertTriangle size={18} className="shrink-0 mt-0.5" />
@@ -430,11 +430,11 @@ function LiveIntelligence() {
           </div>
 
           {/* Empty State Example */}
-          <div className="stitch-card p-5 flex flex-col justify-between gap-4 border-emerald-500/30">
+          <div className="cs-card p-5 flex flex-col justify-between gap-4 border-emerald-500/30">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="stitch-label text-emerald-400">EMPTY STATE EXAMPLE</span>
-                <span className="stitch-pill stitch-pill-success text-[10px]">Nominal Status</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-emerald-400">EMPTY STATE EXAMPLE</span>
+                <span className="cs-pill cs-pill cs-pill-green text-[10px]">Nominal Status</span>
               </div>
               <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-start gap-3 text-xs font-mono text-emerald-400 mb-3">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] mt-1 shrink-0" />
