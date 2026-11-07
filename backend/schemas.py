@@ -1,8 +1,70 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime
 from typing import Any
+import re
 
-from pydantic import field_validator
+EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+
+
+# ============================================================
+# AUTH SCHEMAS
+# ============================================================
+
+class UserRegisterRequest(BaseModel):
+    email: str
+    password: str = Field(min_length=8)
+    full_name: str = Field(min_length=1)
+    company_name: str = Field(min_length=1)
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        clean = v.strip().lower()
+        if not EMAIL_REGEX.match(clean):
+            raise ValueError("Invalid email format")
+        return clean
+
+
+class UserLoginRequest(BaseModel):
+    email: str
+    password: str = Field(min_length=1)
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        clean = v.strip().lower()
+        if not EMAIL_REGEX.match(clean):
+            raise ValueError("Invalid email format")
+        return clean
+
+
+class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    email: str
+    full_name: str
+    role: str
+    created_at: datetime
+    supplier_id: int | None = None
+    company_name: str | None = None
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
+
+
+class DashboardStatsResponse(BaseModel):
+    company_name: str
+    supplier_id: int | None = None
+    role: str
+    products_count: int
+    active_shipments_count: int
+    pending_shipments_count: int
+    inventory_items_count: int
+    recent_shipments: list[dict[str, Any]] = []
 
 
 # ============================================================
@@ -14,6 +76,7 @@ class SupplierCreate(BaseModel):
     contact_email: str | None = None
     phone: str | None = None
     country: str | None = None
+    user_id: int | None = None
 
 
 class SupplierResponse(BaseModel):
@@ -24,6 +87,7 @@ class SupplierResponse(BaseModel):
     contact_email: str | None = None
     phone: str | None = None
     country: str | None = None
+    user_id: int | None = None
 
 
 # ============================================================
@@ -33,8 +97,22 @@ class SupplierResponse(BaseModel):
 class ProductCreate(BaseModel):
     name: str = Field(min_length=1)
     sku: str = Field(min_length=1)
-    supplier_id: int
-    unit_price: float = Field(ge=0)
+    supplier_id: int | None = None
+    unit_cost: float = Field(ge=0)
+    packing_qty: int | None = 500
+    weight_per_carton: float | None = 10.0
+    default_origin_port: str | None = None
+    is_fragile: bool | None = False
+
+
+class ProductUpdate(BaseModel):
+    name: str | None = None
+    sku: str | None = None
+    unit_cost: float | None = Field(default=None, ge=0)
+    packing_qty: int | None = None
+    weight_per_carton: float | None = None
+    default_origin_port: str | None = None
+    is_fragile: bool | None = None
 
 
 class ProductResponse(BaseModel):
@@ -45,6 +123,11 @@ class ProductResponse(BaseModel):
     sku: str
     supplier_id: int
     unit_cost: float
+    packing_qty: int | None = 500
+    weight_per_carton: float | None = 10.0
+    default_origin_port: str | None = None
+    is_fragile: bool | None = False
+    created_at: datetime | None = None
 
 
 # ============================================================
@@ -54,7 +137,7 @@ class ProductResponse(BaseModel):
 class WarehouseCreate(BaseModel):
     name: str = Field(min_length=1)
     location: str = Field(min_length=1)
-    capacity: float = Field(ge=0)
+    capacity: float | None = None
 
 
 class WarehouseResponse(BaseModel):
@@ -72,7 +155,8 @@ class WarehouseResponse(BaseModel):
 class InventoryCreate(BaseModel):
     product_id: int
     warehouse_id: int
-    quantity: int = Field(ge=0)
+    quantity_on_hand: int = Field(ge=0, default=0)
+    reorder_level: int = Field(ge=0, default=10)
 
 
 class InventoryResponse(BaseModel):
@@ -83,15 +167,36 @@ class InventoryResponse(BaseModel):
     warehouse_id: int
     quantity_on_hand: int
     reorder_level: int
+
+
 # ============================================================
 # SHIPMENT SCHEMAS
 # ============================================================
 
 class ShipmentCreate(BaseModel):
     product_id: int
-    supplier_id: int
-    warehouse_id: int
-    quantity: int = Field(gt=0)
+    supplier_id: int | None = None
+    warehouse_id: int | None = None
+    quantity: int = Field(gt=0, default=1)
+    status: str = "in_transit"
+    origin_port: str | None = None
+    destination_port: str | None = None
+    carrier: str | None = None
+    route_type: str | None = None
+    cost: float | None = None
+    tracking_number: str | None = None
+    expected_arrival: str | None = None
+
+
+class ShipmentUpdate(BaseModel):
+    quantity: int | None = Field(default=None, gt=0)
+    status: str | None = None
+    origin_port: str | None = None
+    destination_port: str | None = None
+    carrier: str | None = None
+    route_type: str | None = None
+    cost: float | None = None
+    expected_arrival: str | None = None
 
 
 class ShipmentResponse(BaseModel):
@@ -99,9 +204,19 @@ class ShipmentResponse(BaseModel):
 
     id: int
     product_id: int
+    product_name: str | None = None
     supplier_id: int
-    warehouse_id: int
+    warehouse_id: int | None = None
     quantity: int
+    status: str
+    origin_port: str | None = None
+    destination_port: str | None = None
+    carrier: str | None = None
+    route_type: str | None = None
+    cost: float | None = None
+    tracking_number: str | None = None
+    expected_arrival: Any | None = None
+    created_at: datetime
 
 
 # ============================================================
@@ -129,8 +244,6 @@ class WeightedRouteQuery(BaseModel):
     time_weight: float = Field(default=0.3, ge=0)
     distance_weight: float = Field(default=0.3, ge=0)
     risk_weight: float = Field(default=0.0, ge=0)
-
-
 
 
 class DisruptionResponse(BaseModel):
@@ -191,4 +304,4 @@ class MLModelInfoResponse(BaseModel):
     model: dict[str, Any]
     evaluation: dict[str, Any]
     baseline_comparison: dict[str, Any]
-    disclaimer: str
+    disclaimer: str

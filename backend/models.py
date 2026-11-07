@@ -15,35 +15,65 @@ from sqlalchemy import (
     Index,
     Text,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    full_name: Mapped[str] = mapped_column(String(150), nullable=False)
+    role: Mapped[str] = mapped_column(String(20), default="supplier", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), nullable=False
+    )
+
+    # Optional 1-1 relationship to supplier
+    supplier: Mapped["Supplier"] = relationship("Supplier", back_populates="user", uselist=False)
 
 
 class Supplier(Base):
     __tablename__ = "suppliers"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id"), unique=True, nullable=True
+    )
     name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
     contact_email: Mapped[str | None] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )
 
+    user: Mapped["User"] = relationship("User", back_populates="supplier")
+
 
 class Product(Base):
     __tablename__ = "products"
+    __table_args__ = (
+        UniqueConstraint("supplier_id", "sku", name="unique_supplier_sku"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
-    sku: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(150), nullable=False)
+    sku: Mapped[str] = mapped_column(String(50), nullable=False)
     unit_cost: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
     supplier_id: Mapped[int] = mapped_column(
         ForeignKey("suppliers.id"), nullable=False
     )
+    packing_qty: Mapped[int | None] = mapped_column(Integer, default=500, nullable=True)
+    weight_per_carton: Mapped[float | None] = mapped_column(Float, default=10.0, nullable=True)
+    default_origin_port: Mapped[str | None] = mapped_column(String(150), nullable=True)
+    is_fragile: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )
+
+    supplier: Mapped["Supplier"] = relationship("Supplier")
 
 
 class Warehouse(Base):
@@ -75,15 +105,24 @@ class Shipment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), nullable=False)
     supplier_id: Mapped[int] = mapped_column(ForeignKey("suppliers.id"), nullable=False)
-    warehouse_id: Mapped[int] = mapped_column(
-        ForeignKey("warehouses.id"), nullable=False
+    warehouse_id: Mapped[int | None] = mapped_column(
+        ForeignKey("warehouses.id"), nullable=True
     )
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String(50), default="pending", nullable=False)
+    origin_port: Mapped[str | None] = mapped_column(String(150), nullable=True)
+    destination_port: Mapped[str | None] = mapped_column(String(150), nullable=True)
+    carrier: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    route_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    cost: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+    tracking_number: Mapped[str | None] = mapped_column(String(50), nullable=True)
     expected_arrival: Mapped[date | None] = mapped_column(Date)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )
+
+    product: Mapped["Product"] = relationship("Product")
+    supplier: Mapped["Supplier"] = relationship("Supplier")
 
 
 class Port(Base):

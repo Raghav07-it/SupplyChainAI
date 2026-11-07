@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -8,25 +8,64 @@ import {
   Check,
   Phone,
   Mail,
-  ExternalLink,
-  ChevronRight,
   Anchor,
   Compass,
   Headphones,
   SlidersHorizontal,
 } from "lucide-react";
-import { sampleAlerts, samplePortHealth } from "../data/sampleData";
+import { useAuth } from "../context/AuthContext";
+import { getMyRouteAlerts, getAllDisruptions } from "../api/alerts";
+import { samplePortHealth } from "../data/sampleData";
+import EmptyState from "../components/ui/EmptyState";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 export default function Alerts() {
-  const [activeTab, setActiveTab] = useState("all");
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const [activeTab, setActiveTab] = useState("my-routes"); // 'my-routes' | 'all' | 'resolved'
   const [smsAlerts, setSmsAlerts] = useState(true);
   const [acknowledged, setAcknowledged] = useState(false);
 
-  const filteredAlerts = sampleAlerts.filter((alert) => {
-    if (activeTab === "my-routes") return alert.shipmentRef !== null;
-    if (activeTab === "resolved") return false;
-    return true;
-  });
+  const [myRouteAlerts, setMyRouteAlerts] = useState([]);
+  const [allDisruptions, setAllDisruptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    Promise.all([
+      getMyRouteAlerts().catch(() => []),
+      getAllDisruptions().catch(() => []),
+    ])
+      .then(([myAlerts, disruptions]) => {
+        if (!isMounted) return;
+        setMyRouteAlerts(Array.isArray(myAlerts) ? myAlerts : []);
+        setAllDisruptions(Array.isArray(disruptions) ? disruptions : []);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const displayedAlerts = activeTab === "my-routes"
+    ? myRouteAlerts
+    : activeTab === "all"
+    ? allDisruptions
+    : [];
+
+  const highCount = displayedAlerts.filter(
+    (a) => (a.severity === "critical" || a.severity === "high" || a.type === "High Alert")
+  ).length;
+
+  const noticeCount = displayedAlerts.filter(
+    (a) => (a.severity === "medium" || a.severity === "warning" || a.type === "Notice")
+  ).length;
+
+  const infoCount = displayedAlerts.length - highCount - noticeCount;
 
   return (
     <div className="space-y-6 animate-fade-in font-sans">
@@ -36,17 +75,14 @@ export default function Alerts() {
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent-cyan)] flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[var(--accent-cyan)] animate-pulse" />
-              Operational Advisory • Live Feeds Active
-            </span>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[var(--text-secondary)] border border-[var(--border-color)]">
-              Sample data
+              Operational Advisory • Live Route Feeds
             </span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-high-contrast)]">
             Route & Port Alerts
           </h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
-            Warnings and weather updates that directly affect ports and shipping lanes where your goods are moving.
+            Warnings and weather updates that directly affect ports and shipping lanes where your cargo is moving.
           </p>
         </div>
 
@@ -74,16 +110,6 @@ export default function Alerts() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           <button
-            onClick={() => setActiveTab("all")}
-            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-              activeTab === "all"
-                ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)] border border-[var(--border-active)]"
-                : "text-[var(--text-secondary)] hover:text-white"
-            }`}
-          >
-            All Alerts ({sampleAlerts.length})
-          </button>
-          <button
             onClick={() => setActiveTab("my-routes")}
             className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
               activeTab === "my-routes"
@@ -91,7 +117,17 @@ export default function Alerts() {
                 : "text-[var(--text-secondary)] hover:text-white"
             }`}
           >
-            Only My Routes (1)
+            Only My Routes ({myRouteAlerts.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+              activeTab === "all"
+                ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)] border border-[var(--border-active)]"
+                : "text-[var(--text-secondary)] hover:text-white"
+            }`}
+          >
+            All Advisories ({allDisruptions.length})
           </button>
           <button
             onClick={() => setActiveTab("resolved")}
@@ -101,43 +137,62 @@ export default function Alerts() {
                 : "text-[var(--text-secondary)] hover:text-white"
             }`}
           >
-            Resolved (6)
+            Resolved (0)
           </button>
         </div>
 
         <div className="flex items-center gap-3 text-xs text-[var(--text-secondary)] font-medium">
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-[var(--status-critical)]" />
-            1 High
+            {highCount} High
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-[var(--status-warning)]" />
-            1 Notice
+            {noticeCount} Notice
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-[var(--status-success)]" />
-            1 Informational
+            {Math.max(0, infoCount)} Normal
           </span>
         </div>
       </div>
 
-      {/* 2-Column Layout matching Screenshot */}
+      {/* 2-Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Alert Cards (8 cols) */}
         <div className="lg:col-span-8 space-y-4">
-          {filteredAlerts.length === 0 ? (
+          {loading ? (
+            <div className="py-12 flex justify-center cs-card">
+              <LoadingSpinner message="Checking active corridor alerts..." />
+            </div>
+          ) : activeTab === "resolved" ? (
             <div className="cs-card p-10 text-center">
               <CheckCircle2 size={36} className="mx-auto text-[var(--status-success)] mb-2" />
-              <h3 className="font-semibold text-[var(--text-high-contrast)]">No active alerts</h3>
+              <h3 className="font-semibold text-[var(--text-high-contrast)]">No resolved alerts in this period</h3>
               <p className="text-xs text-[var(--text-secondary)] mt-1">
-                All routes and ports in this view are operating normally.
+                Resolved advisories are automatically archived after 30 days.
               </p>
             </div>
+          ) : displayedAlerts.length === 0 ? (
+            activeTab === "my-routes" ? (
+              <EmptyState
+                icon={CheckCircle2}
+                title="No Active Corridor Alerts"
+                description="All shipping lanes associated with your active cargo shipments are currently operating normally without delays."
+                actionLabel="View My Shipments"
+                onAction={() => navigate("/my-shipments")}
+              />
+            ) : (
+              <EmptyState
+                icon={CheckCircle2}
+                title="No Global Port Advisories"
+                description="There are currently no active maritime disruptions or severe port delays reported across tracked corridors."
+              />
+            )
           ) : (
-            filteredAlerts.map((alert) => {
-              const isHigh = alert.type === "High Alert";
-              const isNotice = alert.type === "Notice";
-              const isGood = alert.type === "Good News";
+            displayedAlerts.map((alert) => {
+              const isHigh = alert.severity === "critical" || alert.severity === "high" || alert.type === "High Alert";
+              const isNotice = alert.severity === "medium" || alert.severity === "warning" || alert.type === "Notice";
 
               const borderAccent = isHigh
                 ? "border-l-4 border-l-[var(--status-critical)]"
@@ -151,6 +206,11 @@ export default function Alerts() {
                 ? "cs-pill cs-pill-amber"
                 : "cs-pill cs-pill-green";
 
+              const title = alert.title || alert.description || "Port Advisory";
+              const description = alert.description || (alert.delay_hours ? `Estimated delay impact: ~${alert.delay_hours} hours.` : "Monitoring route conditions.");
+              const location = alert.port || alert.location || "Ocean Transit Corridor";
+              const category = alert.category || alert.disruption_type || "Advisory";
+
               return (
                 <div
                   key={alert.id}
@@ -160,68 +220,44 @@ export default function Alerts() {
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <span className={badgeClass}>
-                        ● {alert.type} — {alert.category}
+                        ● {isHigh ? "High Alert" : isNotice ? "Notice" : "Advisory"} — {category}
                       </span>
-                      {alert.transit && (
-                        <span className="text-[11px] font-semibold text-[var(--text-dim)]">
-                          {alert.transit}
+                      {alert.shipment_ref && (
+                        <span className="text-[11px] font-semibold text-[var(--accent-primary-light)]">
+                          Affects Shipment #{alert.shipment_ref}
                         </span>
                       )}
                     </div>
                     <span className="text-xs text-[var(--text-dim)] flex items-center gap-1">
                       <Clock size={12} />
-                      {alert.updatedAgo}
+                      {alert.updatedAgo || "Active"}
                     </span>
                   </div>
 
                   {/* Location & Title */}
                   <div>
                     <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--accent-cyan)] mb-1">
-                      {isGood ? <Compass size={14} /> : <Anchor size={14} />}
-                      <span>{alert.location}</span>
+                      <Anchor size={14} />
+                      <span>{location}</span>
                     </div>
                     <h2 className="text-base sm:text-lg font-bold text-[var(--text-high-contrast)] leading-snug">
-                      {alert.title}
+                      {title}
                     </h2>
                     <p className="text-sm text-[var(--text-secondary)] mt-1.5 leading-relaxed">
-                      {alert.description}
+                      {description}
                     </p>
                   </div>
 
                   {/* What You Should Do Box (if present) */}
-                  {alert.whatToDo && (
+                  {(alert.whatToDo || alert.delay_hours) && (
                     <div className="bg-[var(--surface-base)] border border-[var(--border-color)] rounded-lg p-3 text-xs space-y-1">
                       <div className="font-semibold text-[var(--text-high-contrast)] flex items-center gap-1.5">
                         <CheckCircle2 size={14} className="text-[var(--status-success)]" />
-                        What you should do
+                        Recommended action
                       </div>
                       <p className="text-[var(--text-secondary)] pl-5 leading-relaxed">
-                        {alert.whatToDo}
+                        {alert.whatToDo || `Coordinate with your carrier dispatch regarding the estimated ${alert.delay_hours}h berthing queue.`}
                       </p>
-                    </div>
-                  )}
-
-                  {/* Turnaround metric preview for Good News */}
-                  {alert.gateTurnaround && (
-                    <div className="bg-[var(--surface-base)] border border-[var(--border-color)] rounded-lg p-3 flex items-center justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-md bg-[var(--status-success-bg)] border border-[var(--status-success-border)] flex items-center justify-center text-[var(--status-success)]">
-                          <Clock size={16} />
-                        </div>
-                        <div>
-                          <div className="text-sm font-bold text-[var(--text-high-contrast)]">
-                            {alert.gateTurnaround}
-                          </div>
-                          <div className="text-[11px] text-[var(--text-secondary)]">
-                            {alert.gateTurnaroundNote}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <div className="w-2 h-4 rounded-sm bg-[var(--status-success)] opacity-40" />
-                        <div className="w-2 h-4 rounded-sm bg-[var(--status-success)] opacity-60" />
-                        <div className="w-2 h-4 rounded-sm bg-[var(--status-success)]" />
-                      </div>
                     </div>
                   )}
 
@@ -229,22 +265,14 @@ export default function Alerts() {
                   <div className="pt-2 border-t border-[var(--border-color)] flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2">
                       <Link
-                        to={alert.actionLink || "/my-shipments"}
+                        to="/my-shipments"
                         className="cs-btn cs-btn-secondary py-1 px-3 text-xs"
                       >
-                        {alert.actionLabel || "View Details"}
+                        View Active Shipments
                       </Link>
-                      {alert.shareLabel && (
-                        <button
-                          type="button"
-                          className="cs-btn cs-btn-ghost py-1 px-3 text-xs"
-                        >
-                          {alert.shareLabel}
-                        </button>
-                      )}
                     </div>
                     <span className="text-[11px] text-[var(--text-dim)]">
-                      {alert.terminalStatus || alert.waveThreshold || alert.terminalGateStatus}
+                      {alert.status ? `Status: ${alert.status}` : "Corridor active"}
                     </span>
                   </div>
                 </div>
@@ -298,14 +326,14 @@ export default function Alerts() {
               <div className="flex items-center justify-between mt-1 text-xs text-[var(--text-high-contrast)] bg-[var(--surface-base)] p-2 rounded border border-[var(--border-color)]">
                 <span className="flex items-center gap-1.5 truncate">
                   <Mail size={13} className="text-[var(--text-secondary)] shrink-0" />
-                  elena@acmeceramics.com
+                  {user?.email || "user@example.com"}
                 </span>
-                <button type="button" className="text-[var(--accent-cyan)] hover:underline shrink-0">
-                  Edit
-                </button>
+                <span className="text-[11px] text-[var(--accent-cyan)] shrink-0">
+                  Verified
+                </span>
               </div>
               <p className="text-[10px] text-[var(--text-dim)] mt-1">
-                Digest sent daily at 08:00 CET whenever your active routes register updates.
+                Digest sent daily whenever your active cargo routes register updates.
               </p>
             </div>
 
@@ -319,7 +347,7 @@ export default function Alerts() {
                   <Phone size={13} className="text-[var(--status-success)]" />
                   <span>+31 10 798 2200</span>
                 </div>
-                <span className="text-[11px] text-[var(--text-secondary)]">Kuehne+Nagel CS Desk</span>
+                <span className="text-[11px] text-[var(--text-secondary)]">ChainSight Desk</span>
               </div>
             </div>
 
@@ -396,7 +424,7 @@ export default function Alerts() {
                   Questions about an advisory?
                 </div>
                 <div className="text-[var(--text-secondary)]">
-                  Our trade concierge clarifies all route notices.
+                  Our logistics concierge clarifies all route notices.
                 </div>
               </div>
             </div>
@@ -406,4 +434,3 @@ export default function Alerts() {
     </div>
   );
 }
-

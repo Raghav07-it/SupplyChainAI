@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
@@ -17,7 +17,11 @@ import {
   Activity,
   SlidersHorizontal,
   Compass,
+  LogOut,
+  User as UserIcon,
+  Building,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const primaryNav = [
   { name: "Dashboard", path: "/", icon: LayoutGrid },
@@ -37,11 +41,26 @@ const technicalNav = [
 ];
 
 export default function MainLayout() {
+  const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+
+  const dropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setProfileDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -49,6 +68,22 @@ export default function MainLayout() {
       navigate(`/my-shipments?search=${encodeURIComponent(searchTerm.trim())}`);
     }
   };
+
+  const handleLogout = () => {
+    setProfileDropdownOpen(false);
+    logout();
+    navigate("/login");
+  };
+
+  // Derive display names and initials
+  const fullName = user?.full_name || "User";
+  const companyName = user?.company_name || "Supplier Organization";
+  const initials = fullName
+    .split(" ")
+    .map((p) => p[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() || "CS";
 
   return (
     <div className="min-h-screen bg-[var(--canvas-base)] text-[var(--text-body)] flex font-sans antialiased">
@@ -107,19 +142,19 @@ export default function MainLayout() {
             })}
           </nav>
 
-          {/* Collapsible Admin / Technical Group */}
-          <div className="px-3 pt-6 pb-2">
+          {/* Section: Collapsed Admin / Technical Group */}
+          <div className="px-3 mt-6 pt-3 border-t border-[var(--border-color)]">
             <button
               type="button"
               onClick={() => setAdminOpen(!adminOpen)}
-              className="w-full flex items-center justify-between px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-dim)] hover:text-[var(--text-secondary)] transition-colors"
+              className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] uppercase tracking-wider hover:text-[var(--text-secondary)] transition-colors"
             >
               <span>Admin / Technical</span>
-              {adminOpen ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+              {adminOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </button>
 
             {adminOpen && (
-              <div className="mt-1 flex flex-col gap-0.5 pl-2 border-l border-[var(--border-color)] ml-2">
+              <div className="mt-1 flex flex-col gap-0.5">
                 {technicalNav.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -127,10 +162,10 @@ export default function MainLayout() {
                       key={item.path}
                       to={item.path}
                       className={({ isActive }) =>
-                        `flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                        `flex items-center gap-2.5 px-3 py-1.5 rounded-md text-xs transition-colors ${
                           isActive
-                            ? "bg-[var(--surface-overlay)] text-[var(--accent-primary-light)]"
-                            : "text-[var(--text-secondary)] hover:text-[var(--text-high-contrast)] hover:bg-[var(--surface-elevated)]"
+                            ? "bg-[var(--surface-elevated)] text-[var(--accent-cyan)] font-medium"
+                            : "text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-elevated)]"
                         }`
                       }
                     >
@@ -145,21 +180,25 @@ export default function MainLayout() {
         </div>
 
         {/* User Profile Card */}
-        <div className="p-3 border-t border-[var(--border-color)] bg-[var(--surface-base)]">
-          <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-[var(--surface-elevated)] cursor-pointer transition-colors">
+        <div className="p-3 border-t border-[var(--border-color)] bg-[var(--surface-base)] relative">
+          <button
+            type="button"
+            onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+            className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-[var(--surface-elevated)] cursor-pointer transition-colors text-left"
+          >
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-              ER
+              {initials}
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-xs font-semibold text-[var(--text-high-contrast)] truncate">
-                Elena Rostova
+                {fullName}
               </div>
               <div className="text-[11px] text-[var(--text-secondary)] truncate">
-                Acme Ceramics Ltd
+                {companyName}
               </div>
             </div>
-            <ChevronDown size={14} className="text-[var(--text-dim)]" />
-          </div>
+            <ChevronDown size={14} className="text-[var(--text-dim)] shrink-0" />
+          </button>
         </div>
       </aside>
 
@@ -244,14 +283,24 @@ export default function MainLayout() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[var(--border-color)] flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
-                ER
+            <div className="pt-3 border-t border-[var(--border-color)]">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                  {initials}
+                </div>
+                <div className="text-xs min-w-0">
+                  <div className="font-semibold text-white truncate">{fullName}</div>
+                  <div className="text-[11px] text-[var(--text-secondary)] truncate">{companyName}</div>
+                </div>
               </div>
-              <div className="text-xs">
-                <div className="font-semibold text-white">Elena Rostova</div>
-                <div className="text-[11px] text-[var(--text-secondary)]">Acme Ceramics Ltd</div>
-              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-[var(--surface-elevated)] hover:bg-[var(--surface-overlay)] text-xs text-[var(--status-critical)] transition-colors"
+              >
+                <LogOut size={14} />
+                <span>Log out</span>
+              </button>
             </div>
           </div>
         </div>
@@ -263,7 +312,7 @@ export default function MainLayout() {
       <div className="flex-1 lg:pl-60 flex flex-col min-h-screen min-w-0">
         {/* Sticky Top Bar */}
         <header className="sticky top-0 z-30 h-14 bg-[var(--bg-topbar)] backdrop-blur-md border-b border-[var(--border-color)] px-4 sm:px-6 flex items-center justify-between gap-4">
-          {/* Left: Mobile Toggle & Breadcrumbs */}
+          {/* Left: Mobile Toggle & Breadcrumbs with User Company */}
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -280,7 +329,7 @@ export default function MainLayout() {
               <span className="text-[var(--text-secondary)]">Supplier Portal</span>
               <span className="text-[var(--border-active)]">/</span>
               <span className="font-semibold text-[var(--text-high-contrast)]">
-                Global Logistics
+                {companyName}
               </span>
             </div>
           </div>
@@ -305,8 +354,8 @@ export default function MainLayout() {
             </div>
           </form>
 
-          {/* Right: Actions */}
-          <div className="flex items-center gap-2">
+          {/* Right: Actions & User Profile Dropdown */}
+          <div className="flex items-center gap-2 relative" ref={dropdownRef}>
             <NavLink
               to="/alerts"
               className="relative w-8 h-8 rounded-md bg-[var(--surface-elevated)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-secondary)] hover:text-white transition-colors"
@@ -326,9 +375,78 @@ export default function MainLayout() {
               <HelpCircle size={15} />
             </button>
 
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[11px] font-bold cursor-pointer shrink-0">
-              ER
-            </div>
+            {/* Account Profile Button with Dropdown Trigger */}
+            <button
+              type="button"
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full bg-[var(--surface-elevated)] border border-[var(--border-color)] hover:border-[var(--accent-primary)] transition-all cursor-pointer"
+              title="Account Menu"
+              aria-label="User Account Menu"
+            >
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[11px] font-bold shrink-0">
+                {initials}
+              </div>
+              <span className="hidden md:inline text-xs font-medium text-[var(--text-high-contrast)] max-w-[120px] truncate">
+                {fullName}
+              </span>
+              <ChevronDown size={13} className="text-[var(--text-secondary)]" />
+            </button>
+
+            {/* Profile Dropdown Menu */}
+            {profileDropdownOpen && (
+              <div className="absolute right-0 top-12 w-64 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border-color)] shadow-2xl py-2 z-50 animate-fade-in text-xs">
+                {/* User Info Header */}
+                <div className="px-4 py-3 border-b border-[var(--border-color)]">
+                  <div className="font-semibold text-sm text-[var(--text-high-contrast)] truncate">
+                    {fullName}
+                  </div>
+                  <div className="text-[11px] text-[var(--text-secondary)] truncate mt-0.5">
+                    {user?.email}
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] text-[var(--accent-cyan)] font-medium border border-[var(--border-color)]">
+                      <Building size={11} />
+                      <span className="truncate max-w-[140px]">{companyName}</span>
+                    </span>
+                    <span className="inline-block px-1.5 py-0.5 rounded bg-[rgba(99,102,241,0.15)] text-[10px] text-[var(--accent-primary-light)] font-medium capitalize">
+                      {user?.role || "supplier"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Account Navigation / Links */}
+                <div className="py-1">
+                  <NavLink
+                    to="/"
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2 text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-overlay)] transition-colors"
+                  >
+                    <LayoutGrid size={14} />
+                    <span>Dashboard</span>
+                  </NavLink>
+                  <NavLink
+                    to="/products"
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2 text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-overlay)] transition-colors"
+                  >
+                    <Package size={14} />
+                    <span>My Products</span>
+                  </NavLink>
+                </div>
+
+                {/* Logout Button */}
+                <div className="pt-1 border-t border-[var(--border-color)]">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-[var(--status-critical)] hover:bg-[rgba(239,68,68,0.1)] transition-colors font-medium text-left"
+                  >
+                    <LogOut size={14} />
+                    <span>Log out</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </header>
 

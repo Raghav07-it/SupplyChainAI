@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Ship,
@@ -12,36 +12,80 @@ import {
   ArrowRight,
   ArrowLeft,
   Pencil,
-  Sparkles,
   SlidersHorizontal,
   RefreshCw,
   Lightbulb,
   Anchor,
   Compass,
-  AlertTriangle,
   DollarSign,
-  ChevronRight,
+  AlertCircle,
 } from "lucide-react";
-import { sampleProducts, sampleRouteOptions } from "../data/sampleData";
+import { getProducts } from "../api/products";
+import { createShipment } from "../api/shipments";
+import { sampleRouteOptions } from "../data/sampleData";
+import EmptyState from "../components/ui/EmptyState";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 export default function PlanShipment({ initialStep }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // If initialStep was passed or query param ?step=3 exists
-  const startStep = initialStep || (searchParams.get("step") ? parseInt(searchParams.get("step"), 10) : 2);
+  // If initialStep was passed or query param ?step=X exists
+  const startStep = initialStep || (searchParams.get("step") ? parseInt(searchParams.get("step"), 10) : 1);
   const [currentStep, setCurrentStep] = useState(startStep);
 
+  // Products from Backend
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [productError, setProductError] = useState(null);
+
   // Form State
-  const [selectedProduct, setSelectedProduct] = useState(sampleProducts[0]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [originPort, setOriginPort] = useState("Port of Valencia (Spain)");
   const [destPort, setDestPort] = useState("Port of New York / New Jersey");
   const [readyDate, setReadyDate] = useState("2025-11-12");
   const [priority, setPriority] = useState("balanced"); // 'balanced' | 'lowest' | 'guaranteed'
   const [selectedRouteId, setSelectedRouteId] = useState("safest");
   const [quoteLocked, setQuoteLocked] = useState(false);
+  const [submittingBooking, setSubmittingBooking] = useState(false);
+  const [bookingError, setBookingError] = useState(null);
+  const [createdShipment, setCreatedShipment] = useState(null);
 
   const selectedRoute = sampleRouteOptions.find((r) => r.id === selectedRouteId) || sampleRouteOptions[2];
+
+  useEffect(() => {
+    let isMounted = true;
+    getProducts()
+      .then((data) => {
+        if (!isMounted) return;
+        const list = Array.isArray(data) ? data : [];
+        setProducts(list);
+        if (list.length > 0) {
+          setSelectedProduct(list[0]);
+          if (list[0].default_origin_port) {
+            setOriginPort(list[0].default_origin_port);
+          }
+        }
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        setProductError(err.message || "Failed to load products from catalog.");
+      })
+      .finally(() => {
+        if (isMounted) setLoadingProducts(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleSelectProduct = (prod) => {
+    setSelectedProduct(prod);
+    if (prod.default_origin_port) {
+      setOriginPort(prod.default_origin_port);
+    }
+  };
 
   const handleSwapPorts = () => {
     const temp = originPort;
@@ -53,16 +97,44 @@ export default function PlanShipment({ initialStep }) {
     setReadyDate("2025-11-10");
   };
 
+  const handleLockQuote = async () => {
+    if (!selectedProduct) return;
+    setSubmittingBooking(true);
+    setBookingError(null);
+
+    try {
+      const costNum = parseFloat(String(selectedRoute.price).replace(/[^0-9.]/g, "")) || 3980;
+      const qty = selectedProduct.packing_qty || 500;
+
+      const payload = {
+        product_id: selectedProduct.id,
+        quantity: qty,
+        origin_port: originPort,
+        destination_port: destPort,
+        carrier: selectedRoute.carrier || "Hapag-Lloyd",
+        route_type: selectedRoute.label || "Safest Route",
+        cost: costNum,
+        status: "in_transit",
+        expected_arrival: "2025-12-01",
+      };
+
+      const res = await createShipment(payload);
+      setCreatedShipment(res);
+      setQuoteLocked(true);
+    } catch (err) {
+      setBookingError(err.message || "Failed to lock quote and book shipment.");
+    } finally {
+      setSubmittingBooking(false);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in font-sans">
       {/* Top Wizard Pill & Estimated Transit */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
           <span className="cs-pill cs-pill-blue text-[11px] font-bold uppercase">
-            SHIPMENT WIZARD • Draft #SHP-8821
-          </span>
-          <span className="text-[10px] px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[var(--text-secondary)] border border-[var(--border-color)]">
-            Sample data
+            SHIPMENT WIZARD • {selectedProduct ? `Cargo: ${selectedProduct.sku}` : "New Draft"}
           </span>
         </div>
         <div className="flex items-center gap-2 text-[var(--text-secondary)]">
@@ -123,9 +195,16 @@ export default function PlanShipment({ initialStep }) {
         {/* Step 2 */}
         <button
           type="button"
-          onClick={() => setCurrentStep(2)}
+          onClick={() => {
+            if (products.length > 0 && selectedProduct) {
+              setCurrentStep(2);
+            }
+          }}
+          disabled={products.length === 0}
           className={`flex items-center gap-2.5 p-2 rounded-lg text-left transition-colors ${
-            currentStep === 2
+            products.length === 0
+              ? "opacity-50 cursor-not-allowed text-[var(--text-dim)]"
+              : currentStep === 2
               ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)]"
               : "text-[var(--text-secondary)] hover:text-white"
           }`}
@@ -152,9 +231,16 @@ export default function PlanShipment({ initialStep }) {
         {/* Step 3 */}
         <button
           type="button"
-          onClick={() => setCurrentStep(3)}
+          onClick={() => {
+            if (products.length > 0 && selectedProduct) {
+              setCurrentStep(3);
+            }
+          }}
+          disabled={products.length === 0}
           className={`flex items-center gap-2.5 p-2 rounded-lg text-left transition-colors ${
-            currentStep === 3
+            products.length === 0
+              ? "opacity-50 cursor-not-allowed text-[var(--text-dim)]"
+              : currentStep === 3
               ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)]"
               : "text-[var(--text-secondary)] hover:text-white"
           }`}
@@ -191,61 +277,93 @@ export default function PlanShipment({ initialStep }) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {sampleProducts.map((p) => {
-              const isSel = selectedProduct.id === p.id;
-              return (
-                <div
-                  key={p.id}
-                  onClick={() => setSelectedProduct(p)}
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    isSel
-                      ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_12px_rgba(99,102,241,0.25)]"
-                      : "bg-[var(--surface-base)] border-[var(--border-color)] hover:border-[var(--border-active)]"
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="text-sm font-bold text-[var(--text-high-contrast)]">
-                        {p.name}
-                      </div>
-                      <div className="text-xs text-[var(--text-secondary)] mt-0.5">
-                        SKU: {p.sku} • {p.packingQty} units/pallet
-                      </div>
-                    </div>
-                    {isSel && <CheckCircle2 size={16} className="text-[var(--accent-primary-light)]" />}
-                  </div>
-                  <div className="flex items-center gap-2 mt-3 text-[11px] text-[var(--text-dim)]">
-                    <span>${p.costPerUnit.toFixed(2)}/unit</span>
-                    <span>•</span>
-                    <span>{p.weightPerCarton} kg/carton</span>
-                    {p.fragile && (
-                      <span className="cs-pill cs-pill-amber text-[10px] py-0 px-1.5 ml-auto">
-                        Fragile
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {loadingProducts ? (
+            <div className="py-12 flex justify-center">
+              <LoadingSpinner message="Loading catalog products..." />
+            </div>
+          ) : productError ? (
+            <div className="p-4 rounded-lg bg-[var(--status-critical-bg)] border border-[var(--status-critical-border)] text-[var(--status-critical)] text-xs flex items-center gap-2">
+              <AlertCircle size={16} />
+              <span>{productError}</span>
+            </div>
+          ) : products.length === 0 ? (
+            <EmptyState
+              icon={Package}
+              title="No Products in Catalog"
+              description="You must register at least one product in your company catalog before you can plan and quote a shipment."
+              actionLabel="Add Your First Product"
+              onAction={() => navigate("/products")}
+            />
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {products.map((p) => {
+                  const isSel = selectedProduct?.id === p.id;
+                  const packingQty = p.packing_qty || 500;
+                  const weightPerCarton = p.weight_per_carton || 10;
+                  const costPerUnit = p.cost_per_unit || 0;
+                  const isFragile = Boolean(p.is_fragile);
 
-          <div className="pt-4 border-t border-[var(--border-color)] flex justify-end">
-            <button
-              type="button"
-              onClick={() => setCurrentStep(2)}
-              className="cs-btn cs-btn-primary text-xs"
-            >
-              Continue to Origin & Destination →
-            </button>
-          </div>
+                  return (
+                    <div
+                      key={p.id}
+                      onClick={() => handleSelectProduct(p)}
+                      className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                        isSel
+                          ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_12px_rgba(99,102,241,0.25)]"
+                          : "bg-[var(--surface-base)] border-[var(--border-color)] hover:border-[var(--border-active)]"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="text-sm font-bold text-[var(--text-high-contrast)]">
+                            {p.name}
+                          </div>
+                          <div className="text-xs text-[var(--text-secondary)] mt-0.5">
+                            SKU: {p.sku} • {packingQty} units/pallet
+                          </div>
+                        </div>
+                        {isSel && <CheckCircle2 size={16} className="text-[var(--accent-primary-light)]" />}
+                      </div>
+                      <div className="flex items-center gap-2 mt-3 text-[11px] text-[var(--text-dim)]">
+                        <span>${Number(costPerUnit).toFixed(2)}/unit</span>
+                        <span>•</span>
+                        <span>{weightPerCarton} kg/carton</span>
+                        {isFragile && (
+                          <span className="cs-pill cs-pill-amber text-[10px] py-0 px-1.5 ml-auto">
+                            Fragile
+                          </span>
+                        )}
+                      </div>
+                      {p.default_origin_port && (
+                        <div className="mt-2 text-[10px] text-[var(--text-dim)] truncate">
+                          Origin: {p.default_origin_port}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="pt-4 border-t border-[var(--border-color)] flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(2)}
+                  disabled={!selectedProduct}
+                  className="cs-btn cs-btn-primary text-xs"
+                >
+                  Continue to Origin & Destination →
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
 
       {/* =========================================================
-          STEP 2: ORIGIN & DESTINATION (MATCHES SCREENSHOT 6)
+          STEP 2: ORIGIN & DESTINATION
           ========================================================= */}
-      {currentStep === 2 && (
+      {currentStep === 2 && selectedProduct && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Main Left Column (8 cols) */}
           <div className="lg:col-span-8 space-y-5">
@@ -266,11 +384,11 @@ export default function PlanShipment({ initialStep }) {
                     </span>
                   </div>
                   <div className="text-xs text-[var(--text-secondary)] mt-0.5">
-                    800 boxes (Total weight: 19,200 kg / ~1 standard 20ft container)
+                    {selectedProduct.packing_qty || 500} boxes (Total weight: {((selectedProduct.packing_qty || 500) * (selectedProduct.weight_per_carton || 10)).toLocaleString()} kg / ~1 standard 20ft container)
                   </div>
                   <div className="mt-1 flex items-center gap-2">
-                    <span className="cs-pill cs-pill-green text-[10px] py-0.5">
-                      ✓ Verified Fragile Rating: Level 2
+                    <span className={`cs-pill text-[10px] py-0.5 ${selectedProduct.is_fragile ? "cs-pill-amber" : "cs-pill-green"}`}>
+                      {selectedProduct.is_fragile ? "⚠ Fragile Handling Required" : "✓ Standard Cargo Profile"}
                     </span>
                   </div>
                 </div>
@@ -317,7 +435,7 @@ export default function PlanShipment({ initialStep }) {
                     />
                   </div>
                   <span className="text-[11px] text-[var(--text-dim)] mt-1 block">
-                    Default port for Acme Ceramics warehouse
+                    Default port for {selectedProduct.name}
                   </span>
                 </div>
 
@@ -335,7 +453,7 @@ export default function PlanShipment({ initialStep }) {
                     />
                   </div>
                   <span className="text-[11px] text-[var(--text-dim)] mt-1 block">
-                    East Coast Hub • Pier 7 Container Terminal
+                    Discharge Container Terminal
                   </span>
                 </div>
               </div>
@@ -505,7 +623,7 @@ export default function PlanShipment({ initialStep }) {
                 Avoid Weekend Customs Queues
               </h3>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Did you know? Shipping <strong>2 days earlier</strong> from Valencia (Nov 10 instead of Nov 12) connects directly with the Maersk Tuesday direct feeder, shaving 48 hours off US customs clearance.
+                Did you know? Shipping <strong>2 days earlier</strong> from {originPort.split("(")[0].trim() || "origin"} (Nov 10 instead of Nov 12) connects directly with Tuesday feeder sailings, shaving 48 hours off customs clearance.
               </p>
               <div className="pt-2 border-t border-[var(--border-color)] flex items-center justify-between">
                 <span className="cs-pill cs-pill-green text-[10px]">
@@ -534,14 +652,14 @@ export default function PlanShipment({ initialStep }) {
               <div className="h-24 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] p-3 flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-[var(--text-high-contrast)]">
-                    Valencia to NY/NJ
+                    {originPort.split("(")[0].trim()} → {destPort.split("/")[0].trim()}
                   </span>
                   <span className="cs-pill cs-pill-green text-[10px] py-0 px-1.5">
                     Normal Flow
                   </span>
                 </div>
                 <div className="text-[11px] text-[var(--text-dim)]">
-                  Transatlantic North Route • Sea state calm
+                  Maritime Trade Corridor • Normal Transit Flow
                 </div>
               </div>
 
@@ -576,10 +694,9 @@ export default function PlanShipment({ initialStep }) {
       )}
 
       {/* =========================================================
-          STEP 3: COMPARE ROUTE OPTIONS (MATCHES SCREENSHOT 1)
-          Three cards: Cheapest, Fastest, Safest (repetitive table removed)
+          STEP 3: COMPARE ROUTE OPTIONS
           ========================================================= */}
-      {currentStep === 3 && (
+      {currentStep === 3 && selectedProduct && (
         <div className="space-y-6">
           {/* Freight Escrow Trust Banner */}
           <div className="flex items-center gap-2">
@@ -597,12 +714,12 @@ export default function PlanShipment({ initialStep }) {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-sm text-[var(--text-high-contrast)]">
-                    Valencia (ES) → New York (US)
+                    {originPort.split("(")[0].trim()} → {destPort.split("/")[0].trim()}
                   </span>
                   <span className="text-xs text-[var(--text-dim)]">FCL 20ft Standard</span>
                 </div>
                 <div className="text-xs text-[var(--text-secondary)] mt-0.5">
-                  Shipping 800 boxes of Ceramic Sets • Est. weight 14,200 kg • Cargo ready Nov 12
+                  Shipping {selectedProduct.packing_qty || 500} boxes of {selectedProduct.name} • Est. weight {((selectedProduct.packing_qty || 500) * (selectedProduct.weight_per_carton || 10)).toLocaleString()} kg • Cargo ready {readyDate}
                 </div>
               </div>
             </div>
@@ -769,7 +886,7 @@ export default function PlanShipment({ initialStep }) {
             })}
           </div>
 
-          {/* Sticky Bottom Bar matching Screenshot 1 */}
+          {/* Sticky Bottom Bar */}
           <div className="sticky bottom-4 z-20 cs-card p-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-[var(--surface-elevated)]/95 backdrop-blur-md border border-[var(--border-active)] shadow-2xl">
             <button
               type="button"
@@ -802,7 +919,7 @@ export default function PlanShipment({ initialStep }) {
       {/* =========================================================
           STEP 4: REVIEW & LOCK FREIGHT QUOTE
           ========================================================= */}
-      {currentStep === 4 && (
+      {currentStep === 4 && selectedProduct && (
         <div className="cs-card p-6 space-y-6 max-w-2xl mx-auto">
           <div className="text-center space-y-2">
             <div className="w-12 h-12 rounded-full bg-[var(--accent-primary-bg)] text-[var(--accent-primary-light)] flex items-center justify-center mx-auto">
@@ -813,12 +930,25 @@ export default function PlanShipment({ initialStep }) {
             </h2>
             <p className="text-xs text-[var(--text-secondary)]">
               {quoteLocked
-                ? "Your booking request #CS-8921 has been issued to carrier dispatch."
+                ? `Your booking request #${createdShipment?.tracking_number || "CS-CONFIRMED"} has been successfully created and linked to your account.`
                 : "Your selected rate is protected for 48 hours without demurrage liability."}
             </p>
           </div>
 
+          {bookingError && (
+            <div className="p-3 rounded-lg bg-[var(--status-critical-bg)] border border-[var(--status-critical-border)] text-[var(--status-critical)] text-xs flex items-center gap-2">
+              <AlertCircle size={16} />
+              <span>{bookingError}</span>
+            </div>
+          )}
+
           <div className="p-4 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] space-y-3 text-xs">
+            <div className="flex justify-between py-1 border-b border-[var(--border-color)]">
+              <span className="text-[var(--text-secondary)]">Product</span>
+              <span className="font-bold text-[var(--text-high-contrast)]">
+                {selectedProduct.name} ({selectedProduct.packing_qty || 500} units)
+              </span>
+            </div>
             <div className="flex justify-between py-1 border-b border-[var(--border-color)]">
               <span className="text-[var(--text-secondary)]">Selected Corridor</span>
               <span className="font-bold text-[var(--text-high-contrast)]">
@@ -853,6 +983,7 @@ export default function PlanShipment({ initialStep }) {
             <button
               type="button"
               onClick={() => setCurrentStep(3)}
+              disabled={submittingBooking || quoteLocked}
               className="cs-btn cs-btn-secondary text-xs w-full sm:w-auto"
             >
               <ArrowLeft size={14} />
@@ -861,17 +992,25 @@ export default function PlanShipment({ initialStep }) {
             {quoteLocked ? (
               <Link
                 to="/my-shipments"
-                className="cs-btn cs-btn-primary text-xs w-full sm:w-auto"
+                className="cs-btn cs-btn-primary text-xs w-full sm:w-auto text-center"
               >
                 Go to My Shipments →
               </Link>
             ) : (
               <button
                 type="button"
-                onClick={() => setQuoteLocked(true)}
+                onClick={handleLockQuote}
+                disabled={submittingBooking}
                 className="cs-btn cs-btn-primary text-xs w-full sm:w-auto"
               >
-                Lock Quote & Submit Booking ✓
+                {submittingBooking ? (
+                  <span className="flex items-center gap-2">
+                    <LoadingSpinner size="sm" />
+                    Submitting Booking...
+                  </span>
+                ) : (
+                  "Lock Quote & Submit Booking ✓"
+                )}
               </button>
             )}
           </div>

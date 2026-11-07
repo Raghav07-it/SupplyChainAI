@@ -1,36 +1,45 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import {
-  Ship,
-  Building2,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  ArrowRight,
-  CheckCircle2,
-  ChevronDown,
-  Globe,
-} from "lucide-react";
+import { Ship, Mail, Lock, Eye, EyeOff, ArrowRight, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/Button";
 
-export default function Login({ initialMode = "signin" }) {
+export default function Login() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState(initialMode); // 'signin' | 'register'
-  const [showPassword, setShowPassword] = useState(false);
-  const [company, setCompany] = useState("");
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [market, setMarket] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/");
+    setError("");
+
+    if (!email.trim() || !password) {
+      setError("Please fill in both email and password.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await login({ email: email.trim(), password });
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "Failed to sign in. Please verify your credentials.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--canvas-base)] flex items-center justify-center p-4 font-sans antialiased">
+    <div className="min-h-screen bg-[var(--canvas-base)] flex items-center justify-center p-4 font-sans antialiased text-[var(--text-body)]">
       <div className="w-full max-w-md animate-fade-in">
-        {/* Main Card */}
+        {/* Main Card matching screenshot */}
         <div className="bg-[var(--surface-elevated)] border border-[var(--border-color)] rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
           {/* Header & Logo */}
           <div className="flex flex-col items-center text-center space-y-2">
@@ -49,101 +58,77 @@ export default function Login({ initialMode = "signin" }) {
           <div className="flex p-1 bg-[var(--surface-base)] rounded-lg border border-[var(--border-color)]">
             <button
               type="button"
-              onClick={() => setMode("signin")}
-              className={`flex-1 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                mode === "signin"
-                  ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)] shadow-sm"
-                  : "text-[var(--text-secondary)] hover:text-white"
-              }`}
+              className="flex-1 py-1.5 rounded-md text-xs font-semibold bg-[var(--surface-overlay)] text-[var(--text-high-contrast)] shadow-sm cursor-default"
             >
               Sign In
             </button>
-            <button
-              type="button"
-              onClick={() => setMode("register")}
-              className={`flex-1 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                mode === "register"
-                  ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)] shadow-sm"
-                  : "text-[var(--text-secondary)] hover:text-white"
-              }`}
+            <Link
+              to="/register"
+              className="flex-1 py-1.5 rounded-md text-xs font-semibold text-center text-[var(--text-secondary)] hover:text-white transition-colors"
             >
               Create Account
-            </button>
+            </Link>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="p-3 rounded-lg bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.3)] flex items-center gap-2.5 text-xs text-[var(--status-critical)]">
+              <AlertCircle size={15} className="shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Company Name (only in register) */}
-            {mode === "register" && (
-              <div>
-                <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">
-                  Company Name
-                </label>
-                <div className="relative">
-                  <Building2
-                    size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
-                  />
-                  <input
-                    type="text"
-                    required
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    placeholder="e.g. Blue Harbor Goods"
-                    className="cs-input pl-9 text-xs"
-                  />
-                </div>
-              </div>
-            )}
-
             {/* Work Email */}
-            <div>
-              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">
+            <div className="space-y-1.5">
+              <Label htmlFor="login-email" className="text-xs font-semibold text-[var(--text-secondary)]">
                 Work Email
-              </label>
+              </Label>
               <div className="relative">
                 <Mail
                   size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
                 />
-                <input
+                <Input
+                  id="login-email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. elena@blueharbor.com"
-                  className="cs-input pl-9 text-xs"
+                  autoComplete="email"
+                  className="bg-[var(--surface-base)] border-[var(--border-color)] pl-9 text-xs text-[var(--text-high-contrast)] h-10 focus-visible:ring-[var(--accent-primary)]"
+                  disabled={loading}
                 />
               </div>
             </div>
 
             {/* Password */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">
-                  {mode === "register" ? "Create Password" : "Password"}
-                </label>
-                {mode === "signin" && (
-                  <button
-                    type="button"
-                    className="text-[11px] text-[var(--accent-cyan)] hover:underline"
-                  >
-                    Forgot password?
-                  </button>
-                )}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="login-password" className="text-xs font-semibold text-[var(--text-secondary)]">
+                  Password
+                </Label>
+                <span className="text-[11px] text-[var(--accent-cyan)] cursor-pointer hover:underline">
+                  Forgot password?
+                </span>
               </div>
               <div className="relative">
                 <Lock
                   size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
                 />
-                <input
+                <Input
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder={mode === "register" ? "At least 8 characters" : "••••••••"}
-                  className="cs-input pl-9 pr-9 text-xs"
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  className="bg-[var(--surface-base)] border-[var(--border-color)] pl-9 pr-9 text-xs text-[var(--text-high-contrast)] h-10 focus-visible:ring-[var(--accent-primary)]"
+                  disabled={loading}
                 />
                 <button
                   type="button"
@@ -154,75 +139,31 @@ export default function Login({ initialMode = "signin" }) {
                   {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
-              {mode === "register" && (
-                <span className="text-[10px] text-[var(--text-dim)] mt-1 block">
-                  ⓘ Must include letters and at least one number
-                </span>
-              )}
             </div>
-
-            {/* Primary Goods & Export Market (optional, only in register) */}
-            {mode === "register" && (
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">
-                    Primary Goods & Export Market
-                  </label>
-                  <span className="text-[10px] text-[var(--text-dim)]">Optional</span>
-                </div>
-                <div className="relative">
-                  <Globe
-                    size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)] pointer-events-none"
-                  />
-                  <select
-                    value={market}
-                    onChange={(e) => setMarket(e.target.value)}
-                    className="cs-select pl-9 text-xs"
-                  >
-                    <option value="">Select your key trade flow…</option>
-                    <option value="ceramics-eu-us">Ceramics & Tiles (Europe → North America)</option>
-                    <option value="manufactured-asia-eu">Manufactured Goods (Asia → Europe)</option>
-                    <option value="apparel-asia-us">Apparel & Textiles (Asia → North America)</option>
-                    <option value="electronics-asia-global">Electronics & Hardware (Asia → Global)</option>
-                  </select>
-                </div>
-                <span className="text-[10px] text-[var(--text-dim)] mt-1 block">
-                  Helps us curate initial lane tariffs and route schedules.
-                </span>
-              </div>
-            )}
 
             {/* Submit Button */}
             <div className="pt-2">
-              <button
+              <Button
                 type="submit"
-                className="w-full cs-btn cs-btn-primary text-xs py-2.5 flex items-center justify-center gap-2"
+                disabled={loading}
+                className="w-full bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-white text-xs h-10 font-semibold shadow-md flex items-center justify-center gap-2"
               >
-                <span>
-                  {mode === "register"
-                    ? "Start Planning Shipments — Free for 30 Days"
-                    : "Sign In to Dashboard"}
-                </span>
-                <ArrowRight size={14} />
-              </button>
+                {loading ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    <span>Signing in…</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In to ChainSight</span>
+                    <ArrowRight size={14} />
+                  </>
+                )}
+              </Button>
             </div>
           </form>
 
-          {/* Terms Disclaimer */}
-          <p className="text-[10px] text-[var(--text-dim)] text-center leading-normal">
-            By continuing, you agree to ChainSight's{" "}
-            <span className="text-[var(--text-secondary)] underline cursor-pointer">
-              Terms of Trade
-            </span>{" "}
-            and{" "}
-            <span className="text-[var(--text-secondary)] underline cursor-pointer">
-              Privacy Policy
-            </span>
-            .
-          </p>
-
-          {/* Trust Value Propositions (Screenshot 4) */}
+          {/* Value Propositions from Screenshot */}
           <div className="p-3.5 rounded-xl bg-[var(--surface-base)] border border-[var(--border-color)] space-y-2 text-xs">
             <div className="flex items-center gap-2 text-[var(--text-secondary)]">
               <CheckCircle2 size={13} className="text-[var(--status-success)] shrink-0" />

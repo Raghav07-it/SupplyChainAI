@@ -1,6 +1,6 @@
 # Synthetic Disruption Dataset
 
-`synthetic_disruptions.csv` is generated for SupplyChainAI Phase 4.
+`synthetic_disruptions.csv` is generated for ChainSight-AI Phase 4.
 
 All records are synthetic and must not be interpreted as real historical
 disruptions, operational data, incident reports, or forecasts.
