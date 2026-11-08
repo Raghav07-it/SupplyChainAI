@@ -339,15 +339,18 @@ Rules:
 - Return JSON only.
 """
 
-    response = llm.invoke(prompt)
-
-    raw_response = getattr(
-        response,
-        "content",
-        "",
-    )
-
-    extracted = extract_json(raw_response)
+    extracted = {}
+    ai_engine = "deterministic_rules"
+    if llm is not None:
+        try:
+            response = llm.invoke(prompt)
+            raw_response = getattr(response, "content", "")
+            extracted = extract_json(raw_response)
+            ai_engine = type(llm).__name__
+        except Exception as exc:
+            ai_engine = f"deterministic_nlp_fallback ({type(exc).__name__})"
+    else:
+        ai_engine = "deterministic_rules (llm_unconfigured)"
 
     port_code = normalize_port(
         extracted.get("port_code"),
@@ -367,13 +370,18 @@ Rules:
         extracted.get("severity")
     )
 
+    expl = clean_text(extracted.get("explanation"))[:300]
+    if not expl:
+        loc_str = f" at {port_code}" if port_code != "unknown" else ""
+        expl = f"Detected {event_type.replace('_', ' ')} disruption{loc_str} with {severity} operational severity."
+
     signal = {
         "port_code": port_code,
         "event_type": event_type,
         "severity": severity,
-        "explanation": clean_text(
-            extracted.get("explanation")
-        )[:300],
+        "explanation": expl,
+        "ai_engine": ai_engine,
+        "source_confidence": "high" if port_code != "unknown" else "medium_inferred",
     }
 
     if not signal["explanation"]:
@@ -600,28 +608,21 @@ def agent_analyze_route(
         "unknown",
     )
 
-    db = SessionLocal()
-
+    valid_codes = set()
     try:
-
-        ports = db.execute(
-            select(Port).where(
-                Port.port_code.in_(
-                    [
-                        origin_code,
-                        destination_code,
-                    ]
+        db = SessionLocal()
+        try:
+            ports = db.execute(
+                select(Port).where(
+                    Port.port_code.in_([origin_code, destination_code])
                 )
-            )
-        ).scalars().all()
-
-        valid_codes = {
-            port.port_code
-            for port in ports
-        }
-
-    finally:
-        db.close()
+            ).scalars().all()
+            valid_codes = {port.port_code for port in ports}
+        finally:
+            db.close()
+    except Exception as exc:
+        # Fall back gracefully to project valid port constants if DB connection fails
+        valid_codes = VALID_PORTS
 
     origin_valid = (
         origin_code in valid_codes
@@ -780,6 +781,25 @@ def agent_generate_recommendation(
         f"{route_status}."
     )
 
+    history = state.get("historical_context", {})
+    match_count = history.get("match_count", 0)
+
+    historical_summary = (
+        f"Retrieved {match_count} historical disruption cases from Chroma memory matching '{history.get('query', '')}'."
+        if match_count > 0
+        else "No direct historical match found in memory; standard baseline applied."
+    )
+
+    trade_offs = {
+        "time_vs_cost": "Express route cuts transit time but incurs higher freight rates; Economy route preserves margin with increased dwell buffer.",
+        "risk_mitigation": "Bypassing congested port avoids container demurrage penalties ($300-$500/day).",
+    }
+
+    uncertainty_factors = [
+        "Port berthing congestion projections are based on reported marine advisories and historical dwell averages.",
+        "Ground-truth berthing priority should be confirmed with local vessel agents before rerouting.",
+    ]
+
     return {
         "final_recommendation": {
             "decision": decision,
@@ -789,6 +809,10 @@ def agent_generate_recommendation(
             "risk_level": risk_level,
             "probability": probability,
             "route_status": route_status,
+            "historical_summary": historical_summary,
+            "trade_offs": trade_offs,
+            "uncertainty_factors": uncertainty_factors,
+            "human_in_the_loop": True,
         }
     }
 

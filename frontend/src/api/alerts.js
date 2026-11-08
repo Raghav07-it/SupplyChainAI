@@ -15,3 +15,21 @@ export async function getAllDisruptions() {
   if (res && Array.isArray(res.items)) return res.items;
   return [];
 }
+
+export async function acknowledgeAlert(alertId) {
+  return apiRequest(`/alerts/${encodeURIComponent(alertId)}/acknowledge`, {
+    method: "POST",
+  });
+}
+
+export async function acknowledgeAllAlerts() {
+  return apiRequest("/alerts/acknowledge-all", {
+    method: "POST",
+  });
+}
+
+export async function toggleAlertRead(alertId) {
+  return apiRequest(`/alerts/${encodeURIComponent(alertId)}/read`, {
+    method: "POST",
+  });
+}

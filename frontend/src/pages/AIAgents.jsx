@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertTriangle,
@@ -20,6 +20,12 @@ import {
   TrendingDown,
   TrendingUp,
   Zap,
+  Anchor,
+  Database,
+  ShieldCheck,
+  Check,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { runAgentWorkflow } from "../api/agents";
 
@@ -38,152 +44,178 @@ const PRESET_INCIDENTS = [
   },
   {
     label: "Rotterdam Rail Strike",
-    text: "Wildcat intermodal rail union strike action initiated at Maasvlakte II, creating an immediate 62% backlog for outbound European inland container transfers.",
+    text: "Wildcat intermodal rail union strike action initiated at Maasvlakte II, creating an immediate 62% backlog for outbound European inland container transfers at Rotterdam (NLRTM).",
     port: "NLRTM",
     dest: "SGSIN",
   },
   {
-    label: "Suez Security Transit Protocol",
-    text: "Bab-el-Mandeb Strait and Southern Red Sea security advisory requires defensive escort formation convoy queuing with convoy departure throttled to 8.5 kts.",
-    port: "AEDXB",
+    label: "Singapore Berth Queue",
+    text: "Vessel queuing spikes at Singapore port (SGSIN) following feeder delays across the Strait of Malacca.",
+    port: "SGSIN",
     dest: "NLRTM",
   },
 ];
 
+const PORTS = [
+  { code: "INMUM", name: "Mumbai / JNPT (INMUM)" },
+  { code: "AEDXB", name: "Dubai / Jebel Ali (AEDXB)" },
+  { code: "SGSIN", name: "Singapore (SGSIN)" },
+  { code: "NLRTM", name: "Rotterdam (NLRTM)" },
+];
+
 export default function AIAgents() {
   const [eventText, setEventText] = useState(PRESET_INCIDENTS[0].text);
+  const [originPort, setOriginPort] = useState(PRESET_INCIDENTS[0].port);
+  const [destPort, setDestPort] = useState(PRESET_INCIDENTS[0].dest);
   const [activePreset, setActivePreset] = useState(0);
   const [activeTab, setActiveTab] = useState("trace"); // 'trace' or 'json'
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showAllPrecedents, setShowAllPrecedents] = useState(false);
+  const [workflowResult, setWorkflowResult] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  // Execution states for nodes
-  const [nodeState, setNodeState] = useState({
-    node1: { ms: "45ms", status: "Completed" },
-    node2: { ms: "82ms", output: "High Risk (72)" },
-    node3: { ms: "118ms", sim: "91.4% Sim" },
-    node4: { ms: "140ms", opt: "Corridor B" },
-    node5: { ms: "42ms", arbiter: "Arbiter OK" },
-  });
+  // Initial execution on mount
+  useEffect(() => {
+    executeAgent(PRESET_INCIDENTS[0].text, PRESET_INCIDENTS[0].port, PRESET_INCIDENTS[0].dest);
+  }, []);
 
-  async function handleAnalyze() {
+  async function executeAgent(text, origin, dest) {
     setLoading(true);
+    setErrorMsg(null);
     try {
-      await runAgentWorkflow({
-        eventText,
-        originPortCode: "INMUM",
-        destinationPortCode: "NLRTM",
+      const res = await runAgentWorkflow({
+        eventText: text,
+        originPortCode: origin,
+        destinationPortCode: dest,
       });
-    } catch {
-      // Keep rich operational simulation
+      setWorkflowResult(res);
+    } catch (err) {
+      console.warn("Agent run returned error:", err);
+      setErrorMsg(err.message || "Failed to execute agent workflow");
     } finally {
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
+      setLoading(false);
     }
   }
 
   function handleSelectPreset(index) {
     setActivePreset(index);
-    setEventText(PRESET_INCIDENTS[index].text);
+    const item = PRESET_INCIDENTS[index];
+    setEventText(item.text);
+    setOriginPort(item.port);
+    setDestPort(item.dest);
+    executeAgent(item.text, item.port, item.dest);
   }
+
+  function handleRunManual() {
+    executeAgent(eventText, originPort, destPort);
+  }
+
+  // Derive display values from real response
+  const signal = workflowResult?.signal || {
+    port_code: originPort,
+    event_type: "severe_weather",
+    severity: "medium",
+    confidence: 0.85,
+  };
+
+  const risk = workflowResult?.risk || {
+    disruption_probability: 0.45,
+    severity_score: 45,
+    reasoning: "Evaluating maritime parameters...",
+  };
+
+  const matches = workflowResult?.historical_matches || [];
+  const topMatch = matches[0] || null;
+
+  const rec = workflowResult?.recommendation || {
+    action: "prepare_alternative",
+    primary_corridor: `${originPort} -> ${destPort} via standard lane`,
+    alternative_corridor: `${originPort} -> ${destPort} via alternate channel`,
+    estimated_delay_hours: 36.0,
+    estimated_cost_delta_usd: 8500.0,
+    justification: "Synthesizing corridor alternatives based on historical precedent.",
+    trade_offs: {
+      time_vs_cost: "Rerouting mitigates ~36 hours delay at modest ocean freight variance.",
+      risk_vs_cost: "Avoids severe berth congestion penalties.",
+    },
+    uncertainty_factors: ["Marine weather beyond 48 hours carries moderate variance."],
+    confidence_score: 0.85,
+    human_in_the_loop: true,
+  };
+
+  const executionLogs = workflowResult?.execution_log || [
+    `[INGEST] Parsed disruption signal for port ${originPort}...`,
+    `[MEMORY] Scanning ChromaDB vector store (480 cases)...`,
+    `[RISK] Disruption probability computed.`,
+    `[RECOMMENDER] Synthesizing explainable trade-offs and human-in-the-loop audit.`,
+  ];
+
+  const terminalLogs = executionLogs.join("\n");
+  const jsonPayload = JSON.stringify(workflowResult || {}, null, 2);
 
   function handleCopy() {
     setCopied(true);
-    navigator.clipboard.writeText(terminalLogs);
+    navigator.clipboard.writeText(activeTab === "trace" ? terminalLogs : jsonPayload);
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const terminalLogs = `--- BEGIN AI Decision Pipeline INVOCATION [run_id: f72a8c19-613b-4e1b-b4ce-3ec5f268ef1a] ---
-01 [NODE: signal_ingestion_agent] Invoked with payload: "${eventText.slice(0, 75)}..."
-02 -> Tool: ais_marine_sensor tracking_query args: {"port_code": "INMUM", "radius_nm": 25} -> 19 vessels in roadstead, swell height 3.8m
-03 [NODE: risk_assessment_agent] Compiling Bayesian hazard distribution. Disruption likelihood: 0.942 | Severity: 72/100 (HIGH)
-04 -> State transition: risk_state = {"demurrage_exposure_usd": 112600, "affected_fleet_count": 6}
-05 [NODE: historical_vector_memory] pgvector similarity scan across 14,883 historical incident vectors...
-06 -> Vector Match: "Q3 2023 JNPT Monsoonal Surge & Crane Outage" (cos_sim: 0.9142, duration: 88h, precedent: "Singapore Transshipment Bypass", success_sla: 96%)
-07 [NODE: route_optimization_Multi-factor Scoring] Multi-Criteria Decision Analysis evaluating Corridors [A: Wait Berth, B: Singapore Divert, C: INSTC Intermodal]
-08 -> Weighting: Time 0.40, Cost 0.35, Carbon 0.15, Reliability 0.10. Score B: 0.892 (Optimal) vs Score A: 0.412, Score C: 0.526
-09 [NODE: decision_arbiter_agent] Autonomous consensus validated. Drafting execution order: ROUTE_CORRIDOR_B_DISPATCH
-10 -> GRAPH EXECUTION SUCCEEDED: Total runtime: 423ms | End state: COMPLETED | Dispatched notification to Master Mariners
---- END AI Decision Pipeline INVOCATION [status: 200 OK] ---`;
-
-  const jsonPayload = JSON.stringify(
-    {
-      workflow_run_id: "f72a8c19-613b-4e1b-b4ce-3ec5f268ef1a",
-      timestamp_utc: "2026-10-11T14:02:18.420Z",
-      pipeline_version: "v2.4.0-prod",
-      ensemble: ["anthropic/claude-3-5-sonnet-20241022", "openai/gpt-4o"],
-      state_graph: {
-        nodes_executed: 5,
-        total_latency_ms: 427,
-        exit_code: 0,
-        consensus: "UNANIMOUS",
-      },
-      sensor_signals: {
-        origin: "INMUM",
-        destination: "NLRTM",
-        risk_score: 72,
-        selected_corridor: "CORRIDOR_B_SINGAPORE_BYPASS",
-        demurrage_mitigated_usd: 76300,
-        hours_saved: 44.0,
-      },
-    },
-    null,
-    2
-  );
-
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300 font-sans">
-      
-      {/* =========================================================
-          PAGE HEADER (IMAGE 1 MATCH)
-          ========================================================= */}
+      {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 pb-4 border-b border-[var(--border-color)]">
         <div>
           <div className="flex items-center gap-2 font-mono text-[10px] font-bold tracking-wider text-purple-400 uppercase mb-1">
-            <span>● AI Decision Pipeline MULTI-AGENT ORCHESTRATION PIPELINE · AUTONOMOUS AGENTS</span>
+            <span>● LANGGRAPH MULTI-AGENT PIPELINE · CHROMA VECTOR MEMORY</span>
             <span className="text-slate-600">|</span>
-            <span className="text-slate-400">SESSION #LG-8942-B</span>
+            <span className="text-slate-400">
+              RUN #{workflowResult?.workflow_run_id ? workflowResult.workflow_run_id.slice(0, 8) : "INITIAL"}
+            </span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
-            AI Agent Analysis
+            AI Agent Decision Engine
           </h1>
           <p className="text-xs text-slate-400 mt-1.5 max-w-4xl leading-relaxed">
-            Multi-agent disruption assessment, historical vector intelligence, and autonomous decision support for global maritime &amp; intermodal corridors.
+            Autonomous multi-agent disruption assessment, 480-case ChromaDB historical vector retrieval, and explainable human-in-the-loop recommendations.
           </p>
         </div>
 
-        {/* Top Right Badges */}
+        {/* Top Badges */}
         <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
           <div className="px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             <div className="flex flex-col text-[10px]">
-              <span className="text-slate-500 uppercase font-semibold">AI Decision Pipeline STATE</span>
-              <span className="text-white font-bold">Active (v2.4.0-prod)</span>
+              <span className="text-slate-500 uppercase font-semibold">ENGINE STATE</span>
+              <span className="text-white font-bold">LangGraph Active</span>
             </div>
           </div>
 
           <div className="px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-2">
-            <Sparkles size={14} className="text-purple-400" />
+            <Database size={14} className="text-purple-400" />
             <div className="flex flex-col text-[10px]">
-              <span className="text-slate-500 uppercase font-semibold">AGENT ENSEMBLE</span>
-              <span className="text-purple-300 font-bold">Sonnet 3.5 + GPT-4o</span>
+              <span className="text-slate-500 uppercase font-semibold">VECTOR MEMORY</span>
+              <span className="text-purple-300 font-bold">480 Historical Cases</span>
             </div>
           </div>
 
           <div className="px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-2">
-            <Clock size={14} className="text-cyan-400" />
+            <ShieldCheck size={14} className="text-cyan-400" />
             <div className="flex flex-col text-[10px]">
-              <span className="text-slate-500 uppercase font-semibold">TURNAROUND</span>
-              <span className="text-cyan-300 font-bold">420ms avg</span>
+              <span className="text-slate-500 uppercase font-semibold">EXPLAINABILITY</span>
+              <span className="text-cyan-300 font-bold">Human-in-the-Loop</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* =========================================================
-          CARD 1: DISRUPTION & INCIDENT EVENT INGESTION (IMAGE 1)
-          ========================================================= */}
+      {errorMsg && (
+        <div className="p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] text-xs text-[var(--status-critical)] flex items-center gap-2">
+          <AlertTriangle size={15} />
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
+      {/* CARD 1: Incident Ingestion */}
       <div className="cs-card p-5 lg:p-6 flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--border-color)] pb-3">
           <div className="flex items-center gap-2">
@@ -192,17 +224,17 @@ export default function AIAgents() {
               Disruption &amp; Incident Event Ingestion
             </h2>
             <span className="text-slate-500 text-xs font-mono hidden md:inline">
-              (Live sensor tracking, manual alert injection, or automated EDI parser feed)
+              (Live sensor alerts, manual text, or EDI maritime notice)
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-400">
             <Zap size={12} className="text-emerald-400" />
-            <span>Agent State: Synthesis Complete (Session #LG-8942-B)</span>
+            <span>Multi-Agent Synthesis Complete</span>
           </div>
         </div>
 
-        {/* Textarea Input */}
+        {/* Textarea */}
         <div className="relative">
           <textarea
             value={eventText}
@@ -212,215 +244,221 @@ export default function AIAgents() {
             placeholder="Type or paste a disruption event..."
           />
           <div className="absolute right-3 bottom-3 text-[10px] font-mono text-slate-500">
-            Tokens: {Math.round(eventText.length / 4)} / 2,048
+            Tokens: ~{Math.round(eventText.length / 4)}
           </div>
         </div>
 
-        {/* Presets & Action Button */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px] mr-1">PRESET INCIDENTS:</span>
-            {PRESET_INCIDENTS.map((preset, idx) => (
-              <button
-                key={preset.label}
-                type="button"
-                onClick={() => handleSelectPreset(idx)}
-                className={`px-3 py-1.5 rounded-lg font-mono text-xs transition-all border ${
-                  activePreset === idx
-                    ? "bg-purple-600/20 text-purple-300 border-purple-500/50 font-bold"
-                    : "bg-slate-900 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
-                }`}
-              >
-                {preset.label}
-              </button>
-            ))}
+        {/* Route Selectors & Presets */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+          <div>
+            <label className="block text-[10px] font-mono uppercase text-slate-400 mb-1">
+              Origin Port
+            </label>
+            <select
+              value={originPort}
+              onChange={(e) => setOriginPort(e.target.value)}
+              className="w-full bg-[#080d16] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:border-purple-500"
+            >
+              {PORTS.map((p) => (
+                <option key={p.code} value={p.code}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <button
-            type="button"
-            onClick={handleAnalyze}
-            disabled={loading}
-            className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(168,85,247,0.4)] whitespace-nowrap disabled:opacity-60"
-          >
-            <Sparkles size={14} className={loading ? "animate-spin" : ""} />
-            <span>{loading ? "Analyzing Graph..." : "Analyze Event via AI Decision Pipeline"}</span>
-          </button>
+          <div>
+            <label className="block text-[10px] font-mono uppercase text-slate-400 mb-1">
+              Destination Port
+            </label>
+            <select
+              value={destPort}
+              onChange={(e) => setDestPort(e.target.value)}
+              className="w-full bg-[#080d16] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:border-purple-500"
+            >
+              {PORTS.map((p) => (
+                <option key={p.code} value={p.code}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="md:col-span-2 flex items-end">
+            <button
+              type="button"
+              onClick={handleRunManual}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(168,85,247,0.4)] disabled:opacity-60"
+            >
+              <Sparkles size={14} className={loading ? "animate-spin" : ""} />
+              <span>{loading ? "Running Multi-Agent Graph..." : "Execute AI Agent Analysis"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Presets */}
+        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800">
+          <span className="text-[10px] font-mono uppercase text-slate-400 mr-1">
+            Preset Incidents:
+          </span>
+          {PRESET_INCIDENTS.map((preset, idx) => (
+            <button
+              key={preset.label}
+              type="button"
+              onClick={() => handleSelectPreset(idx)}
+              className={`px-3 py-1.5 rounded-lg font-mono text-xs transition-all border ${
+                activePreset === idx
+                  ? "bg-purple-600/20 text-purple-300 border-purple-500/50 font-bold"
+                  : "bg-slate-900 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* =========================================================
-          CARD 2: AGENT EXECUTION GRAPH (5 ACTIVE NODES) (IMAGE 1)
-          ========================================================= */}
+      {/* CARD 2: Active Graph Execution Nodes */}
       <div className="cs-card p-5 lg:p-6 flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--border-color)] pb-3">
           <div className="flex items-center gap-2">
             <Network size={16} className="text-cyan-400" />
             <h2 className="text-sm font-bold text-white font-mono">
-              Agent Execution Graph (5 Active Nodes)
+              Agent Execution Graph (4 Synchronous Nodes)
             </h2>
           </div>
-
-          <div className="flex items-center gap-3 font-mono text-[10px] text-slate-400">
-            <span>Graph Engine: <strong className="text-slate-200">StateGraph</strong></span>
-            <span>•</span>
-            <span className="text-emerald-400">Topology: Acyclic DAG (Synchronous Synthesis)</span>
+          <div className="font-mono text-[10px] text-slate-400">
+            Engine: <strong className="text-slate-200">LangGraph StateGraph</strong> • Topology: Ingest &rarr; Memory &rarr; Risk &rarr; Recommender
           </div>
         </div>
 
-        {/* 5 Nodes Horizontal Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-          
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           {/* Node 1 */}
-          <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
+          <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-emerald-400 font-bold">NODE #1</span>
-                <span className="font-mono text-[10px] text-slate-500">{nodeState.node1.ms}</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[9px] text-emerald-400 font-bold font-mono">NODE #1</span>
+                <span className="font-mono text-[10px] text-slate-500">Signal Ingestion</span>
               </div>
               <div className="font-bold text-xs text-white mb-1">
-                Signal Ingestion Agent
+                Port {signal.port_code}
               </div>
               <p className="text-[11px] text-slate-400 leading-snug">
-                Parsed AIS anomaly, Mumbai port authority EDI advisories, &amp; oceanic meteo forecasts.
+                Event: {signal.event_type} • Severity: {signal.severity}
               </p>
             </div>
-            <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between font-mono text-[10px]">
-              <span className="text-slate-500">Status:</span>
-              <span className="text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                {nodeState.node1.status}
+            <div className="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between font-mono text-[10px]">
+              <span className="text-slate-500">Confidence:</span>
+              <span className="text-emerald-400 font-bold">
+                {Math.round((signal.confidence || 0.85) * 100)}%
               </span>
             </div>
           </div>
 
           {/* Node 2 */}
-          <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
+          <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-rose-400 font-bold">NODE #2</span>
-                <span className="font-mono text-[10px] text-slate-500">{nodeState.node2.ms}</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[9px] text-cyan-400 font-bold font-mono">NODE #2</span>
+                <span className="font-mono text-[10px] text-slate-500">Vector Memory</span>
               </div>
               <div className="font-bold text-xs text-white mb-1">
-                Risk Assessment Agent
+                ChromaDB Precedents
               </div>
               <p className="text-[11px] text-slate-400 leading-snug">
-                Evaluated Bayesian disruption probability, dwell velocity &amp; delay severity score (72/100).
+                Retrieved {matches.length} similar past incident vectors from database.
               </p>
             </div>
-            <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between font-mono text-[10px]">
-              <span className="text-slate-500">Output:</span>
-              <span className="text-rose-400 font-bold bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20">
-                {nodeState.node2.output}
+            <div className="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between font-mono text-[10px]">
+              <span className="text-slate-500">Top Similarity:</span>
+              <span className="text-cyan-400 font-bold">
+                {topMatch ? `${Math.round(topMatch.similarity_score * 100)}%` : "N/A"}
               </span>
             </div>
           </div>
 
           {/* Node 3 */}
-          <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
+          <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-cyan-400 font-bold">NODE #3</span>
-                <span className="font-mono text-[10px] text-slate-500">{nodeState.node3.ms}</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[9px] text-rose-400 font-bold font-mono">NODE #3</span>
+                <span className="font-mono text-[10px] text-slate-500">Risk Assessment</span>
               </div>
               <div className="font-bold text-xs text-white mb-1">
-                Historical Vector Memory
+                Disruption Likelihood
               </div>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Queried pgvector for similar past JNPT monsoonal crane crises &amp; average recovery arcs.
+              <p className="text-[11px] text-slate-400 leading-snug truncate">
+                {risk.reasoning || "Compiling risk score..."}
               </p>
             </div>
-            <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between font-mono text-[10px]">
-              <span className="text-slate-500">Cosine Match:</span>
-              <span className="text-cyan-400 font-bold bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
-                {nodeState.node3.sim}
+            <div className="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between font-mono text-[10px]">
+              <span className="text-slate-500">Severity Score:</span>
+              <span className="text-rose-400 font-bold">
+                {risk.severity_score || Math.round(risk.disruption_probability * 100)}/100
               </span>
             </div>
           </div>
 
           {/* Node 4 */}
-          <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
+          <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-purple-400 font-bold">NODE #4</span>
-                <span className="font-mono text-[10px] text-slate-500">{nodeState.node4.ms}</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[9px] text-purple-400 font-bold font-mono">NODE #4</span>
+                <span className="font-mono text-[10px] text-slate-500">Recommender</span>
               </div>
               <div className="font-bold text-xs text-white mb-1">
-                Route Optimization Multi-factor Scoring
+                {rec.action.toUpperCase()}
               </div>
               <p className="text-[11px] text-slate-400 leading-snug">
-                Evaluated 3 candidate corridors: Suez direct, Malacca bypass via PSA, &amp; INSTC multimodal.
+                Delay: ~{rec.estimated_delay_hours}h • Cost: ${rec.estimated_cost_delta_usd?.toLocaleString()}
               </p>
             </div>
-            <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between font-mono text-[10px]">
-              <span className="text-slate-500">Optimum:</span>
-              <span className="text-purple-300 font-bold bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20">
-                {nodeState.node4.opt}
-              </span>
+            <div className="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between font-mono text-[10px]">
+              <span className="text-slate-500">Human In Loop:</span>
+              <span className="text-purple-300 font-bold">Mandatory</span>
             </div>
           </div>
-
-          {/* Node 5 */}
-          <div className="rounded-xl bg-[#090e18] border border-slate-800 p-3.5 flex flex-col justify-between transition-all hover:border-slate-700">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[9px] text-indigo-400 font-bold">NODE #5</span>
-                <span className="font-mono text-[10px] text-slate-500">{nodeState.node5.ms}</span>
-              </div>
-              <div className="font-bold text-xs text-white mb-1">
-                Decision Arbiter Agent
-              </div>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Synthesized consensus decision, calculated cost delta, and authored autonomous dispatch command.
-              </p>
-            </div>
-            <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between font-mono text-[10px]">
-              <span className="text-slate-500">Consensus:</span>
-              <span className="text-indigo-300 font-bold bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
-                {nodeState.node5.arbiter}
-              </span>
-            </div>
-          </div>
-
         </div>
       </div>
 
-      {/* =========================================================
-          4 ANALYSIS & DOSSIER CARDS (IMAGE 1 MATCH)
-          ========================================================= */}
+      {/* 4 DOSSIER CARDS (Real Data) */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        
-        {/* Card 1: Event Detected */}
+        {/* Card 1: Event Ingestion */}
         <div className="cs-card p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px]">EVENT DETECTED</span>
-              <span className="cs-pill cs-pill cs-pill-red text-[9px] px-1.5 py-0.5">HIGH RISK</span>
+              <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+                EVENT DETECTED
+              </span>
+              <span className="cs-pill cs-pill-amber text-[9px]">
+                {signal.severity.toUpperCase()}
+              </span>
             </div>
             <h3 className="font-bold text-sm text-white font-sans mt-1">
-              Port Congestion &amp; Berth Paralysis
+              Port {signal.port_code} Incident
             </h3>
             <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-              JNPT Container Terminal 3, Mumbai (INMUM). Multiple STS gantry crane failures compounded by Southwest monsoon surge wave amplitudes.
+              Categorized as <strong className="text-slate-200">{signal.event_type}</strong>. Route {originPort} &rarr; {destPort} evaluated.
             </p>
           </div>
 
-          <div className="my-3 py-2.5 border-y border-slate-800 grid grid-cols-3 gap-2 font-mono text-center">
+          <div className="my-3 py-2 border-y border-slate-800 grid grid-cols-2 gap-2 font-mono text-center text-xs">
             <div>
-              <div className="text-[9px] text-slate-500 uppercase">Throughput</div>
-              <div className="font-bold text-rose-400 text-sm">-38%</div>
+              <div className="text-[9px] text-slate-500 uppercase">Target Port</div>
+              <div className="font-bold text-cyan-400">{signal.port_code}</div>
             </div>
             <div>
-              <div className="text-[9px] text-slate-500 uppercase">Berth Wait</div>
-              <div className="font-bold text-rose-400 text-sm">+44 hrs</div>
-            </div>
-            <div>
-              <div className="text-[9px] text-slate-500 uppercase">Queue</div>
-              <div className="font-bold text-slate-200 text-sm">19 Vessels</div>
+              <div className="text-[9px] text-slate-500 uppercase">Confidence</div>
+              <div className="font-bold text-emerald-400">
+                {Math.round((signal.confidence || 0.85) * 100)}%
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between font-mono text-[10px] text-slate-500">
-            <span>AIS Polling: 30s interval</span>
-            <span className="text-emerald-400 font-semibold">Verified INMUM-EDI</span>
+          <div className="text-[10px] font-mono text-slate-500 flex items-center justify-between">
+            <span>Extraction: LLM / Rules</span>
+            <span className="text-emerald-400">Active</span>
           </div>
         </div>
 
@@ -428,100 +466,113 @@ export default function AIAgents() {
         <div className="cs-card p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px]">RISK ASSESSMENT</span>
-              <span className="font-mono text-xs font-bold text-cyan-400">Score: 72/100</span>
+              <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+                RISK ASSESSMENT
+              </span>
+              <span className="font-mono text-xs font-bold text-cyan-400">
+                Prob: {Math.round(risk.disruption_probability * 100)}%
+              </span>
             </div>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-3xl font-extrabold text-white font-mono">72</span>
+              <span className="text-3xl font-extrabold text-white font-mono">
+                {risk.severity_score || Math.round(risk.disruption_probability * 100)}
+              </span>
               <span className="text-xs font-mono text-slate-400">/ 100</span>
-              <span className="text-[10px] font-mono text-rose-400 font-bold ml-auto">+28 pts vs Baseline</span>
             </div>
           </div>
 
-          <div className="my-3 py-2 border-y border-slate-800 space-y-1.5 font-mono text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Demurrage:</span>
-              <span className="font-bold text-rose-400">$112,600</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Schedule Slippage Prob.:</span>
-              <span className="font-bold text-amber-400">94.2%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Affected Fleet:</span>
-              <span className="font-bold text-slate-200">6 Carriers</span>
+          <div className="my-3 py-2 border-y border-slate-800 space-y-1 font-mono text-xs">
+            <div className="text-[11px] text-slate-300 leading-snug">
+              {risk.reasoning}
             </div>
           </div>
 
-          <div className="flex items-center justify-between font-mono text-[10px] text-slate-500">
-            <span>Bayesian Model: v4.1</span>
-            <span className="text-slate-400">99.1% Confidence</span>
+          <div className="text-[10px] font-mono text-slate-500 flex items-center justify-between">
+            <span>Model: Bayesian Assessment</span>
+            <span className="text-cyan-400">Calibrated</span>
           </div>
         </div>
 
-        {/* Card 3: pgvector Memory */}
+        {/* Card 3: ChromaDB Vector Memory */}
         <div className="cs-card p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px]">PGVECTOR MEMORY</span>
-              <span className="cs-pill cs-pill cs-pill-blue text-[9px] px-1.5 py-0.5">91.4% SIMILARITY</span>
+              <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+                CHROMADB VECTOR MEMORY
+              </span>
+              {topMatch && (
+                <span className="cs-pill cs-pill-blue text-[9px]">
+                  {Math.round(topMatch.similarity_score * 100)}% SIMILARITY
+                </span>
+              )}
             </div>
             <h3 className="font-bold text-sm text-white font-sans mt-1">
-              Q3 2023 JNPT Monsoonal Surge &amp; Crane Outage
+              {topMatch ? `Case #${topMatch.id} (${topMatch.port_code})` : "Scanning Memory..."}
             </h3>
             <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-              Precedent match: Identical gantry power-distribution sensor tracking fault with 3.8m swells.
+              {topMatch?.lesson_learned || "Matching vector representations against 480 historical disruption documents."}
             </p>
           </div>
 
-          <div className="my-3 py-2 border-y border-slate-800 space-y-1.5 font-mono text-xs">
+          <div className="my-3 py-2 border-y border-slate-800 space-y-1 font-mono text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Historical Recovery:</span>
-              <span className="font-bold text-slate-200">88 Hours</span>
+              <span className="text-slate-400 text-[11px]">Historical Delay:</span>
+              <span className="font-bold text-slate-200">
+                {topMatch?.delay_days ? `${topMatch.delay_days} Days` : "N/A"}
+              </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Precedent Action Taken:</span>
-              <span className="font-bold text-purple-300">Singapore Bypass</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Past SLA Retention:</span>
-              <span className="font-bold text-emerald-400">96.8% Maintained</span>
+              <span className="text-slate-400 text-[11px]">Cost Impact:</span>
+              <span className="font-bold text-rose-400">
+                {topMatch?.cost_impact_usd ? `$${topMatch.cost_impact_usd.toLocaleString()}` : "N/A"}
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center justify-between font-mono text-[10px] text-slate-500">
-            <span>Vector Store: 48,200 dims</span>
-            <span className="text-cyan-400 font-semibold">3 Closest Embeddings</span>
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setShowAllPrecedents(!showAllPrecedents)}
+              className="text-[11px] text-purple-300 hover:text-white flex items-center gap-1 font-mono"
+            >
+              <span>{matches.length} Precedents</span>
+              {showAllPrecedents ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            </button>
+            <span className="text-[10px] font-mono text-slate-500">480 embeddings</span>
           </div>
         </div>
 
-        {/* Card 4: Recommended Action */}
+        {/* Card 4: Recommender & Human in the Loop */}
         <div className="cs-card p-5 flex flex-col justify-between border-purple-500/30">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] text-[10px] text-purple-300">RECOMMENDED ACTION</span>
-              <span className="cs-pill cs-pill-purple text-[9px] px-1.5 py-0.5">94.6% Conf</span>
+              <span className="text-[10px] font-mono uppercase text-purple-300 font-semibold">
+                RECOMMENDATION
+              </span>
+              <span className="cs-pill cs-pill-purple text-[9px]">
+                {Math.round((rec.confidence_score || 0.85) * 100)}% Conf
+              </span>
             </div>
             <h3 className="font-bold text-sm text-white font-sans mt-1">
-              Corridor B: Singapore / Malacca Bypass
+              {rec.action === "reroute"
+                ? "Autonomous Reroute Recommended"
+                : rec.action === "prepare_alternative"
+                ? "Prepare Alternative Corridor"
+                : "Proceed on Current Track"}
             </h3>
             <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-              Divert pending inbound carriers directly to PSA Singapore transshipment hub, bypassing JNPT anchorage bottleneck.
+              {rec.justification}
             </p>
           </div>
 
-          <div className="my-3 py-2 border-y border-slate-800 space-y-1.5 font-mono text-xs">
+          <div className="my-3 py-2 border-y border-slate-800 space-y-1 font-mono text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Projected Time Saved:</span>
-              <span className="font-bold text-emerald-400">-44.0 Hours</span>
+              <span className="text-slate-400 text-[11px]">Estimated Delay:</span>
+              <span className="font-bold text-amber-400">~{rec.estimated_delay_hours}h</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Preserved Capital Value:</span>
-              <span className="font-bold text-emerald-400">+$76,300 Net</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Carbon Delta:</span>
-              <span className="font-bold text-amber-400">+1.4% Bunkering</span>
+              <span className="text-slate-400 text-[11px]">Cost Delta:</span>
+              <span className="font-bold text-cyan-400">+${rec.estimated_cost_delta_usd?.toLocaleString()}</span>
             </div>
           </div>
 
@@ -531,32 +582,102 @@ export default function AIAgents() {
               className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[#0284c7] hover:bg-[#0369a1] text-white font-mono text-xs font-bold transition-all shadow-[0_0_12px_rgba(2,132,199,0.3)]"
             >
               <RotateCw size={12} />
-              <span>Deploy Autonomous Reroute</span>
+              <span>Review In Rerouting Console</span>
             </Link>
-            <button
-              type="button"
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 text-slate-300 hover:text-white font-mono text-[11px] transition-colors"
-            >
-              <span>Inspect Route Geometry</span>
-            </button>
           </div>
         </div>
-
       </div>
 
-      {/* =========================================================
-          CARD 5: AI Decision Pipeline TRACE & AGENT COMMUNICATION STREAM (IMAGE 1)
-          ========================================================= */}
+      {/* Expandable Chroma Precedents List */}
+      {showAllPrecedents && matches.length > 0 && (
+        <div className="cs-card p-5 space-y-3 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+              <Database size={14} className="text-cyan-400" />
+              Retrieved Historical Precedents ({matches.length} Matches from ChromaDB)
+            </h3>
+            <span className="text-[11px] text-slate-400 font-mono">
+              Similarity Metric: Cosine on all-MiniLM-L6-v2
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs font-mono">
+            {matches.map((m, idx) => (
+              <div
+                key={m.id || idx}
+                className="p-3 rounded-lg bg-[#090e18] border border-slate-800 space-y-1.5"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-cyan-400 font-bold">{m.id}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-900/40 text-blue-300">
+                    {Math.round(m.similarity_score * 100)}% match
+                  </span>
+                </div>
+                <div className="text-[11px] text-white">
+                  Port: {m.port_code} • {m.event_type}
+                </div>
+                <div className="text-[10px] text-slate-400">
+                  Delay: {m.delay_days} days • Cost: ${m.cost_impact_usd?.toLocaleString()}
+                </div>
+                <div className="text-[10px] text-slate-300 border-t border-slate-800/80 pt-1">
+                  Lesson: {m.lesson_learned}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Explainability & Uncertainty Box */}
+      {rec.trade_offs && (
+        <div className="cs-card p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
+              <Compass size={14} className="text-purple-400" />
+              Multi-Criteria Trade-off Analysis
+            </h4>
+            <div className="p-3 rounded-lg bg-[#090e18] border border-slate-800 text-xs space-y-1.5">
+              <div>
+                <span className="text-slate-400 text-[11px] font-semibold block">Time vs Cost:</span>
+                <span className="text-slate-200 text-xs">{rec.trade_offs.time_vs_cost}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 text-[11px] font-semibold block">Risk Mitigation:</span>
+                <span className="text-slate-200 text-xs">{rec.trade_offs.risk_vs_cost}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
+              <ShieldAlert size={14} className="text-amber-400" />
+              Operational Uncertainty Factors
+            </h4>
+            <div className="p-3 rounded-lg bg-[#090e18] border border-slate-800 text-xs">
+              <ul className="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
+                {rec.uncertainty_factors?.map((u, i) => (
+                  <li key={i}>{u}</li>
+                )) || <li>Maritime forecast volatility over 72h corridor.</li>}
+              </ul>
+              <div className="mt-2 text-[10px] text-purple-300 font-mono">
+                * Recommendations require logistics supervisor sign-off before filing bill of lading amendments.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Trace Terminal & JSON Payload */}
       <div className="cs-card p-5 lg:p-6 flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
           <div className="flex items-center gap-2.5">
             <Terminal size={16} className="text-cyan-400" />
             <div>
               <h2 className="text-sm font-bold text-white font-mono">
-                AI Decision Pipeline Trace &amp; Agent Communication Stream
+                Multi-Agent Stream &amp; Audit Trace
               </h2>
               <p className="text-[11px] text-slate-400 font-mono">
-                Real-time graph dispatch edge, node state diffs, and tool arguments
+                Real-time node execution steps, vector matches, and state transitions
               </p>
             </div>
           </div>
@@ -571,7 +692,7 @@ export default function AIAgents() {
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              Agent Reasoning Trace
+              Execution Trace
             </button>
             <button
               type="button"
@@ -582,7 +703,7 @@ export default function AIAgents() {
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              Technical JSON Payload
+              State JSON
             </button>
           </div>
         </div>
@@ -598,7 +719,7 @@ export default function AIAgents() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 border-t border-[var(--border-color)] font-mono text-xs">
           <div className="flex items-center gap-2 text-emerald-400 text-[11px] font-semibold">
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>ALL 5 AI Decision Pipeline agent nodes converged with 0 retries</span>
+            <span>Multi-agent workflow converged with state verification</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -608,7 +729,7 @@ export default function AIAgents() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors text-[11px]"
             >
               <Copy size={12} />
-              <span>{copied ? "Copied!" : "Copy Stream Log"}</span>
+              <span>{copied ? "Copied!" : "Copy Stream"}</span>
             </button>
             <button
               type="button"
@@ -617,18 +738,17 @@ export default function AIAgents() {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = "AI Decision Pipeline-audit.json";
+                a.download = `chainsight-agent-run-${workflowResult?.workflow_run_id || "latest"}.json`;
                 a.click();
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors text-[11px]"
             >
               <Download size={12} />
-              <span>Export JSON Audit</span>
+              <span>Export Audit JSON</span>
             </button>
           </div>
         </div>
       </div>
-
     </div>
   );
 }

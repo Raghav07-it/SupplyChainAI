@@ -241,3 +241,42 @@ class Disruption(Base):
         server_default=func.now(),
         nullable=False,
     )
+
+
+class UserSettings(Base):
+    __tablename__ = "user_settings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True, nullable=False)
+    email_notifications: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    sms_alerts: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    critical_alerts: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    high_severity_alerts: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    weather_alerts: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    digest_frequency: Mapped[str] = mapped_column(String(20), default="daily", nullable=False)
+    theme: Mapped[str] = mapped_column(String(20), default="dark", nullable=False)
+    compact_view: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+    user: Mapped["User"] = relationship("User")
+
+
+class UserAlertInteraction(Base):
+    __tablename__ = "user_alert_interactions"
+    __table_args__ = (
+        UniqueConstraint("user_id", "alert_id", name="unique_user_alert"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    alert_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    is_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_acknowledged: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    acknowledged_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), nullable=False
+    )
+
+    user: Mapped["User"] = relationship("User")

@@ -305,3 +305,75 @@ class MLModelInfoResponse(BaseModel):
     evaluation: dict[str, Any]
     baseline_comparison: dict[str, Any]
     disclaimer: str
+
+
+# ============================================================
+# SETTINGS & PROFILE SCHEMAS
+# ============================================================
+
+class UserSettingsResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    user_id: int
+    email_notifications: bool = True
+    sms_alerts: bool = False
+    critical_alerts: bool = True
+    high_severity_alerts: bool = True
+    weather_alerts: bool = True
+    digest_frequency: str = "daily"
+    theme: str = "dark"
+    compact_view: bool = False
+    updated_at: datetime
+
+
+class UserSettingsUpdate(BaseModel):
+    email_notifications: bool | None = None
+    sms_alerts: bool | None = None
+    critical_alerts: bool | None = None
+    high_severity_alerts: bool | None = None
+    weather_alerts: bool | None = None
+    digest_frequency: str | None = None
+    theme: str | None = None
+    compact_view: bool | None = None
+
+
+class UserProfileUpdate(BaseModel):
+    full_name: str | None = Field(default=None, min_length=2, max_length=150)
+    company_name: str | None = Field(default=None, min_length=2, max_length=150)
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str = Field(min_length=1)
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+# ============================================================
+# GLOBAL SEARCH SCHEMAS
+# ============================================================
+
+class SearchResultItem(BaseModel):
+    category: str  # "shipment", "product", "warehouse", "port", "disruption"
+    id: str | int
+    title: str
+    subtitle: str
+    link: str
+    badge: str | None = None
+
+
+class GlobalSearchResponse(BaseModel):
+    query: str
+    total_matches: int
+    results: list[SearchResultItem]
+
+
+# ============================================================
+# ALERT INTERACTION SCHEMAS
+# ============================================================
+
+class AlertActionResponse(BaseModel):
+    alert_id: str
+    is_read: bool = False
+    is_acknowledged: bool = False
+    message: str
+

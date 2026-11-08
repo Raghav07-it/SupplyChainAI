@@ -12,9 +12,19 @@ import {
   Compass,
   Headphones,
   SlidersHorizontal,
+  Eye,
+  EyeOff,
+  CheckCheck,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { getMyRouteAlerts, getAllDisruptions } from "../api/alerts";
+import {
+  getMyRouteAlerts,
+  getAllDisruptions,
+  acknowledgeAlert,
+  acknowledgeAllAlerts,
+  toggleAlertRead,
+} from "../api/alerts";
+import { getSettings, updateSettings } from "../api/settings";
 import { samplePortHealth } from "../data/sampleData";
 import EmptyState from "../components/ui/EmptyState";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
@@ -24,23 +34,29 @@ export default function Alerts() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("my-routes"); // 'my-routes' | 'all' | 'resolved'
-  const [smsAlerts, setSmsAlerts] = useState(true);
-  const [acknowledged, setAcknowledged] = useState(false);
+  const [smsAlerts, setSmsAlerts] = useState(false);
+  const [acknowledgedAll, setAcknowledgedAll] = useState(false);
+  const [actionLoadingId, setActionLoadingId] = useState(null);
 
   const [myRouteAlerts, setMyRouteAlerts] = useState([]);
   const [allDisruptions, setAllDisruptions] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Load alerts and user settings
   useEffect(() => {
     let isMounted = true;
     Promise.all([
       getMyRouteAlerts().catch(() => []),
       getAllDisruptions().catch(() => []),
+      getSettings().catch(() => null),
     ])
-      .then(([myAlerts, disruptions]) => {
+      .then(([myAlerts, disruptions, userSettings]) => {
         if (!isMounted) return;
         setMyRouteAlerts(Array.isArray(myAlerts) ? myAlerts : []);
         setAllDisruptions(Array.isArray(disruptions) ? disruptions : []);
+        if (userSettings && typeof userSettings.sms_alerts === "boolean") {
+          setSmsAlerts(userSettings.sms_alerts);
+        }
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -51,21 +67,77 @@ export default function Alerts() {
     };
   }, []);
 
-  const displayedAlerts = activeTab === "my-routes"
-    ? myRouteAlerts
-    : activeTab === "all"
-    ? allDisruptions
-    : [];
+  // Filtered views
+  const activeMyRoutes = myRouteAlerts.filter((a) => !a.is_acknowledged);
+  const resolvedMyRoutes = myRouteAlerts.filter((a) => a.is_acknowledged);
+
+  const displayedAlerts =
+    activeTab === "my-routes"
+      ? activeMyRoutes
+      : activeTab === "all"
+      ? allDisruptions
+      : resolvedMyRoutes;
 
   const highCount = displayedAlerts.filter(
-    (a) => (a.severity === "critical" || a.severity === "high" || a.type === "High Alert")
+    (a) => a.severity === "critical" || a.severity === "high" || a.type === "High Alert"
   ).length;
 
   const noticeCount = displayedAlerts.filter(
-    (a) => (a.severity === "medium" || a.severity === "warning" || a.type === "Notice")
+    (a) => a.severity === "medium" || a.severity === "warning" || a.type === "Notice"
   ).length;
 
   const infoCount = displayedAlerts.length - highCount - noticeCount;
+
+  // Actions
+  const handleAcknowledgeAll = async () => {
+    try {
+      await acknowledgeAllAlerts();
+      setMyRouteAlerts((prev) =>
+        prev.map((a) => ({ ...a, is_acknowledged: true, is_read: true }))
+      );
+      setAcknowledgedAll(true);
+    } catch (err) {
+      console.error("Failed to acknowledge all alerts:", err);
+    }
+  };
+
+  const handleAcknowledgeSingle = async (alertId) => {
+    setActionLoadingId(alertId);
+    try {
+      await acknowledgeAlert(alertId);
+      setMyRouteAlerts((prev) =>
+        prev.map((a) => (a.id === alertId ? { ...a, is_acknowledged: true, is_read: true } : a))
+      );
+    } catch (err) {
+      console.error("Failed to acknowledge alert:", err);
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleToggleRead = async (alertId) => {
+    setActionLoadingId(alertId);
+    try {
+      const res = await toggleAlertRead(alertId);
+      setMyRouteAlerts((prev) =>
+        prev.map((a) => (a.id === alertId ? { ...a, is_read: res.is_read } : a))
+      );
+    } catch (err) {
+      console.error("Failed to toggle read state:", err);
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleSmsToggle = async () => {
+    const nextVal = !smsAlerts;
+    setSmsAlerts(nextVal);
+    try {
+      await updateSettings({ sms_alerts: nextVal });
+    } catch (err) {
+      console.warn("Failed to persist SMS toggle:", err);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in font-sans">
@@ -90,18 +162,20 @@ export default function Alerts() {
         <div className="flex items-center gap-3">
           <button
             type="button"
+            onClick={() => setActiveTab(activeTab === "my-routes" ? "all" : "my-routes")}
             className="cs-btn cs-btn-secondary text-xs"
           >
             <Filter size={14} />
-            Filter Lane
+            {activeTab === "my-routes" ? "Show Global Advisories" : "Filter My Lanes"}
           </button>
           <button
             type="button"
-            onClick={() => setAcknowledged(true)}
-            className="cs-btn cs-btn-primary text-xs"
+            onClick={handleAcknowledgeAll}
+            disabled={activeMyRoutes.length === 0}
+            className="cs-btn cs-btn-primary text-xs disabled:opacity-50"
           >
-            <Check size={14} />
-            {acknowledged ? "Acknowledged" : "Acknowledge All"}
+            <CheckCheck size={14} />
+            {acknowledgedAll || activeMyRoutes.length === 0 ? "All Acknowledged" : "Acknowledge All"}
           </button>
         </div>
       </div>
@@ -117,7 +191,7 @@ export default function Alerts() {
                 : "text-[var(--text-secondary)] hover:text-white"
             }`}
           >
-            Only My Routes ({myRouteAlerts.length})
+            Only My Routes ({activeMyRoutes.length})
           </button>
           <button
             onClick={() => setActiveTab("all")}
@@ -137,7 +211,7 @@ export default function Alerts() {
                 : "text-[var(--text-secondary)] hover:text-white"
             }`}
           >
-            Resolved (0)
+            Acknowledged / Resolved ({resolvedMyRoutes.length})
           </button>
         </div>
 
@@ -165,12 +239,12 @@ export default function Alerts() {
             <div className="py-12 flex justify-center cs-card">
               <LoadingSpinner message="Checking active corridor alerts..." />
             </div>
-          ) : activeTab === "resolved" ? (
+          ) : activeTab === "resolved" && displayedAlerts.length === 0 ? (
             <div className="cs-card p-10 text-center">
               <CheckCircle2 size={36} className="mx-auto text-[var(--status-success)] mb-2" />
               <h3 className="font-semibold text-[var(--text-high-contrast)]">No resolved alerts in this period</h3>
               <p className="text-xs text-[var(--text-secondary)] mt-1">
-                Resolved advisories are automatically archived after 30 days.
+                When you acknowledge active corridor notices, they appear here for operational audit.
               </p>
             </div>
           ) : displayedAlerts.length === 0 ? (
@@ -191,8 +265,10 @@ export default function Alerts() {
             )
           ) : (
             displayedAlerts.map((alert) => {
-              const isHigh = alert.severity === "critical" || alert.severity === "high" || alert.type === "High Alert";
-              const isNotice = alert.severity === "medium" || alert.severity === "warning" || alert.type === "Notice";
+              const isHigh =
+                alert.severity === "critical" || alert.severity === "high" || alert.type === "High Alert";
+              const isNotice =
+                alert.severity === "medium" || alert.severity === "warning" || alert.type === "Notice";
 
               const borderAccent = isHigh
                 ? "border-l-4 border-l-[var(--status-critical)]"
@@ -207,14 +283,18 @@ export default function Alerts() {
                 : "cs-pill cs-pill-green";
 
               const title = alert.title || alert.description || "Port Advisory";
-              const description = alert.description || (alert.delay_hours ? `Estimated delay impact: ~${alert.delay_hours} hours.` : "Monitoring route conditions.");
+              const description =
+                alert.description ||
+                (alert.delay_hours ? `Estimated delay impact: ~${alert.delay_hours} hours.` : "Monitoring route conditions.");
               const location = alert.port || alert.location || "Ocean Transit Corridor";
               const category = alert.category || alert.disruption_type || "Advisory";
 
               return (
                 <div
                   key={alert.id}
-                  className={`cs-card p-5 ${borderAccent} space-y-4`}
+                  className={`cs-card p-5 ${borderAccent} space-y-4 ${
+                    alert.is_read ? "opacity-85" : "shadow-[0_0_15px_rgba(99,102,241,0.08)]"
+                  }`}
                 >
                   {/* Card Meta Row */}
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -225,6 +305,11 @@ export default function Alerts() {
                       {alert.shipment_ref && (
                         <span className="text-[11px] font-semibold text-[var(--accent-primary-light)]">
                           Affects Shipment #{alert.shipment_ref}
+                        </span>
+                      )}
+                      {alert.is_acknowledged && (
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-[rgba(16,185,129,0.15)] text-[var(--status-success)] border border-[rgba(16,185,129,0.3)] flex items-center gap-1 font-semibold">
+                          <Check size={11} /> Acknowledged
                         </span>
                       )}
                     </div>
@@ -248,7 +333,7 @@ export default function Alerts() {
                     </p>
                   </div>
 
-                  {/* What You Should Do Box (if present) */}
+                  {/* What You Should Do Box */}
                   {(alert.whatToDo || alert.delay_hours) && (
                     <div className="bg-[var(--surface-base)] border border-[var(--border-color)] rounded-lg p-3 text-xs space-y-1">
                       <div className="font-semibold text-[var(--text-high-contrast)] flex items-center gap-1.5">
@@ -256,7 +341,8 @@ export default function Alerts() {
                         Recommended action
                       </div>
                       <p className="text-[var(--text-secondary)] pl-5 leading-relaxed">
-                        {alert.whatToDo || `Coordinate with your carrier dispatch regarding the estimated ${alert.delay_hours}h berthing queue.`}
+                        {alert.whatToDo ||
+                          `Coordinate with your carrier dispatch regarding the estimated ${alert.delay_hours}h berthing queue.`}
                       </p>
                     </div>
                   )}
@@ -270,6 +356,30 @@ export default function Alerts() {
                       >
                         View Active Shipments
                       </Link>
+
+                      {/* Interactive Read/Unread Toggle */}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleRead(alert.id)}
+                        disabled={actionLoadingId === alert.id}
+                        className="px-2.5 py-1 rounded border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-overlay)] transition-colors flex items-center gap-1 text-[11px]"
+                      >
+                        {alert.is_read ? <EyeOff size={12} /> : <Eye size={12} />}
+                        <span>{alert.is_read ? "Mark Unread" : "Mark Read"}</span>
+                      </button>
+
+                      {/* Interactive Acknowledge */}
+                      {!alert.is_acknowledged && (
+                        <button
+                          type="button"
+                          onClick={() => handleAcknowledgeSingle(alert.id)}
+                          disabled={actionLoadingId === alert.id}
+                          className="px-2.5 py-1 rounded bg-[rgba(99,102,241,0.15)] text-[var(--accent-primary-light)] border border-[rgba(99,102,241,0.3)] hover:bg-[rgba(99,102,241,0.25)] transition-colors flex items-center gap-1 text-[11px] font-medium"
+                        >
+                          <Check size={12} />
+                          <span>Acknowledge</span>
+                        </button>
+                      )}
                     </div>
                     <span className="text-[11px] text-[var(--text-dim)]">
                       {alert.status ? `Status: ${alert.status}` : "Corridor active"}
@@ -285,10 +395,18 @@ export default function Alerts() {
         <div className="lg:col-span-4 space-y-4">
           {/* Card 1: Alert Preferences */}
           <div className="cs-card p-5 space-y-4">
-            <h3 className="text-sm font-bold text-[var(--text-high-contrast)] flex items-center gap-2">
-              <SlidersHorizontal size={16} className="text-[var(--accent-primary-light)]" />
-              Alert Preferences
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-[var(--text-high-contrast)] flex items-center gap-2">
+                <SlidersHorizontal size={16} className="text-[var(--accent-primary-light)]" />
+                Alert Preferences
+              </h3>
+              <Link
+                to="/settings"
+                className="text-[11px] text-[var(--accent-cyan)] hover:underline font-medium"
+              >
+                Configure
+              </Link>
+            </div>
 
             {/* Toggle */}
             <div className="pt-1">
@@ -303,7 +421,7 @@ export default function Alerts() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setSmsAlerts(!smsAlerts)}
+                  onClick={handleSmsToggle}
                   className={`w-10 h-5 rounded-full transition-colors relative shrink-0 ml-3 ${
                     smsAlerts ? "bg-[var(--accent-primary)]" : "bg-[var(--surface-overlay)]"
                   }`}
@@ -337,7 +455,7 @@ export default function Alerts() {
               </p>
             </div>
 
-            {/* Forwarder Liaison */}
+            {/* Freight Forwarder Liaison */}
             <div className="pt-2 border-t border-[var(--border-color)]">
               <div className="text-[11px] text-[var(--text-dim)] uppercase font-semibold">
                 Freight Forwarder Liaison
@@ -351,82 +469,102 @@ export default function Alerts() {
               </div>
             </div>
 
+            {/* Button */}
             <button
               type="button"
-              className="w-full cs-btn cs-btn-secondary text-xs mt-2"
+              onClick={() => navigate("/settings")}
+              className="w-full cs-btn cs-btn-secondary py-2 text-xs"
             >
               Update Notification Channels
             </button>
           </div>
 
-          {/* Card 2: Key Port Health */}
+          {/* Card 2: Key Port Health (from Screenshot) */}
           <div className="cs-card p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-[var(--text-high-contrast)]">
                 Key Port Health
               </h3>
-              <span className="text-[10px] font-semibold text-[var(--text-dim)]">Live Sync</span>
+              <span className="text-[11px] text-[var(--text-dim)] flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success)]" />
+                Live Sync
+              </span>
             </div>
 
-            <div className="space-y-2">
-              {samplePortHealth.map((item) => (
-                <div
-                  key={item.port}
-                  className="flex items-center justify-between text-xs py-1.5 border-b border-[var(--border-color)] last:border-b-0"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        item.status === "red"
-                          ? "bg-[var(--status-critical)]"
-                          : item.status === "amber"
-                          ? "bg-[var(--status-warning)]"
-                          : "bg-[var(--status-success)]"
-                      }`}
-                    />
-                    <span className="text-[var(--text-high-contrast)]">{item.port}</span>
-                  </div>
-                  <span
-                    className={`font-semibold text-[11px] ${
-                      item.status === "red"
-                        ? "text-[var(--status-critical)]"
-                        : item.status === "amber"
-                        ? "text-[var(--status-warning)]"
-                        : "text-[var(--status-success)]"
-                    }`}
+            <div className="space-y-2 text-xs">
+              {samplePortHealth.map((p) => {
+                const isDelay = p.status.includes("Delay");
+                const isClear = p.status.includes("Clear") || p.status.includes("Normal");
+                const isQueue = p.status.includes("Queue");
+
+                const statusColor = isDelay
+                  ? "text-[var(--status-critical)]"
+                  : isClear
+                  ? "text-[var(--status-success)]"
+                  : isQueue
+                  ? "text-[var(--status-warning)]"
+                  : "text-[var(--text-secondary)]";
+
+                const dotColor = isDelay
+                  ? "bg-[var(--status-critical)]"
+                  : isClear
+                  ? "bg-[var(--status-success)]"
+                  : "bg-[var(--status-warning)]";
+
+                return (
+                  <div
+                    key={p.name}
+                    className="flex items-center justify-between py-1 border-b border-[var(--border-color)] last:border-0"
                   >
-                    {item.info}
-                  </span>
-                </div>
-              ))}
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${dotColor}`} />
+                      <span className="font-medium text-[var(--text-high-contrast)]">
+                        {p.name}
+                      </span>
+                    </div>
+                    <span className={`font-semibold ${statusColor}`}>{p.status}</span>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Map preview box */}
-            <div className="rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] p-3 text-center">
-              <div className="h-20 rounded bg-[var(--canvas-base)] flex items-center justify-center text-xs text-[var(--text-dim)] border border-[var(--border-color)]">
-                <span>Satellite Route Track Preview</span>
+            {/* Satellite Map Mock preview */}
+            <div className="mt-3 rounded-lg overflow-hidden border border-[var(--border-color)] bg-[var(--surface-base)] relative h-28 flex items-center justify-center">
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--accent-primary)_0%,_transparent_70%)]" />
+              <div className="relative text-center p-3">
+                <Compass size={24} className="mx-auto text-[var(--accent-cyan)] mb-1 opacity-70" />
+                <span className="text-[11px] text-[var(--text-dim)] block">
+                  Live satellite corridor overlay
+                </span>
+                <Link
+                  to="/routes"
+                  className="text-[11px] text-[var(--accent-cyan)] hover:underline font-semibold mt-1 inline-block"
+                >
+                  Full Map View &rarr;
+                </Link>
               </div>
+            </div>
+          </div>
+
+          {/* Card 3: Questions About an Advisory */}
+          <div className="cs-card p-5 flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[var(--surface-overlay)] flex items-center justify-center text-[var(--accent-primary-light)] shrink-0">
+              <Headphones size={20} />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-xs font-bold text-[var(--text-high-contrast)]">
+                Questions about an advisory?
+              </h4>
+              <p className="text-[11px] text-[var(--text-secondary)] leading-snug">
+                Our trade concierge clarifies all route notices and negotiates terminal priority on your behalf.
+              </p>
               <button
                 type="button"
-                className="text-[11px] text-[var(--accent-cyan)] font-semibold mt-2 hover:underline inline-flex items-center gap-1"
+                onClick={() => navigate("/rerouting")}
+                className="text-[11px] text-[var(--accent-cyan)] font-semibold hover:underline block pt-1"
               >
-                Live satellite imagery Full Map View →
+                Request Autonomous Reroute &rarr;
               </button>
-            </div>
-
-            {/* Concierge support */}
-            <div className="p-2.5 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-[var(--accent-primary-bg)] flex items-center justify-center text-[var(--accent-primary-light)] shrink-0">
-                <Headphones size={14} />
-              </div>
-              <div className="text-[11px] leading-tight">
-                <div className="font-semibold text-[var(--text-high-contrast)]">
-                  Questions about an advisory?
-                </div>
-                <div className="text-[var(--text-secondary)]">
-                  Our logistics concierge clarifies all route notices.
-                </div>
-              </div>
             </div>
           </div>
         </div>

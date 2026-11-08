@@ -49,6 +49,7 @@ export default function PlanShipment({ initialStep }) {
   const [quoteLocked, setQuoteLocked] = useState(false);
   const [submittingBooking, setSubmittingBooking] = useState(false);
   const [bookingError, setBookingError] = useState(null);
+  const [step2Error, setStep2Error] = useState(null);
   const [createdShipment, setCreatedShipment] = useState(null);
 
   const selectedRoute = sampleRouteOptions.find((r) => r.id === selectedRouteId) || sampleRouteOptions[2];
@@ -587,11 +588,22 @@ export default function PlanShipment({ initialStep }) {
                 </div>
               </div>
 
+              {/* Step 2 Error Banner */}
+              {step2Error && (
+                <div className="p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] text-xs text-[var(--status-critical)] flex items-center gap-2">
+                  <AlertCircle size={15} />
+                  <span>{step2Error}</span>
+                </div>
+              )}
+
               {/* Bottom Nav Buttons */}
               <div className="pt-4 border-t border-[var(--border-color)] flex items-center justify-between">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(1)}
+                  onClick={() => {
+                    setStep2Error(null);
+                    setCurrentStep(1);
+                  }}
                   className="cs-btn cs-btn-secondary text-xs"
                 >
                   <ArrowLeft size={14} />
@@ -599,7 +611,22 @@ export default function PlanShipment({ initialStep }) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(3)}
+                  onClick={() => {
+                    if (!originPort.trim() || !destPort.trim()) {
+                      setStep2Error("Both Origin and Destination ports are required.");
+                      return;
+                    }
+                    if (originPort.trim().toLowerCase() === destPort.trim().toLowerCase()) {
+                      setStep2Error("Origin and Destination ports cannot be identical.");
+                      return;
+                    }
+                    if (!readyDate) {
+                      setStep2Error("Please select a cargo ready date.");
+                      return;
+                    }
+                    setStep2Error(null);
+                    setCurrentStep(3);
+                  }}
                   className="cs-btn cs-btn-primary text-xs"
                 >
                   Compare 3 Available Routes

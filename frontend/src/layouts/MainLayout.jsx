@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
@@ -20,53 +20,103 @@ import {
   LogOut,
   User as UserIcon,
   Building,
+  Settings as SettingsIcon,
+  Loader2,
+  Anchor,
+  Box,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-
-const primaryNav = [
-  { name: "Dashboard", path: "/dashboard", icon: LayoutGrid },
-  { name: "My Products", path: "/products", icon: Package },
-  { name: "Plan Shipment", path: "/plan-shipment", icon: Ship },
-  { name: "My Shipments", path: "/my-shipments", icon: Ship },
-  { name: "Alerts", path: "/alerts", icon: AlertTriangle, badge: 3 },
-];
-
-const technicalNav = [
-  { name: "AI Agents", path: "/agents", icon: Cpu },
-  { name: "Disruptions", path: "/disruptions", icon: AlertTriangle },
-  { name: "Live Intelligence", path: "/live", icon: Radio },
-  { name: "Operations", path: "/operations", icon: SlidersHorizontal },
-  { name: "System Health", path: "/health", icon: Activity },
-  { name: "Route Analysis", path: "/routes", icon: Compass },
-];
+import { searchGlobal } from "../api/search";
+import { getMyRouteAlerts } from "../api/alerts";
 
 export default function MainLayout() {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [unreadAlertsCount, setUnreadAlertsCount] = useState(0);
+
+  // Search state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchDropdownOpen, setSearchDropdownOpen] = useState(false);
 
   const dropdownRef = useRef(null);
+  const searchContainerRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Close profile dropdown on outside click
+  // Load unread alerts count
+  const loadAlerts = useCallback(async () => {
+    try {
+      const alerts = await getMyRouteAlerts();
+      if (Array.isArray(alerts)) {
+        const unread = alerts.filter((a) => !a.is_read && !a.is_acknowledged).length;
+        setUnreadAlertsCount(unread);
+      }
+    } catch {
+      // non-blocking
+    }
+  }, []);
+
+  useEffect(() => {
+    loadAlerts();
+  }, [loadAlerts, location.pathname]);
+
+  // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setProfileDropdownOpen(false);
+      }
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setSearchDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Debounced search
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      setSearchDropdownOpen(false);
+      return;
+    }
+
+    setSearchLoading(true);
+    setSearchDropdownOpen(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await searchGlobal(searchTerm);
+        setSearchResults(res.results || []);
+      } catch (err) {
+        console.warn("Global search failed:", err);
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 280);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
+      setSearchDropdownOpen(false);
       navigate(`/my-shipments?search=${encodeURIComponent(searchTerm.trim())}`);
     }
+  };
+
+  const handleSelectSearchResult = (link) => {
+    setSearchDropdownOpen(false);
+    setSearchTerm("");
+    navigate(link);
   };
 
   const handleLogout = () => {
@@ -78,12 +128,51 @@ export default function MainLayout() {
   // Derive display names and initials
   const fullName = user?.full_name || "User";
   const companyName = user?.company_name || "Supplier Organization";
-  const initials = fullName
-    .split(" ")
-    .map((p) => p[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase() || "CS";
+  const initials =
+    fullName
+      .split(" ")
+      .map((p) => p[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "CS";
+
+  const primaryNav = [
+    { name: "Dashboard", path: "/dashboard", icon: LayoutGrid },
+    { name: "My Products", path: "/products", icon: Package },
+    { name: "Plan Shipment", path: "/plan-shipment", icon: Ship },
+    { name: "My Shipments", path: "/my-shipments", icon: Ship },
+    {
+      name: "Alerts",
+      path: "/alerts",
+      icon: AlertTriangle,
+      badge: unreadAlertsCount > 0 ? unreadAlertsCount : null,
+    },
+    { name: "Settings", path: "/settings", icon: SettingsIcon },
+  ];
+
+  const technicalNav = [
+    { name: "AI Agents", path: "/agents", icon: Cpu },
+    { name: "Disruptions", path: "/disruptions", icon: AlertTriangle },
+    { name: "Live Intelligence", path: "/live", icon: Radio },
+    { name: "Operations", path: "/operations", icon: SlidersHorizontal },
+    { name: "System Health", path: "/health", icon: Activity },
+    { name: "Route Analysis", path: "/routes", icon: Compass },
+  ];
+
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case "shipment":
+        return <Ship size={14} className="text-[var(--accent-primary-light)]" />;
+      case "product":
+        return <Box size={14} className="text-[var(--accent-cyan)]" />;
+      case "port":
+        return <Anchor size={14} className="text-emerald-400" />;
+      case "disruption":
+        return <AlertTriangle size={14} className="text-[var(--status-critical)]" />;
+      default:
+        return <Search size={14} className="text-[var(--text-dim)]" />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[var(--canvas-base)] text-[var(--text-body)] flex font-sans antialiased">
@@ -132,8 +221,8 @@ export default function MainLayout() {
                     <Icon size={16} />
                     {item.name}
                   </span>
-                  {item.badge && (
-                    <span className="w-4 h-4 rounded-full bg-[var(--status-critical)] text-white text-[10px] font-bold flex items-center justify-center">
+                  {item.badge !== null && item.badge !== undefined && (
+                    <span className="min-w-4 h-4 px-1 rounded-full bg-[var(--status-critical)] text-white text-[10px] font-bold flex items-center justify-center">
                       {item.badge}
                     </span>
                   )}
@@ -252,8 +341,8 @@ export default function MainLayout() {
                         <Icon size={16} />
                         {item.name}
                       </span>
-                      {item.badge && (
-                        <span className="w-4 h-4 rounded-full bg-[var(--status-critical)] text-white text-[10px] font-bold flex items-center justify-center">
+                      {item.badge !== null && item.badge !== undefined && (
+                        <span className="min-w-4 h-4 px-1 rounded-full bg-[var(--status-critical)] text-white text-[10px] font-bold flex items-center justify-center">
                           {item.badge}
                         </span>
                       )}
@@ -334,25 +423,90 @@ export default function MainLayout() {
             </div>
           </div>
 
-          {/* Middle: Functional Search Bar */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex-1 max-w-md mx-2 sm:mx-4"
-          >
-            <div className="relative">
-              <Search
-                size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
-              />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search tracking ID, BOL, SKU…"
-                className="w-full bg-[var(--surface-base)] border border-[var(--border-color)] rounded-md pl-9 pr-3 py-1.5 text-xs text-[var(--text-high-contrast)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)] transition-all"
-              />
-            </div>
-          </form>
+          {/* Middle: Functional Search Bar with Live Dropdown */}
+          <div className="flex-1 max-w-md mx-2 sm:mx-4 relative" ref={searchContainerRef}>
+            <form onSubmit={handleSearchSubmit}>
+              <div className="relative">
+                {searchLoading ? (
+                  <Loader2
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--accent-primary-light)] animate-spin"
+                  />
+                ) : (
+                  <Search
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
+                  />
+                )}
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onFocus={() => {
+                    if (searchResults.length > 0 || searchTerm.trim()) {
+                      setSearchDropdownOpen(true);
+                    }
+                  }}
+                  placeholder="Search tracking ID, BOL, SKU, port, disruption…"
+                  className="w-full bg-[var(--surface-base)] border border-[var(--border-color)] rounded-md pl-9 pr-3 py-1.5 text-xs text-[var(--text-high-contrast)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)] transition-all"
+                />
+              </div>
+            </form>
+
+            {/* Global Search Dropdown */}
+            {searchDropdownOpen && (
+              <div className="absolute left-0 right-0 top-10 mt-1 bg-[var(--surface-elevated)] border border-[var(--border-color)] rounded-xl shadow-2xl p-2 z-50 max-h-96 overflow-y-auto animate-fade-in text-xs">
+                {searchLoading && (
+                  <div className="p-3 text-center text-[var(--text-dim)] flex items-center justify-center gap-2">
+                    <Loader2 size={13} className="animate-spin text-[var(--accent-cyan)]" />
+                    <span>Searching workspace records…</span>
+                  </div>
+                )}
+
+                {!searchLoading && searchResults.length === 0 && (
+                  <div className="p-4 text-center text-[var(--text-secondary)]">
+                    No matching shipments, products, or disruptions found for "{searchTerm}".
+                  </div>
+                )}
+
+                {!searchLoading && searchResults.length > 0 && (
+                  <div className="space-y-1">
+                    <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-dim)] flex items-center justify-between">
+                      <span>Matching Records</span>
+                      <span>{searchResults.length} found</span>
+                    </div>
+                    {searchResults.map((item, idx) => (
+                      <button
+                        key={`${item.category}-${item.id}-${idx}`}
+                        type="button"
+                        onClick={() => handleSelectSearchResult(item.link)}
+                        className="w-full flex items-start gap-2.5 p-2 rounded-lg hover:bg-[var(--surface-overlay)] transition-colors text-left group"
+                      >
+                        <div className="mt-0.5 shrink-0 p-1.5 rounded-md bg-[var(--surface-base)] border border-[var(--border-color)]">
+                          {getCategoryIcon(item.category)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-[var(--text-high-contrast)] truncate group-hover:text-[var(--accent-cyan)]">
+                              {item.title}
+                            </span>
+                            {item.badge && (
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-[var(--surface-base)] border border-[var(--border-color)] text-[var(--text-secondary)]">
+                                {item.badge}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-[var(--text-secondary)] truncate">
+                            {item.subtitle}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Right: Actions & User Profile Dropdown */}
           <div className="flex items-center gap-2 relative" ref={dropdownRef}>
@@ -362,15 +516,18 @@ export default function MainLayout() {
               title="Alerts"
             >
               <Bell size={15} />
-              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[var(--status-critical)] text-white text-[9px] font-bold flex items-center justify-center">
-                3
-              </span>
+              {unreadAlertsCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-3.5 h-3.5 px-0.5 rounded-full bg-[var(--status-critical)] text-white text-[9px] font-bold flex items-center justify-center">
+                  {unreadAlertsCount}
+                </span>
+              )}
             </NavLink>
 
             <button
               type="button"
+              onClick={() => navigate("/health")}
               className="w-8 h-8 rounded-md bg-[var(--surface-elevated)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-secondary)] hover:text-white transition-colors"
-              title="Help & Documentation"
+              title="System Health & Status"
             >
               <HelpCircle size={15} />
             </button>
@@ -425,20 +582,20 @@ export default function MainLayout() {
                     <span>Dashboard</span>
                   </NavLink>
                   <NavLink
+                    to="/settings"
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2 text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-overlay)] transition-colors"
+                  >
+                    <SettingsIcon size={14} />
+                    <span>Settings & Security</span>
+                  </NavLink>
+                  <NavLink
                     to="/home"
                     onClick={() => setProfileDropdownOpen(false)}
                     className="flex items-center gap-2.5 px-4 py-2 text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-overlay)] transition-colors"
                   >
                     <Compass size={14} />
                     <span>Marketing Homepage</span>
-                  </NavLink>
-                  <NavLink
-                    to="/products"
-                    onClick={() => setProfileDropdownOpen(false)}
-                    className="flex items-center gap-2.5 px-4 py-2 text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-overlay)] transition-colors"
-                  >
-                    <Package size={14} />
-                    <span>My Products</span>
                   </NavLink>
                 </div>
 

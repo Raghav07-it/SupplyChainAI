@@ -16,6 +16,7 @@ import AIAgents from "./pages/AIAgents";
 import LiveIntelligence from "./pages/LiveIntelligence";
 import Operations from "./pages/operations";
 import SystemHealth from "./pages/SystemHealth";
+import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
@@ -126,6 +127,7 @@ function App() {
             <Route path="/live" element={<LiveIntelligence />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/health" element={<SystemHealth />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
 
           {/* Catch-all redirect */}

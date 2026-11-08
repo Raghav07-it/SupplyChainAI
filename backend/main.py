@@ -3,9 +3,9 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Any
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import inspect, select, text
+from sqlalchemy import func, inspect, or_, select, text
 from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
@@ -18,16 +18,22 @@ from models import (
     Shipment,
     Supplier,
     User,
+    UserAlertInteraction,
+    UserSettings,
     Warehouse,
 )
 from schemas import (
+    AlertActionResponse,
     AuthResponse,
     DashboardStatsResponse,
+    GlobalSearchResponse,
     InventoryCreate,
     InventoryResponse,
+    PasswordChangeRequest,
     ProductCreate,
     ProductResponse,
     ProductUpdate,
+    SearchResultItem,
     ShipmentCreate,
     ShipmentResponse,
     ShipmentUpdate,
@@ -35,7 +41,10 @@ from schemas import (
     SupplierResponse,
     UserLoginRequest,
     UserRegisterRequest,
+    UserProfileUpdate,
     UserResponse,
+    UserSettingsResponse,
+    UserSettingsUpdate,
     WarehouseCreate,
     WarehouseResponse,
 )
@@ -88,6 +97,31 @@ def run_db_migrations():
                     ALTER TABLE shipments ADD COLUMN IF NOT EXISTS route_type VARCHAR(50);
                     ALTER TABLE shipments ADD COLUMN IF NOT EXISTS cost NUMERIC(12, 2);
                     ALTER TABLE shipments ADD COLUMN IF NOT EXISTS tracking_number VARCHAR(50);
+
+                    CREATE TABLE IF NOT EXISTS user_settings (
+                        id SERIAL PRIMARY KEY,
+                        user_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+                        email_notifications BOOLEAN NOT NULL DEFAULT TRUE,
+                        sms_alerts BOOLEAN NOT NULL DEFAULT FALSE,
+                        critical_alerts BOOLEAN NOT NULL DEFAULT TRUE,
+                        high_severity_alerts BOOLEAN NOT NULL DEFAULT TRUE,
+                        weather_alerts BOOLEAN NOT NULL DEFAULT TRUE,
+                        digest_frequency VARCHAR(20) NOT NULL DEFAULT 'daily',
+                        theme VARCHAR(20) NOT NULL DEFAULT 'dark',
+                        compact_view BOOLEAN NOT NULL DEFAULT FALSE,
+                        updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+                    );
+
+                    CREATE TABLE IF NOT EXISTS user_alert_interactions (
+                        id SERIAL PRIMARY KEY,
+                        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        alert_id VARCHAR(100) NOT NULL,
+                        is_read BOOLEAN NOT NULL DEFAULT FALSE,
+                        is_acknowledged BOOLEAN NOT NULL DEFAULT FALSE,
+                        acknowledged_at TIMESTAMP WITHOUT TIME ZONE,
+                        created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                        CONSTRAINT unique_user_alert UNIQUE (user_id, alert_id)
+                    );
                     """
                 )
             )
@@ -973,6 +1007,12 @@ def get_user_route_alerts(
     ).all()
 
     matched_alerts = []
+    # Load user alert interactions
+    interactions = db.scalars(
+        select(UserAlertInteraction).where(UserAlertInteraction.user_id == current_user.id)
+    ).all()
+    inter_map = {i.alert_id: i for i in interactions}
+
     for d in disruptions:
         port = db.get(Port, d.port_id)
         if not port:
@@ -989,8 +1029,10 @@ def get_user_route_alerts(
                 break
 
         if matching_shipment:
+            aid = f"ALT-{d.id}"
+            user_inter = inter_map.get(aid)
             matched_alerts.append({
-                "id": f"ALT-{d.id}",
+                "id": aid,
                 "severity": d.severity,
                 "category": d.disruption_type.replace("_", " ").title(),
                 "title": d.description,
@@ -1000,6 +1042,334 @@ def get_user_route_alerts(
                 "cost_impact": float(d.estimated_cost_impact_usd),
                 "status": d.status,
                 "started_at": str(d.started_at) if d.started_at else None,
+                "is_acknowledged": user_inter.is_acknowledged if user_inter else False,
+                "is_read": user_inter.is_read if user_inter else False,
             })
 
     return matched_alerts
+
+
+@app.post("/alerts/{alert_id}/acknowledge", response_model=AlertActionResponse)
+def acknowledge_alert(
+    alert_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    inter = db.scalar(
+        select(UserAlertInteraction).where(
+            UserAlertInteraction.user_id == current_user.id,
+            UserAlertInteraction.alert_id == alert_id,
+        )
+    )
+    if not inter:
+        inter = UserAlertInteraction(
+            user_id=current_user.id,
+            alert_id=alert_id,
+            is_acknowledged=True,
+            acknowledged_at=datetime.utcnow(),
+        )
+        db.add(inter)
+    else:
+        inter.is_acknowledged = True
+        inter.acknowledged_at = datetime.utcnow()
+
+    db.commit()
+    return AlertActionResponse(
+        alert_id=alert_id,
+        is_acknowledged=True,
+        is_read=inter.is_read,
+        message="Alert marked as acknowledged.",
+    )
+
+
+@app.post("/alerts/acknowledge-all")
+def acknowledge_all_alerts(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    alerts = get_user_route_alerts(current_user, db)
+    now = datetime.utcnow()
+    for a in alerts:
+        aid = a["id"]
+        inter = db.scalar(
+            select(UserAlertInteraction).where(
+                UserAlertInteraction.user_id == current_user.id,
+                UserAlertInteraction.alert_id == aid,
+            )
+        )
+        if not inter:
+            db.add(
+                UserAlertInteraction(
+                    user_id=current_user.id,
+                    alert_id=aid,
+                    is_acknowledged=True,
+                    acknowledged_at=now,
+                )
+            )
+        else:
+            inter.is_acknowledged = True
+            inter.acknowledged_at = now
+    db.commit()
+    return {"message": "All current route alerts acknowledged.", "count": len(alerts)}
+
+
+@app.post("/alerts/{alert_id}/read", response_model=AlertActionResponse)
+def toggle_alert_read(
+    alert_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    inter = db.scalar(
+        select(UserAlertInteraction).where(
+            UserAlertInteraction.user_id == current_user.id,
+            UserAlertInteraction.alert_id == alert_id,
+        )
+    )
+    if not inter:
+        inter = UserAlertInteraction(
+            user_id=current_user.id,
+            alert_id=alert_id,
+            is_read=True,
+        )
+        db.add(inter)
+    else:
+        inter.is_read = not inter.is_read
+
+    db.commit()
+    return AlertActionResponse(
+        alert_id=alert_id,
+        is_acknowledged=inter.is_acknowledged,
+        is_read=inter.is_read,
+        message=f"Alert marked as {'read' if inter.is_read else 'unread'}.",
+    )
+
+
+# ============================================================
+# USER SETTINGS & PROFILE ENDPOINTS
+# ============================================================
+
+@app.get("/settings", response_model=UserSettingsResponse)
+def get_user_settings(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    settings = db.scalar(
+        select(UserSettings).where(UserSettings.user_id == current_user.id)
+    )
+    if not settings:
+        settings = UserSettings(user_id=current_user.id)
+        db.add(settings)
+        db.commit()
+        db.refresh(settings)
+    return settings
+
+
+@app.put("/settings", response_model=UserSettingsResponse)
+def update_user_settings(
+    data: UserSettingsUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    settings = db.scalar(
+        select(UserSettings).where(UserSettings.user_id == current_user.id)
+    )
+    if not settings:
+        settings = UserSettings(user_id=current_user.id)
+        db.add(settings)
+
+    if data.email_notifications is not None:
+        settings.email_notifications = data.email_notifications
+    if data.sms_alerts is not None:
+        settings.sms_alerts = data.sms_alerts
+    if data.critical_alerts is not None:
+        settings.critical_alerts = data.critical_alerts
+    if data.high_severity_alerts is not None:
+        settings.high_severity_alerts = data.high_severity_alerts
+    if data.weather_alerts is not None:
+        settings.weather_alerts = data.weather_alerts
+    if data.digest_frequency is not None:
+        settings.digest_frequency = data.digest_frequency
+    if data.theme is not None:
+        settings.theme = data.theme
+    if data.compact_view is not None:
+        settings.compact_view = data.compact_view
+
+    db.commit()
+    db.refresh(settings)
+    return settings
+
+
+@app.put("/auth/profile")
+def update_user_profile(
+    data: UserProfileUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if data.full_name is not None:
+        current_user.full_name = data.full_name.strip()
+
+    supplier = get_supplier_for_user(current_user, db)
+    if data.company_name is not None and supplier:
+        supplier.name = data.company_name.strip()
+
+    db.commit()
+    db.refresh(current_user)
+    if supplier:
+        db.refresh(supplier)
+
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "full_name": current_user.full_name,
+        "company_name": supplier.name if supplier else "",
+        "role": current_user.role,
+    }
+
+
+@app.put("/auth/change-password")
+def change_user_password(
+    data: PasswordChangeRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not verify_password(data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect.",
+        )
+    if len(data.new_password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be at least 8 characters long.",
+        )
+
+    current_user.password_hash = hash_password(data.new_password)
+    db.commit()
+    return {"message": "Password updated successfully."}
+
+
+# ============================================================
+# GLOBAL SEARCH ENDPOINT
+# ============================================================
+
+@app.get("/search", response_model=GlobalSearchResponse)
+def global_search(
+    q: str = Query(..., min_length=1),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    term = f"%{q.strip().lower()}%"
+    results = []
+    supplier = get_supplier_for_user(current_user, db) if current_user.role != "admin" else None
+
+    # 1. Search Shipments (scoped to user)
+    shipment_stmt = (
+        select(Shipment)
+        .join(Product, Shipment.product_id == Product.id)
+    )
+    if supplier:
+        shipment_stmt = shipment_stmt.where(Shipment.supplier_id == supplier.id)
+
+    shipment_stmt = shipment_stmt.where(
+        or_(
+            Shipment.tracking_number.ilike(term),
+            Shipment.carrier.ilike(term),
+            Shipment.origin_port.ilike(term),
+            Shipment.destination_port.ilike(term),
+            Shipment.status.ilike(term),
+            Product.name.ilike(term),
+            Product.sku.ilike(term),
+        )
+    ).order_by(Shipment.id.desc()).limit(8)
+
+    shipments = db.scalars(shipment_stmt).all()
+    for s in shipments:
+        prod = db.get(Product, s.product_id)
+        results.append(
+            SearchResultItem(
+                category="shipment",
+                id=s.id,
+                title=f"Shipment {s.tracking_number or f'#CS-{s.id:04d}'}",
+                subtitle=f"{prod.name if prod else 'Cargo'} • {s.origin_port or 'Origin'} → {s.destination_port or 'Dest'} ({s.status.title()})",
+                link=f"/my-shipments?focus={s.id}",
+                badge=s.status.upper(),
+            )
+        )
+
+    # 2. Search Products (scoped to user)
+    product_stmt = select(Product)
+    if supplier:
+        product_stmt = product_stmt.where(Product.supplier_id == supplier.id)
+
+    product_stmt = product_stmt.where(
+        or_(
+            Product.name.ilike(term),
+            Product.sku.ilike(term),
+            Product.default_origin_port.ilike(term),
+        )
+    ).order_by(Product.id.desc()).limit(8)
+
+    products = db.scalars(product_stmt).all()
+    for p in products:
+        results.append(
+            SearchResultItem(
+                category="product",
+                id=p.id,
+                title=p.name,
+                subtitle=f"SKU: {p.sku} • Packing: {p.packing_qty or 500} units • Cost: ${float(p.unit_cost):.2f}",
+                link=f"/products?focus={p.id}",
+                badge="PRODUCT",
+            )
+        )
+
+    # 3. Search Reference Ports
+    port_stmt = select(Port).where(
+        or_(
+            Port.name.ilike(term),
+            Port.port_code.ilike(term),
+            Port.city.ilike(term),
+            Port.country.ilike(term),
+        )
+    ).limit(5)
+
+    ports = db.scalars(port_stmt).all()
+    for port in ports:
+        results.append(
+            SearchResultItem(
+                category="port",
+                id=port.id,
+                title=f"{port.name} ({port.port_code})",
+                subtitle=f"{port.city}, {port.country}",
+                link=f"/routes?port={port.port_code}",
+                badge="PORT",
+            )
+        )
+
+    # 4. Search Active Disruptions
+    disr_stmt = select(Disruption).where(
+        or_(
+            Disruption.disruption_type.ilike(term),
+            Disruption.description.ilike(term),
+            Disruption.severity.ilike(term),
+        )
+    ).limit(5)
+
+    disruptions = db.scalars(disr_stmt).all()
+    for d in disruptions:
+        results.append(
+            SearchResultItem(
+                category="disruption",
+                id=d.id,
+                title=f"{d.disruption_type.replace('_', ' ').title()} ({d.severity.upper()})",
+                subtitle=d.description[:90] + ("..." if len(d.description) > 90 else ""),
+                link="/alerts",
+                badge=d.severity.upper(),
+            )
+        )
+
+    return GlobalSearchResponse(
+        query=q,
+        total_matches=len(results),
+        results=results,
+    )
+
