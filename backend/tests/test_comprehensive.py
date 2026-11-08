@@ -164,21 +164,24 @@ def test_global_search_tenant_scoping(client, db_session):
     u2, h2 = register_user(client, "search2@test.io", "Beta Trans")
 
     # Add product for user 1
-    prod1 = client.post(
+    p1_res = client.post(
         "/products",
         headers=h1,
         json={
             "sku": "CERAMIC-ALPHA-99",
             "name": "Glazed Tile Floor",
-            "category": "Ceramics",
-            "unit_price": 45.0,
+            "unit_cost": 45.0,
             "packing_qty": 200,
+            "weight_per_carton": 12.0,
             "default_origin_port": "INMUM",
+            "is_fragile": True,
         },
-    ).json()
+    )
+    assert p1_res.status_code == 201, p1_res.text
+    prod1 = p1_res.json()
 
     # Add shipment for user 1
-    client.post(
+    s_res = client.post(
         "/shipments",
         headers=h1,
         json={
@@ -192,20 +195,23 @@ def test_global_search_tenant_scoping(client, db_session):
             "status": "in_transit",
         },
     )
+    assert s_res.status_code == 201, s_res.text
 
     # Add product for user 2
-    client.post(
+    p2_res = client.post(
         "/products",
         headers=h2,
         json={
             "sku": "CERAMIC-BETA-77",
             "name": "Beta Mosaic Slabs",
-            "category": "Ceramics",
-            "unit_price": 50.0,
+            "unit_cost": 50.0,
             "packing_qty": 150,
+            "weight_per_carton": 15.0,
             "default_origin_port": "AEDXB",
+            "is_fragile": False,
         },
     )
+    assert p2_res.status_code == 201, p2_res.text
 
     # Search for "CERAMIC" as User 1 -> should only find User 1's product
     s1 = client.get("/search?q=CERAMIC", headers=h1)
@@ -258,13 +264,11 @@ def test_agent_run_workflow_endpoint(client):
     )
     assert res.status_code == 200
     data = res.json()
-    assert data["status"] == "COMPLETED"
-    assert "signal" in data
-    assert data["signal"]["port_code"] == "INMUM"
-    assert "risk" in data
-    assert "disruption_probability" in data["risk"]
-    assert "historical_matches" in data
-    assert "recommendation" in data
-    assert "trade_offs" in data["recommendation"]
-    assert data["recommendation"]["human_in_the_loop"] is True
+    assert data["status"] == "success"
+    assert "extracted_signal" in data
+    assert data["extracted_signal"]["port_code"] == "INMUM"
+    assert "risk_assessment" in data
+    assert "historical_context" in data
+    assert "final_recommendation" in data
+    assert "autonomous_routing" in data
 

@@ -112,35 +112,53 @@ export default function AIAgents() {
   }
 
   // Derive display values from real response
-  const signal = workflowResult?.signal || {
-    port_code: originPort,
-    event_type: "severe_weather",
-    severity: "medium",
-    confidence: 0.85,
+  const rawSignal = workflowResult?.extracted_signal || workflowResult?.signal;
+  const signal = {
+    port_code: rawSignal?.port_code || originPort,
+    event_type: rawSignal?.event_type || "severe_weather",
+    severity: rawSignal?.severity || "medium",
+    confidence: rawSignal?.confidence ?? 0.85,
   };
 
-  const risk = workflowResult?.risk || {
-    disruption_probability: 0.45,
-    severity_score: 45,
-    reasoning: "Evaluating maritime parameters...",
+  const rawRisk = workflowResult?.risk_assessment || workflowResult?.risk;
+  const risk = {
+    disruption_probability: rawRisk?.disruption_probability ?? 0.45,
+    severity_score: rawRisk?.severity_score ?? Math.round((rawRisk?.disruption_probability ?? 0.45) * 100),
+    reasoning: rawRisk?.reasoning || rawRisk?.explanation || "Evaluating maritime parameters...",
   };
 
-  const matches = workflowResult?.historical_matches || [];
+  const rawPatterns =
+    workflowResult?.historical_matches ||
+    workflowResult?.historical_context?.historical_patterns ||
+    [];
+  const matches = rawPatterns.map((p, idx) => {
+    const meta = p.metadata || {};
+    return {
+      id: p.id || meta.event_code || `CASE-${idx + 101}`,
+      port_code: p.port_code || meta.port_code || originPort,
+      event_type: p.event_type || meta.disruption_type || "severe_weather",
+      delay_days: p.delay_days || (meta.delay_hours ? (meta.delay_hours / 24).toFixed(1) : 2.5),
+      cost_impact_usd: p.cost_impact_usd || meta.cost_impact_usd || 45000,
+      similarity_score: p.similarity_score || (meta.vector_distance ? Math.max(0.65, 1 - meta.vector_distance) : 0.82),
+      lesson_learned: p.lesson_learned || meta.source || "Precedent suggests proactive rerouting around congestion bottlenecks.",
+    };
+  });
   const topMatch = matches[0] || null;
 
-  const rec = workflowResult?.recommendation || {
-    action: "prepare_alternative",
-    primary_corridor: `${originPort} -> ${destPort} via standard lane`,
-    alternative_corridor: `${originPort} -> ${destPort} via alternate channel`,
-    estimated_delay_hours: 36.0,
-    estimated_cost_delta_usd: 8500.0,
-    justification: "Synthesizing corridor alternatives based on historical precedent.",
-    trade_offs: {
+  const rawRec = workflowResult?.final_recommendation || workflowResult?.recommendation;
+  const rec = {
+    action: rawRec?.action || rawRec?.recommended_action || "prepare_alternative",
+    primary_corridor: rawRec?.primary_corridor || `${originPort} -> ${destPort} via standard lane`,
+    alternative_corridor: rawRec?.alternative_corridor || rawRec?.suggested_route || `${originPort} -> ${destPort} via alternate channel`,
+    estimated_delay_hours: rawRec?.estimated_delay_hours ?? 36.0,
+    estimated_cost_delta_usd: rawRec?.estimated_cost_delta_usd ?? 8500.0,
+    justification: rawRec?.justification || rawRec?.explanation || "Synthesizing corridor alternatives based on historical precedent.",
+    trade_offs: rawRec?.trade_offs || {
       time_vs_cost: "Rerouting mitigates ~36 hours delay at modest ocean freight variance.",
       risk_vs_cost: "Avoids severe berth congestion penalties.",
     },
-    uncertainty_factors: ["Marine weather beyond 48 hours carries moderate variance."],
-    confidence_score: 0.85,
+    uncertainty_factors: rawRec?.uncertainty_factors || ["Marine weather beyond 48 hours carries moderate variance."],
+    confidence_score: rawRec?.confidence_score ?? 0.85,
     human_in_the_loop: true,
   };
 

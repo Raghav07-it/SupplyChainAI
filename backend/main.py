@@ -139,16 +139,31 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="ChainSight-AI API", lifespan=lifespan)
 
+default_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "http://localhost:5175",
+    "http://127.0.0.1:5175",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://chainsightai-mu.vercel.app",
+]
+
+env_cors = os.getenv("CORS_ORIGINS")
+if env_cors:
+    for origin in env_cors.split(","):
+        cleaned = origin.strip()
+        if cleaned and cleaned not in default_origins:
+            default_origins.append(cleaned)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-        "http://localhost:5175",
-        "http://127.0.0.1:5175",
-    ],
+    allow_origins=default_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
