@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import MainLayout from "./layouts/MainLayout";
+import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Alerts from "./pages/Alerts";
@@ -49,10 +50,28 @@ function PublicRoute({ children }) {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;
+}
+
+function RootRoute() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[var(--canvas-base)] flex items-center justify-center p-6 text-[var(--text-body)]">
+        <LoadingSpinner message="Loading ChainSight AI…" />
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <LandingPage />;
 }
 
 function App() {
@@ -60,6 +79,13 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Public Root Route: Landing Page when unauthenticated, Dashboard when authenticated */}
+          <Route path="/" element={<RootRoute />} />
+
+          {/* Direct Public Landing Routes */}
+          <Route path="/home" element={<LandingPage />} />
+          <Route path="/landing" element={<LandingPage />} />
+
           {/* Public Authentication Routes (no sidebar) */}
           <Route
             path="/login"
@@ -86,7 +112,7 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/products" element={<Products />} />
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/plan-shipment" element={<PlanShipment />} />

@@ -28,7 +28,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login({ email: email.trim(), password });
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Failed to sign in. Please verify your credentials.");
     } finally {
@@ -177,6 +177,15 @@ export default function Login() {
               <CheckCircle2 size={13} className="text-[var(--status-success)] shrink-0" />
               <span>Live port delay alerts</span>
             </div>
+          </div>
+
+          <div className="text-center pt-1">
+            <Link
+              to="/"
+              className="text-xs text-[var(--text-dim)] hover:text-[var(--accent-cyan)] transition-colors inline-flex items-center gap-1"
+            >
+              ← Back to Marketing Homepage
+            </Link>
           </div>
         </div>
       </div>

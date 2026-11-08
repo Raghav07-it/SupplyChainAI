@@ -61,7 +61,7 @@ export default function Register() {
         full_name: fullName.trim(),
         company_name: company.trim(),
       });
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Failed to create account. Please try again.");
     } finally {
@@ -303,6 +303,15 @@ export default function Register() {
               <CheckCircle2 size={13} className="text-[var(--status-success)] shrink-0" />
               <span>Live port delay alerts</span>
             </div>
+          </div>
+
+          <div className="text-center pt-1">
+            <Link
+              to="/"
+              className="text-xs text-[var(--text-dim)] hover:text-[var(--accent-cyan)] transition-colors inline-flex items-center gap-1"
+            >
+              ← Back to Marketing Homepage
+            </Link>
           </div>
         </div>
       </div>

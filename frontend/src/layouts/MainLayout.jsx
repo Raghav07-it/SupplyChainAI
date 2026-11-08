@@ -24,7 +24,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 
 const primaryNav = [
-  { name: "Dashboard", path: "/", icon: LayoutGrid },
+  { name: "Dashboard", path: "/dashboard", icon: LayoutGrid },
   { name: "My Products", path: "/products", icon: Package },
   { name: "Plan Shipment", path: "/plan-shipment", icon: Ship },
   { name: "My Shipments", path: "/my-shipments", icon: Ship },
@@ -119,7 +119,7 @@ export default function MainLayout() {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  end={item.path === "/"}
+                  end={item.path === "/dashboard"}
                   className={({ isActive }) =>
                     `flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium transition-colors ${
                       isActive
@@ -238,7 +238,7 @@ export default function MainLayout() {
                     <NavLink
                       key={item.path}
                       to={item.path}
-                      end={item.path === "/"}
+                      end={item.path === "/dashboard"}
                       onClick={() => setMobileMenuOpen(false)}
                       className={({ isActive }) =>
                         `flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -417,12 +417,20 @@ export default function MainLayout() {
                 {/* Account Navigation / Links */}
                 <div className="py-1">
                   <NavLink
-                    to="/"
+                    to="/dashboard"
                     onClick={() => setProfileDropdownOpen(false)}
                     className="flex items-center gap-2.5 px-4 py-2 text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-overlay)] transition-colors"
                   >
                     <LayoutGrid size={14} />
                     <span>Dashboard</span>
+                  </NavLink>
+                  <NavLink
+                    to="/home"
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2 text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-overlay)] transition-colors"
+                  >
+                    <Compass size={14} />
+                    <span>Marketing Homepage</span>
                   </NavLink>
                   <NavLink
                     to="/products"
