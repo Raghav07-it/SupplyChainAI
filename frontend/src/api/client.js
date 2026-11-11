@@ -1,9 +1,51 @@
 const rawBaseUrl = import.meta.env.VITE_API_BASE_URL;
-const API_BASE_URL = rawBaseUrl
-  ? rawBaseUrl.replace(/\/+$/, "")
-  : "http://127.0.0.1:8000";
+
+// Detect whether the application is running in a browser on a local host vs deployed production
+const isLocalhostHost =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "0.0.0.0");
+
+const isDeployedProduction =
+  typeof window !== "undefined" &&
+  !isLocalhostHost &&
+  (import.meta.env.PROD || window.location.protocol === "https:");
+
+function resolveApiBaseUrl() {
+  if (rawBaseUrl && rawBaseUrl.trim()) {
+    const trimmed = rawBaseUrl.trim().replace(/\/+$/, "");
+    if (isDeployedProduction && (trimmed.includes("127.0.0.1") || trimmed.includes("localhost"))) {
+      return {
+        url: trimmed,
+        isConfigured: false,
+        error:
+          "Production Connection Notice: This deployed frontend cannot connect to http://127.0.0.1:8000. In Vercel Project Settings > Environment Variables, please set VITE_API_BASE_URL to your public backend URL and redeploy.",
+      };
+    }
+    return { url: trimmed, isConfigured: true, error: null };
+  }
+
+  if (isDeployedProduction) {
+    return {
+      url: "",
+      isConfigured: false,
+      error:
+        "Production Connection Notice: VITE_API_BASE_URL is not set on this deployed site. In Vercel Project Settings > Environment Variables, please set VITE_API_BASE_URL to your public HTTPS backend URL and redeploy.",
+    };
+  }
+
+  // Local development default
+  return { url: "http://127.0.0.1:8000", isConfigured: true, error: null };
+}
+
+const { url: API_BASE_URL, isConfigured, error: configError } = resolveApiBaseUrl();
 
 export async function apiRequest(endpoint, options = {}) {
+  if (!isConfigured && configError) {
+    throw new Error(configError);
+  }
+
   const token = localStorage.getItem("token");
   const headers = {
     "Content-Type": "application/json",
@@ -20,18 +62,11 @@ export async function apiRequest(endpoint, options = {}) {
       headers,
     });
   } catch (networkError) {
-    const isLocalhost =
-      API_BASE_URL.includes("127.0.0.1") || API_BASE_URL.includes("localhost");
-    const isHttpsPage =
-      typeof window !== "undefined" && window.location.protocol === "https:";
-
-    if (isLocalhost && isHttpsPage) {
-      throw new Error(
-        "Production Connection Notice: This deployed frontend cannot connect to http://127.0.0.1:8000. In Vercel Project Settings > Environment Variables, please set VITE_API_BASE_URL to your public backend URL and redeploy."
-      );
+    if (configError) {
+      throw new Error(configError);
     }
     throw new Error(
-      `Unable to connect to the backend server (${API_BASE_URL}). Please verify that the API is active and accessible.`
+      `Unable to connect to the backend server (${API_BASE_URL || "unconfigured"}). Please verify that the API is active, online, and accessible.`
     );
   }
 
@@ -40,6 +75,7 @@ export async function apiRequest(endpoint, options = {}) {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     if (
+      typeof window !== "undefined" &&
       !window.location.pathname.startsWith("/login") &&
       !window.location.pathname.startsWith("/register")
     ) {
