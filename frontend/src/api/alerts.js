@@ -1,9 +1,26 @@
 import { apiRequest } from "./client";
 
-export async function getMyRouteAlerts() {
-  const res = await apiRequest("/alerts/me", {
-    method: "GET",
-  });
+export async function getAlerts({ view = "all", severity = null, isRead = null, isAcknowledged = null, search = "" } = {}) {
+  const params = new URLSearchParams();
+  if (view) params.append("view", view);
+  if (severity && severity !== "all") params.append("severity", severity);
+  if (typeof isRead === "boolean") params.append("is_read", isRead);
+  if (typeof isAcknowledged === "boolean") params.append("is_acknowledged", isAcknowledged);
+  if (search && search.trim()) params.append("search", search.trim());
+
+  const query = params.toString() ? `?${params.toString()}` : "";
+  const res = await apiRequest(`/alerts${query}`, { method: "GET" });
+  return Array.isArray(res) ? res : [];
+}
+
+export async function getMyRouteAlerts({ severity = null, search = "" } = {}) {
+  const params = new URLSearchParams();
+  params.append("view", "my-routes");
+  if (severity && severity !== "all") params.append("severity", severity);
+  if (search && search.trim()) params.append("search", search.trim());
+
+  const query = params.toString() ? `?${params.toString()}` : "";
+  const res = await apiRequest(`/alerts/me${query}`, { method: "GET" });
   return Array.isArray(res) ? res : [];
 }
 

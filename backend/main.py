@@ -1,6 +1,6 @@
 import os
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Query, status
@@ -1013,27 +1013,35 @@ def delete_shipment(
 
 
 # ============================================================
-# USER-SCOPED ROUTE ALERTS
+# USER-SCOPED AND GLOBAL ROUTE ALERTS
 # ============================================================
 
-@app.get("/alerts/me")
-def get_user_route_alerts(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
+def _normalize_alert_ids(aid: str) -> list[str]:
+    aid = str(aid).strip()
+    if aid.startswith("ALT-"):
+        raw_num = aid[4:]
+        return [aid, raw_num] if raw_num.isdigit() else [aid]
+    elif aid.isdigit():
+        return [f"ALT-{aid}", aid]
+    return [aid]
+
+
+def build_alerts_feed(
+    current_user: User,
+    db: Session,
+    view: str = "my-routes",
+    severity: str | None = None,
+    is_read: bool | None = None,
+    is_acknowledged: bool | None = None,
+    search: str | None = None,
+) -> list[dict]:
     supplier = get_supplier_for_user(current_user, db)
-    if not supplier:
-        return []
+    shipments = []
+    if supplier:
+        shipments = db.scalars(
+            select(Shipment).where(Shipment.supplier_id == supplier.id)
+        ).all()
 
-    # Get active shipments belonging to this user
-    shipments = db.scalars(
-        select(Shipment).where(Shipment.supplier_id == supplier.id)
-    ).all()
-
-    if not shipments:
-        return []
-
-    # Collect distinct port names/codes
     user_corridors = []
     for s in shipments:
         user_corridors.append({
@@ -1044,97 +1052,228 @@ def get_user_route_alerts(
 
     # Fetch active disruptions
     disruptions = db.scalars(
-        select(Disruption).where(Disruption.status.in_(["active", "monitoring"])).limit(20)
+        select(Disruption).where(Disruption.status.in_(["active", "monitoring"])).order_by(Disruption.started_at.desc()).limit(50)
     ).all()
 
-    matched_alerts = []
-    # Load user alert interactions
+    # Load all user alert interactions
     interactions = db.scalars(
         select(UserAlertInteraction).where(UserAlertInteraction.user_id == current_user.id)
     ).all()
-    inter_map = {i.alert_id: i for i in interactions}
+    inter_map = {}
+    for i in interactions:
+        inter_map[i.alert_id] = i
+        if i.alert_id.startswith("ALT-") and i.alert_id[4:].isdigit():
+            inter_map[i.alert_id[4:]] = i
+
+    all_alerts = []
+    matched_alerts = []
 
     for d in disruptions:
         port = db.get(Port, d.port_id)
-        if not port:
-            continue
-        p_name = port.name.lower()
-        p_code = port.port_code.lower()
+        port_name = port.name if port else f"Port #{d.port_id}"
+        port_country = port.country if port else "Global"
+        port_code = port.port_code if port else ""
+        port_lat = getattr(port, "latitude", None)
+        port_lng = getattr(port, "longitude", None)
 
-        # Check if this disruption affects any user shipment route
         matching_shipment = None
-        port_tokens = [p_name, p_code]
-        if port.city:
-            port_tokens.append(port.city.lower())
-        if port.country:
-            port_tokens.append(port.country.lower())
+        if port and user_corridors:
+            p_name = port.name.lower()
+            p_code = port.port_code.lower()
+            port_tokens = [p_name, p_code]
+            if port.city:
+                port_tokens.append(port.city.lower())
+            if port.country:
+                port_tokens.append(port.country.lower())
 
-        for c in user_corridors:
-            matched = False
-            for token in port_tokens:
-                if token and len(token) >= 3 and (
-                    token in c["origin"] or c["origin"] in token or
-                    token in c["dest"] or c["dest"] in token
-                ):
-                    matched = True
+            for c in user_corridors:
+                for token in port_tokens:
+                    if token and len(token) >= 3 and (
+                        token in c["origin"] or c["origin"] in token or
+                        token in c["dest"] or c["dest"] in token
+                    ):
+                        matching_shipment = c["tracking_number"]
+                        break
+                if matching_shipment:
                     break
-            if matched:
-                matching_shipment = c["tracking_number"]
-                break
 
+        aid = f"ALT-{d.id}"
+        user_inter = inter_map.get(aid) or inter_map.get(str(d.id))
+        is_ack = user_inter.is_acknowledged if user_inter else False
+        is_r = user_inter.is_read if user_inter else False
+
+        cat_title = d.disruption_type.replace("_", " ").title()
+        title = f"{cat_title} Alert: {port_name}"
+        desc = d.description or f"Operational disruption impacting {port_name}."
+        action = (
+            f"Coordinate with carrier regarding {d.estimated_delay_hours}h estimated delay."
+            if d.estimated_delay_hours > 0
+            else "Monitor terminal operations and cargo dwell status."
+        )
+
+        alert_item = {
+            "id": aid,
+            "event_code": d.event_code,
+            "severity": d.severity,
+            "category": cat_title,
+            "title": title,
+            "headline": title,
+            "description": desc,
+            "port": f"{port_name} ({port_country})",
+            "port_name": port_name,
+            "port_code": port_code,
+            "country": port_country,
+            "latitude": port_lat,
+            "longitude": port_lng,
+            "shipment_ref": matching_shipment,
+            "delay_hours": d.estimated_delay_hours,
+            "cost_impact": float(d.estimated_cost_impact_usd),
+            "capacity_impact_percent": d.capacity_impact_percent,
+            "status": d.status,
+            "source": d.source or "Maritime Disruption Tracking Network",
+            "started_at": str(d.started_at) if d.started_at else None,
+            "is_acknowledged": is_ack,
+            "is_read": is_r,
+            "recommended_action": action,
+            "whatToDo": action,
+            "location": f"{port_name} ({port_country})",
+        }
+
+        all_alerts.append(alert_item)
         if matching_shipment:
-            aid = f"ALT-{d.id}"
-            user_inter = inter_map.get(aid)
-            matched_alerts.append({
-                "id": aid,
-                "severity": d.severity,
-                "category": d.disruption_type.replace("_", " ").title(),
-                "title": d.description,
-                "port": f"{port.name} ({port.country})",
-                "shipment_ref": matching_shipment,
-                "delay_hours": d.estimated_delay_hours,
-                "cost_impact": float(d.estimated_cost_impact_usd),
-                "status": d.status,
-                "started_at": str(d.started_at) if d.started_at else None,
-                "is_acknowledged": user_inter.is_acknowledged if user_inter else False,
-                "is_read": user_inter.is_read if user_inter else False,
-            })
+            matched_alerts.append(alert_item)
 
-    if not matched_alerts and user_corridors:
-        primary_ref = user_corridors[0]["tracking_number"]
+    # Standard fallback corridor advisories if user has shipments without matching disruption
+    if not matched_alerts:
+        primary_ref = user_corridors[0]["tracking_number"] if user_corridors else None
+        inter_cor1 = inter_map.get("ALT-COR-01")
+        inter_cor2 = inter_map.get("ALT-COR-02")
         synthetic_advisories = [
             {
                 "id": "ALT-COR-01",
+                "event_code": "EVT-ROTTERDAM-BERTH",
                 "severity": "medium",
                 "category": "Berth Notice",
-                "title": "Vessel turnaround delayed by ~36 hours due to crane maintenance. Your shipment is still expected on time. Berth 4A • Cleared for queue bypass.",
+                "title": "Rotterdam Terminal Berth Maintenance",
+                "headline": "Rotterdam Terminal Berth Maintenance",
+                "description": "Vessel turnaround delayed by ~36 hours due to crane maintenance. Cleared for queue bypass.",
                 "port": "Rotterdam Gateway (Netherlands)",
+                "port_name": "Rotterdam Gateway",
+                "port_code": "NLRTM",
+                "country": "Netherlands",
+                "latitude": 51.95,
+                "longitude": 4.13,
                 "shipment_ref": primary_ref,
                 "delay_hours": 36,
                 "cost_impact": 0.0,
+                "capacity_impact_percent": 15.0,
                 "status": "monitoring",
+                "source": "Port of Rotterdam Authority Advisory",
                 "started_at": "2025-11-03T14:15:00Z",
-                "is_acknowledged": inter_map.get("ALT-COR-01").is_acknowledged if inter_map.get("ALT-COR-01") else False,
-                "is_read": inter_map.get("ALT-COR-01").is_read if inter_map.get("ALT-COR-01") else False,
+                "is_acknowledged": inter_cor1.is_acknowledged if inter_cor1 else False,
+                "is_read": inter_cor1.is_read if inter_cor1 else False,
+                "recommended_action": "Coordinate with European ground drayage dispatch for rescheduled pickup windows.",
+                "whatToDo": "Coordinate with European ground drayage dispatch for rescheduled pickup windows.",
+                "location": "Rotterdam Gateway (Netherlands)",
             },
             {
                 "id": "ALT-COR-02",
+                "event_code": "EVT-MALACCA-PASS",
                 "severity": "low",
                 "category": "Clear Corridor",
-                "title": "Clear weather, no backlog reported. Smooth passage through Malacca strait corridors. Normal handling velocity (12h avg).",
+                "title": "Singapore Malacca Corridor Passage Advisory",
+                "headline": "Singapore Malacca Corridor Passage Advisory",
+                "description": "Clear weather, no backlog reported. Smooth passage through Malacca strait corridors. Normal handling velocity.",
                 "port": "Singapore Transshipment (Singapore)",
+                "port_name": "Port of Singapore",
+                "port_code": "SGSIN",
+                "country": "Singapore",
+                "latitude": 1.29,
+                "longitude": 103.85,
                 "shipment_ref": primary_ref,
                 "delay_hours": 0,
                 "cost_impact": 0.0,
+                "capacity_impact_percent": 0.0,
                 "status": "active",
+                "source": "Maritime and Port Authority of Singapore (MPA)",
                 "started_at": "2025-11-01T16:20:00Z",
-                "is_acknowledged": inter_map.get("ALT-COR-02").is_acknowledged if inter_map.get("ALT-COR-02") else False,
-                "is_read": inter_map.get("ALT-COR-02").is_read if inter_map.get("ALT-COR-02") else False,
-            }
+                "is_acknowledged": inter_cor2.is_acknowledged if inter_cor2 else False,
+                "is_read": inter_cor2.is_read if inter_cor2 else False,
+                "recommended_action": "Standard tracking active. No rerouting needed.",
+                "whatToDo": "Standard tracking active. No rerouting needed.",
+                "location": "Singapore Transshipment (Singapore)",
+            },
         ]
         matched_alerts = synthetic_advisories
+        all_alerts.extend(synthetic_advisories)
 
-    return matched_alerts
+    # Determine view set
+    if view == "my-routes":
+        if not shipments:
+            return []
+        feed = matched_alerts
+    elif view == "resolved":
+        feed = [a for a in all_alerts if a["is_acknowledged"]]
+    else:  # 'all'
+        feed = all_alerts
+
+    # Filters
+    if severity and severity.lower() != "all":
+        feed = [a for a in feed if a["severity"].lower() == severity.lower()]
+    if is_read is not None:
+        feed = [a for a in feed if a["is_read"] == is_read]
+    if is_acknowledged is not None:
+        feed = [a for a in feed if a["is_acknowledged"] == is_acknowledged]
+    if search:
+        q = search.lower().strip()
+        feed = [
+            a for a in feed
+            if q in a["title"].lower() or q in a["description"].lower() or q in a["port"].lower() or (a.get("shipment_ref") and q in a["shipment_ref"].lower())
+        ]
+
+    return feed
+
+
+@app.get("/alerts")
+def get_alerts(
+    view: str = Query(default="all"),
+    severity: str | None = Query(default=None),
+    is_read: bool | None = Query(default=None),
+    is_acknowledged: bool | None = Query(default=None),
+    search: str | None = Query(default=None),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return build_alerts_feed(
+        current_user=current_user,
+        db=db,
+        view=view,
+        severity=severity,
+        is_read=is_read,
+        is_acknowledged=is_acknowledged,
+        search=search,
+    )
+
+
+@app.get("/alerts/me")
+def get_user_route_alerts(
+    view: str = Query(default="my-routes"),
+    severity: str | None = Query(default=None),
+    is_read: bool | None = Query(default=None),
+    is_acknowledged: bool | None = Query(default=None),
+    search: str | None = Query(default=None),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return build_alerts_feed(
+        current_user=current_user,
+        db=db,
+        view=view,
+        severity=severity,
+        is_read=is_read,
+        is_acknowledged=is_acknowledged,
+        search=search,
+    )
 
 
 @app.post("/alerts/{alert_id}/acknowledge", response_model=AlertActionResponse)
@@ -1143,23 +1282,28 @@ def acknowledge_alert(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    norm_ids = _normalize_alert_ids(alert_id)
     inter = db.scalar(
         select(UserAlertInteraction).where(
             UserAlertInteraction.user_id == current_user.id,
-            UserAlertInteraction.alert_id == alert_id,
+            UserAlertInteraction.alert_id.in_(norm_ids),
         )
     )
+    now = datetime.now(timezone.utc)
     if not inter:
+        standard_aid = f"ALT-{alert_id}" if alert_id.isdigit() else alert_id
         inter = UserAlertInteraction(
             user_id=current_user.id,
-            alert_id=alert_id,
+            alert_id=standard_aid,
             is_acknowledged=True,
-            acknowledged_at=datetime.utcnow(),
+            is_read=True,
+            acknowledged_at=now,
         )
         db.add(inter)
     else:
         inter.is_acknowledged = True
-        inter.acknowledged_at = datetime.utcnow()
+        inter.is_read = True
+        inter.acknowledged_at = now
 
     db.commit()
     return AlertActionResponse(
@@ -1175,14 +1319,15 @@ def acknowledge_all_alerts(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    alerts = get_user_route_alerts(current_user, db)
-    now = datetime.utcnow()
+    alerts = build_alerts_feed(current_user=current_user, db=db, view="all")
+    now = datetime.now(timezone.utc)
     for a in alerts:
         aid = a["id"]
+        norm_ids = _normalize_alert_ids(aid)
         inter = db.scalar(
             select(UserAlertInteraction).where(
                 UserAlertInteraction.user_id == current_user.id,
-                UserAlertInteraction.alert_id == aid,
+                UserAlertInteraction.alert_id.in_(norm_ids),
             )
         )
         if not inter:
@@ -1191,14 +1336,16 @@ def acknowledge_all_alerts(
                     user_id=current_user.id,
                     alert_id=aid,
                     is_acknowledged=True,
+                    is_read=True,
                     acknowledged_at=now,
                 )
             )
         else:
             inter.is_acknowledged = True
+            inter.is_read = True
             inter.acknowledged_at = now
     db.commit()
-    return {"message": "All current route alerts acknowledged.", "count": len(alerts)}
+    return {"message": "All active alerts acknowledged.", "count": len(alerts)}
 
 
 @app.post("/alerts/{alert_id}/read", response_model=AlertActionResponse)
@@ -1207,16 +1354,18 @@ def toggle_alert_read(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    norm_ids = _normalize_alert_ids(alert_id)
     inter = db.scalar(
         select(UserAlertInteraction).where(
             UserAlertInteraction.user_id == current_user.id,
-            UserAlertInteraction.alert_id == alert_id,
+            UserAlertInteraction.alert_id.in_(norm_ids),
         )
     )
     if not inter:
+        standard_aid = f"ALT-{alert_id}" if alert_id.isdigit() else alert_id
         inter = UserAlertInteraction(
             user_id=current_user.id,
-            alert_id=alert_id,
+            alert_id=standard_aid,
             is_read=True,
         )
         db.add(inter)

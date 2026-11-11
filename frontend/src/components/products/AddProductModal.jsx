@@ -67,10 +67,10 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
               <Package size={17} />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-[#F8FAFC]">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#F8FAFC]">
                 Add a New Product
               </h2>
-              <p className="text-xs text-[#94A3B8] mt-0.5">
+              <p className="text-sm text-[#94A3B8] mt-1">
                 Enter basic details. We'll remember this next time you plan a shipment.
               </p>
             </div>
@@ -97,7 +97,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Product Name */}
           <div>
-            <label className="block text-xs font-semibold text-[#94A3B8] mb-1.5">
+            <label className="block text-sm font-semibold text-[#E2E8F0] mb-1.5">
               Product Name
             </label>
             <input
@@ -106,10 +106,10 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Porcelain Espresso Cups"
-              className="cs-input text-sm"
+              className="cs-input text-base"
               disabled={loading}
             />
-            <span className="text-xs text-[#64748B] mt-1 block">
+            <span className="text-xs text-[#94A3B8] mt-1 block">
               Clear trade label displayed on customs manifests &amp; packing slips.
             </span>
           </div>
@@ -117,7 +117,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
           {/* SKU / Code & Cost per Unit ($) */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#94A3B8] mb-1.5">
+              <label className="block text-sm font-semibold text-[#E2E8F0] mb-1.5">
                 SKU / Code
               </label>
               <input
@@ -126,16 +126,16 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
                 value={sku}
                 onChange={(e) => setSku(e.target.value)}
                 placeholder="AC-CUP-44"
-                className="cs-input text-sm font-mono"
+                className="cs-input text-base font-mono"
                 disabled={loading}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#94A3B8] mb-1.5">
+              <label className="block text-sm font-semibold text-[#E2E8F0] mb-1.5">
                 Cost per Unit ($)
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8] pointer-events-none">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">
                   $
                 </span>
                 <input
@@ -145,7 +145,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
                   value={cost}
                   onChange={(e) => setCost(e.target.value)}
                   placeholder="6.80"
-                  className="cs-input text-sm pl-7"
+                  className="cs-input text-base pl-7"
                   disabled={loading}
                 />
               </div>
@@ -155,7 +155,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
           {/* Standard Packing Quantity & Weight per Carton */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#94A3B8] mb-1.5">
+              <label className="block text-sm font-semibold text-[#E2E8F0] mb-1.5">
                 Standard Packing Quantity
               </label>
               <div className="relative">
@@ -164,16 +164,16 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   placeholder="480"
-                  className="cs-input text-sm pr-20"
+                  className="cs-input text-base pr-20"
                   disabled={loading}
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#64748B] pointer-events-none">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8] pointer-events-none">
                   units/pallet
                 </span>
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#94A3B8] mb-1.5">
+              <label className="block text-sm font-semibold text-[#E2E8F0] mb-1.5">
                 Weight per Carton
               </label>
               <div className="relative">
@@ -183,10 +183,10 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
                   placeholder="11.2"
-                  className="cs-input text-sm pr-10"
+                  className="cs-input text-base pr-10"
                   disabled={loading}
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#64748B] pointer-events-none">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8] pointer-events-none">
                   kg
                 </span>
               </div>
@@ -195,13 +195,13 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
 
           {/* Default Origin Port */}
           <div>
-            <label className="block text-xs font-semibold text-[#94A3B8] mb-1.5">
+            <label className="block text-sm font-semibold text-[#E2E8F0] mb-1.5">
               Default Origin Port
             </label>
             <select
               value={port}
               onChange={(e) => setPort(e.target.value)}
-              className="cs-select text-sm"
+              className="cs-select text-base"
               disabled={loading}
             >
               <option value="Port of Ningbo-Zhoushan (China)">
@@ -281,3 +281,4 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
     </div>
   );
 }
+

@@ -459,11 +459,11 @@ export default function PlanShipment({ initialStep }) {
                   <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent-primary-light)]">
                     STEP 2 OF 3
                   </span>
-                  <h2 className="text-xl font-bold text-[var(--text-high-contrast)] mt-0.5">
+                  <h2 className="text-2xl font-bold text-[var(--text-high-contrast)] mt-0.5">
                     Where is this cargo heading?
                   </h2>
                 </div>
-                <span className="cs-pill cs-pill-cyan text-xs font-semibold">
+                <span className="cs-pill cs-pill-cyan text-sm font-semibold">
                   FCL Shipment
                 </span>
               </div>
@@ -472,21 +472,21 @@ export default function PlanShipment({ initialStep }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
+                    <label className="text-sm font-semibold text-[#E2E8F0]">
                       Origin Port
                     </label>
-                    <span className="text-[11px] text-[var(--text-dim)]">Departing</span>
+                    <span className="text-xs text-[var(--text-dim)]">Departing</span>
                   </div>
                   <div className="relative">
                     <Anchor
-                      size={15}
+                      size={16}
                       className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
                     />
                     <input
                       type="text"
                       value={originPort}
                       onChange={(e) => setOriginPort(e.target.value)}
-                      className="cs-input pl-10 text-sm font-medium"
+                      className="cs-input pl-10 text-base font-medium"
                     />
                   </div>
                   <span className="text-xs text-[var(--text-dim)] mt-1.5 block">
@@ -496,21 +496,21 @@ export default function PlanShipment({ initialStep }) {
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
+                    <label className="text-sm font-semibold text-[#E2E8F0]">
                       Destination Port / City
                     </label>
-                    <span className="text-[11px] text-[var(--text-dim)]">Discharge</span>
+                    <span className="text-xs text-[var(--text-dim)]">Discharge</span>
                   </div>
                   <div className="relative">
                     <Compass
-                      size={15}
+                      size={16}
                       className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
                     />
                     <input
                       type="text"
                       value={destPort}
                       onChange={(e) => setDestPort(e.target.value)}
-                      className="cs-input pl-10 text-sm font-medium"
+                      className="cs-input pl-10 text-base font-medium"
                     />
                   </div>
                   <span className="text-xs text-[var(--text-dim)] mt-1.5 block">
@@ -533,19 +533,19 @@ export default function PlanShipment({ initialStep }) {
 
               {/* Cargo Ready Date */}
               <div>
-                <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
+                <label className="block text-sm font-semibold text-[#E2E8F0] mb-1.5">
                   Cargo Ready Date
                 </label>
                 <div className="relative max-w-sm">
                   <Calendar
-                    size={15}
+                    size={16}
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
                   />
                   <input
                     type="date"
                     value={readyDate}
                     onChange={(e) => setReadyDate(e.target.value)}
-                    className="cs-input pl-10 text-sm font-medium"
+                    className="cs-input pl-10 text-base font-medium"
                   />
                 </div>
                 <span className="text-xs text-[var(--text-dim)] mt-1.5 block">
@@ -556,7 +556,7 @@ export default function PlanShipment({ initialStep }) {
               {/* Priority Choice (Image 2 Match) */}
               <div>
                 <div className="flex items-center justify-between mb-2.5">
-                  <label className="text-xs font-bold text-[var(--text-high-contrast)] uppercase tracking-wider">
+                  <label className="text-sm font-bold text-[var(--text-high-contrast)] uppercase tracking-wider">
                     Select your shipment priority
                   </label>
                   <span className="text-xs text-[var(--text-dim)]">

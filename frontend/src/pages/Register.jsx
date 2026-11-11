@@ -11,13 +11,11 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  Globe,
   Loader2,
+  Globe,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/Button";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -27,7 +25,6 @@ export default function Register() {
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [market, setMarket] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,7 +38,7 @@ export default function Register() {
       return;
     }
     if (!company.trim()) {
-      setError("Please enter your company name.");
+      setError("Please enter your company / supplier name.");
       return;
     }
     if (!email.trim() || !email.includes("@")) {
@@ -63,254 +60,266 @@ export default function Register() {
       });
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message || "Failed to create account. Please try again.");
+      setError(err.message || "Failed to create account. Please verify input and try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--canvas-base)] flex items-center justify-center p-4 font-sans antialiased text-[var(--text-body)]">
-      <div className="w-full max-w-md animate-fade-in my-8">
-        {/* Main Card */}
-        <div className="bg-[var(--surface-elevated)] border border-[var(--border-color)] rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#060B17] via-[#0D1527] to-[#121E36] flex items-center justify-center p-4 font-sans antialiased text-[#E5E7EB] relative overflow-hidden">
+      {/* Decorative Logistics Grid & Glowing Arcs Overlay */}
+      <div className="absolute inset-0 pointer-events-none opacity-25">
+        <svg
+          className="w-full h-full"
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+        >
+          <defs>
+            <pattern
+              id="reg-grid-pattern"
+              width="48"
+              height="48"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 48 0 L 0 0 0 48"
+                fill="none"
+                stroke="rgba(99, 102, 241, 0.12)"
+                strokeWidth="1"
+              />
+            </pattern>
+            <linearGradient id="reg-route-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.4" />
+              <stop offset="50%" stopColor="#6366F1" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#10B981" stopOpacity="0.2" />
+            </linearGradient>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#reg-grid-pattern)" />
+          <path
+            d="M -100 300 C 400 150, 800 600, 1600 350"
+            fill="none"
+            stroke="url(#reg-route-gradient)"
+            strokeWidth="2"
+            strokeDasharray="6 6"
+          />
+        </svg>
+      </div>
+
+      {/* Radial soft lighting */}
+      <div className="absolute w-[600px] h-[600px] bg-gradient-to-tr from-cyan-600/15 via-indigo-600/10 to-transparent rounded-full blur-3xl pointer-events-none -top-24 -right-24" />
+      <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-indigo-600/15 via-purple-600/10 to-transparent rounded-full blur-3xl pointer-events-none -bottom-24 -left-24" />
+
+      {/* Main Glassmorphic Container */}
+      <div className="w-full max-w-lg relative z-10 animate-fade-in my-8">
+        <div className="bg-[#0F172A]/90 backdrop-blur-2xl border border-[#273B5E] rounded-3xl p-7 sm:p-9 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] space-y-6">
           {/* Header & Logo */}
           <div className="flex flex-col items-center text-center space-y-2">
-            <div className="w-12 h-12 rounded-xl bg-[var(--accent-primary)] flex items-center justify-center text-white shadow-[0_0_24px_rgba(99,102,241,0.4)]">
-              <Ship size={22} />
-            </div>
-            <h1 className="text-xl font-bold text-[var(--text-high-contrast)] tracking-wide">
-              ChainSight
+            <Link
+              to="/"
+              className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-[#4F46E5] to-[#6366F1] flex items-center justify-center text-white shadow-[0_0_25px_rgba(99,102,241,0.45)] hover:scale-105 transition-transform"
+            >
+              <Ship size={26} />
+            </Link>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight pt-1">
+              Create Account
             </h1>
-            <p className="text-xs text-[var(--text-secondary)] max-w-xs leading-relaxed">
-              Find the simplest, most cost-effective shipping routes for your business — without the logistics headaches.
+            <p className="text-sm text-[#94A3B8] max-w-sm leading-relaxed">
+              Join ChainSight AI to monitor shipments, assess port disruptions, and automate route decisions.
             </p>
           </div>
 
           {/* Mode Switcher Tabs */}
-          <div className="flex p-1 bg-[var(--surface-base)] rounded-lg border border-[var(--border-color)]">
+          <div className="flex p-1 bg-[#0A101D] rounded-xl border border-[#223554]">
             <Link
               to="/login"
-              className="flex-1 py-1.5 rounded-md text-xs font-semibold text-center text-[var(--text-secondary)] hover:text-white transition-colors"
+              className="flex-1 py-2 rounded-lg text-sm font-semibold text-center text-[#94A3B8] hover:text-white transition-colors"
             >
               Sign In
             </Link>
             <button
               type="button"
-              className="flex-1 py-1.5 rounded-md text-xs font-semibold bg-[var(--surface-overlay)] text-[var(--text-high-contrast)] shadow-sm cursor-default"
+              className="flex-1 py-2 rounded-lg text-sm font-bold bg-[#1E293B] text-white shadow-sm cursor-default"
             >
               Create Account
             </button>
           </div>
 
-          {/* Error Alert */}
+          {/* Error Message Banner */}
           {error && (
-            <div className="p-3 rounded-lg bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.3)] flex items-center gap-2.5 text-xs text-[var(--status-critical)]">
-              <AlertCircle size={15} className="shrink-0" />
+            <div className="p-3.5 rounded-xl bg-red-500/12 border border-red-500/35 flex items-center gap-3 text-xs sm:text-sm text-red-400">
+              <AlertCircle size={16} className="shrink-0 text-red-400" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Full Name */}
-            <div className="space-y-1.5">
-              <Label htmlFor="reg-fullname" className="text-xs font-semibold text-[var(--text-secondary)]">
-                Full Name
-              </Label>
-              <div className="relative">
-                <User
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
-                />
-                <Input
-                  id="reg-fullname"
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Elena Rostova"
-                  autoComplete="name"
-                  className="bg-[var(--surface-base)] border-[var(--border-color)] pl-9 text-xs text-[var(--text-high-contrast)] h-10 focus-visible:ring-[var(--accent-primary)]"
-                  disabled={loading}
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Full Name */}
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="register-name"
+                  className="block text-sm font-semibold text-[#E2E8F0]"
+                >
+                  Full Name
+                </label>
+                <div className="relative">
+                  <User
+                    size={16}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]"
+                  />
+                  <input
+                    id="register-name"
+                    type="text"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="e.g. Elena Rostova"
+                    autoComplete="name"
+                    className="w-full bg-[#0A101D] border border-[#223554] rounded-xl pl-10 pr-4 py-2.5 text-base text-white placeholder-[#64748B] focus:outline-none focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20 transition-all"
+                    disabled={loading}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Company Name */}
-            <div className="space-y-1.5">
-              <Label htmlFor="reg-company" className="text-xs font-semibold text-[var(--text-secondary)]">
-                Company Name
-              </Label>
-              <div className="relative">
-                <Building2
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
-                />
-                <Input
-                  id="reg-company"
-                  type="text"
-                  required
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  placeholder="e.g. Blue Harbor Goods"
-                  autoComplete="organization"
-                  className="bg-[var(--surface-base)] border-[var(--border-color)] pl-9 text-xs text-[var(--text-high-contrast)] h-10 focus-visible:ring-[var(--accent-primary)]"
-                  disabled={loading}
-                />
+              {/* Company / Supplier Name */}
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="register-company"
+                  className="block text-sm font-semibold text-[#E2E8F0]"
+                >
+                  Company Name
+                </label>
+                <div className="relative">
+                  <Building2
+                    size={16}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]"
+                  />
+                  <input
+                    id="register-company"
+                    type="text"
+                    required
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="e.g. Acme Ceramics Ltd"
+                    autoComplete="organization"
+                    className="w-full bg-[#0A101D] border border-[#223554] rounded-xl pl-10 pr-4 py-2.5 text-base text-white placeholder-[#64748B] focus:outline-none focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20 transition-all"
+                    disabled={loading}
+                  />
+                </div>
               </div>
             </div>
 
             {/* Work Email */}
             <div className="space-y-1.5">
-              <Label htmlFor="reg-email" className="text-xs font-semibold text-[var(--text-secondary)]">
-                Work Email
-              </Label>
+              <label
+                htmlFor="register-email"
+                className="block text-sm font-semibold text-[#E2E8F0]"
+              >
+                Work Email Address
+              </label>
               <div className="relative">
                 <Mail
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
+                  size={16}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]"
                 />
-                <Input
-                  id="reg-email"
+                <input
+                  id="register-email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. elena@blueharbor.com"
+                  placeholder="e.g. elena@acmeceramics.com"
                   autoComplete="email"
-                  className="bg-[var(--surface-base)] border-[var(--border-color)] pl-9 text-xs text-[var(--text-high-contrast)] h-10 focus-visible:ring-[var(--accent-primary)]"
+                  className="w-full bg-[#0A101D] border border-[#223554] rounded-xl pl-10 pr-4 py-2.5 text-base text-white placeholder-[#64748B] focus:outline-none focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20 transition-all"
                   disabled={loading}
                 />
               </div>
             </div>
 
-            {/* Create Password */}
+            {/* Password */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="reg-password" className="text-xs font-semibold text-[var(--text-secondary)]">
-                  Create Password
-                </Label>
+                <label
+                  htmlFor="register-password"
+                  className="block text-sm font-semibold text-[#E2E8F0]"
+                >
+                  Password (minimum 8 characters)
+                </label>
               </div>
               <div className="relative">
                 <Lock
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
+                  size={16}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]"
                 />
-                <Input
-                  id="reg-password"
+                <input
+                  id="register-password"
                   type={showPassword ? "text" : "password"}
                   required
-                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 8 characters"
+                  placeholder="Create a secure password"
                   autoComplete="new-password"
-                  className="bg-[var(--surface-base)] border-[var(--border-color)] pl-9 pr-9 text-xs text-[var(--text-high-contrast)] h-10 focus-visible:ring-[var(--accent-primary)]"
+                  className="w-full bg-[#0A101D] border border-[#223554] rounded-xl pl-10 pr-11 py-2.5 text-base text-white placeholder-[#64748B] focus:outline-none focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20 transition-all"
                   disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-white"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-white transition-colors"
                   aria-label="Toggle password visibility"
                 >
-                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              <span className="text-[10px] text-[var(--text-dim)] mt-1 block">
-                ⓘ Must include letters and at least one number
-              </span>
-            </div>
-
-            {/* Primary Goods & Export Market (Optional) */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold text-[var(--text-secondary)]">
-                  Primary Goods & Export Market
-                </Label>
-                <span className="text-[10px] text-[var(--text-dim)]">Optional</span>
-              </div>
-              <div className="relative">
-                <Globe
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)] pointer-events-none"
-                />
-                <select
-                  value={market}
-                  onChange={(e) => setMarket(e.target.value)}
-                  disabled={loading}
-                  className="w-full bg-[var(--surface-base)] border border-[var(--border-color)] rounded-lg pl-9 pr-3 py-2 text-xs text-[var(--text-high-contrast)] focus:outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)] transition-all"
-                >
-                  <option value="">Select your key trade flow…</option>
-                  <option value="ceramics-eu-us">Ceramics & Tiles (Europe → North America)</option>
-                  <option value="manufactured-asia-eu">Manufactured Goods (Asia → Europe)</option>
-                  <option value="apparel-asia-us">Apparel & Textiles (Asia → North America)</option>
-                  <option value="electronics-asia-global">Electronics & Hardware (Asia → Global)</option>
-                </select>
-              </div>
-              <span className="text-[10px] text-[var(--text-dim)] mt-1 block">
-                Helps us curate initial lane tariffs and route schedules.
-              </span>
             </div>
 
             {/* Submit Button */}
             <div className="pt-2">
-              <Button
+              <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-white text-xs h-10 font-semibold shadow-md flex items-center justify-center gap-2"
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:brightness-110 text-white text-base font-bold shadow-[0_0_20px_rgba(99,102,241,0.35)] flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
               >
                 {loading ? (
                   <>
-                    <Loader2 size={14} className="animate-spin" />
-                    <span>Setting up account…</span>
+                    <Loader2 size={16} className="animate-spin" />
+                    <span>Creating Organization Account…</span>
                   </>
                 ) : (
                   <>
-                    <span>Start Planning Shipments — Free for 30 Days</span>
-                    <ArrowRight size={14} />
+                    <span>Create Free Organization Account</span>
+                    <ArrowRight size={16} />
                   </>
                 )}
-              </Button>
+              </button>
             </div>
           </form>
 
-          {/* Terms Disclaimer */}
-          <p className="text-[10px] text-[var(--text-dim)] text-center leading-normal">
-            By continuing, you agree to ChainSight's{" "}
-            <span className="text-[var(--text-secondary)] underline cursor-pointer">
-              Terms of Trade
-            </span>{" "}
-            and{" "}
-            <span className="text-[var(--text-secondary)] underline cursor-pointer">
-              Privacy Policy
-            </span>
-            .
-          </p>
-
-          {/* Trust Value Propositions */}
-          <div className="p-3.5 rounded-xl bg-[var(--surface-base)] border border-[var(--border-color)] space-y-2 text-xs">
-            <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-              <CheckCircle2 size={13} className="text-[var(--status-success)] shrink-0" />
-              <span>No credit card needed</span>
+          {/* Value Propositions */}
+          <div className="p-4 rounded-xl bg-[#0A101D] border border-[#223554] space-y-2 text-xs text-[#94A3B8]">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 size={15} className="text-[#10B981] shrink-0" />
+              <span>Dedicated supplier workspace with complete data isolation</span>
             </div>
-            <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-              <CheckCircle2 size={13} className="text-[var(--status-success)] shrink-0" />
-              <span>Plain English route tracking</span>
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 size={15} className="text-[#10B981] shrink-0" />
+              <span>Full access to MapLibre world fleet & chokepoint maps</span>
             </div>
-            <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-              <CheckCircle2 size={13} className="text-[var(--status-success)] shrink-0" />
-              <span>Live port delay alerts</span>
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 size={15} className="text-[#10B981] shrink-0" />
+              <span>Zero setup fees • Instant access to corridor radar</span>
             </div>
           </div>
 
           <div className="text-center pt-1">
             <Link
               to="/"
-              className="text-xs text-[var(--text-dim)] hover:text-[var(--accent-cyan)] transition-colors inline-flex items-center gap-1"
+              className="text-xs text-[#64748B] hover:text-[#38BDF8] transition-colors inline-flex items-center gap-1.5"
             >
-              ← Back to Marketing Homepage
+              ← Return to ChainSight Marketing Homepage
             </Link>
           </div>
         </div>

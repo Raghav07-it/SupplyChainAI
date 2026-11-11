@@ -106,10 +106,10 @@ export default function GlobalIntelligence() {
               GIS Geospatial Telemetry • Maritime Situational Intelligence
             </span>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-high-contrast)]">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--text-high-contrast)]">
             Global Logistics Intelligence
           </h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-3xl">
+          <p className="text-base text-[var(--text-secondary)] mt-1.5 max-w-3xl leading-relaxed">
             Live oceanic situational awareness: interactive fleet positioning, strategic maritime chokepoints, and AI supply-chain operational news analysis.
           </p>
         </div>
@@ -120,12 +120,12 @@ export default function GlobalIntelligence() {
             type="button"
             onClick={handleRefresh}
             disabled={refreshing}
-            className="cs-btn cs-btn-secondary text-xs flex items-center gap-1.5"
+            className="cs-btn cs-btn-secondary text-sm flex items-center gap-1.5"
           >
-            <RefreshCw size={13} className={refreshing ? "animate-spin" : ""} />
+            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
             {refreshing ? "Refreshing Feed…" : "Sync Live Signals"}
           </button>
-          <Link to="/plan-shipment" className="cs-btn cs-btn-primary text-xs">
+          <Link to="/plan-shipment" className="cs-btn cs-btn-primary text-sm font-semibold">
             Plan New Corridor →
           </Link>
         </div>
@@ -136,12 +136,12 @@ export default function GlobalIntelligence() {
           ========================================================= */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-[var(--text-high-contrast)] flex items-center gap-2">
-            <Globe size={18} className="text-[var(--accent-primary-light)]" />
+          <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-high-contrast)] flex items-center gap-2">
+            <Globe size={20} className="text-[var(--accent-primary-light)]" />
             Global Maritime Corridors & Chokepoint Map
           </h2>
           <span className="text-xs text-[var(--text-secondary)]">
-            CartoDB Dark Matter • Geodesic Great-Circle Projections
+            OpenFreeMap Liberty • 100% Free • Zero API Key
           </span>
         </div>
 
@@ -161,7 +161,7 @@ export default function GlobalIntelligence() {
         {/* Left: Active Alerts & Corridors (5 cols) */}
         <div className="lg:col-span-5 cs-card p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
-            <h2 className="text-sm font-bold text-[var(--text-high-contrast)] flex items-center gap-2">
+            <h2 className="text-lg font-bold text-[var(--text-high-contrast)] flex items-center gap-2">
               <AlertTriangle size={16} className="text-[var(--status-warning)]" />
               Corridor Watchlist & Notices
             </h2>
@@ -374,3 +374,4 @@ export default function GlobalIntelligence() {
     </div>
   );
 }
+

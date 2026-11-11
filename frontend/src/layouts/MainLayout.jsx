@@ -212,7 +212,7 @@ export default function MainLayout() {
                   to={item.path}
                   end={item.path === "/dashboard"}
                   className={({ isActive }) =>
-                    `flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium transition-colors ${
+                    `flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
                       isActive
                         ? "bg-[var(--accent-primary)] text-white shadow-[0_0_14px_rgba(99,102,241,0.3)]"
                         : "text-[var(--text-secondary)] hover:text-[var(--text-high-contrast)] hover:bg-[var(--surface-elevated)]"
@@ -253,9 +253,9 @@ export default function MainLayout() {
                       key={item.path}
                       to={item.path}
                       className={({ isActive }) =>
-                        `flex items-center gap-2.5 px-3 py-1.5 rounded-md text-xs transition-colors ${
+                        `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
                           isActive
-                            ? "bg-[var(--surface-elevated)] text-[var(--accent-cyan)] font-medium"
+                            ? "bg-[var(--surface-elevated)] text-[var(--accent-cyan)] font-semibold"
                             : "text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-elevated)]"
                         }`
                       }
@@ -281,10 +281,10 @@ export default function MainLayout() {
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-[var(--text-high-contrast)] truncate">
+              <div className="text-sm font-bold text-[var(--text-high-contrast)] truncate">
                 {fullName}
               </div>
-              <div className="text-[11px] text-[var(--text-secondary)] truncate">
+              <div className="text-xs text-[var(--text-secondary)] truncate">
                 {companyName}
               </div>
             </div>

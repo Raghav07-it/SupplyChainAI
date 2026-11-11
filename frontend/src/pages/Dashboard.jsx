@@ -198,17 +198,17 @@ export default function Dashboard() {
         {/* Left: Recent Shipments Table (8 cols) */}
         <div className="lg:col-span-8 cs-card overflow-hidden">
           <div className="p-4 sm:p-5 border-b border-[var(--border-color)] flex items-center justify-between">
-            <h2 className="text-base font-bold text-[var(--text-high-contrast)] flex items-center gap-2">
-              <Ship size={18} className="text-[var(--accent-cyan)]" />
+            <h2 className="text-xl font-bold text-[var(--text-high-contrast)] flex items-center gap-2">
+              <Ship size={20} className="text-[var(--accent-cyan)]" />
               Recent Shipments
             </h2>
             {recentShipments.length > 0 && (
               <Link
                 to="/my-shipments"
-                className="text-xs font-semibold text-[var(--accent-primary-light)] hover:underline flex items-center gap-1"
+                className="text-sm font-semibold text-[var(--accent-primary-light)] hover:underline flex items-center gap-1"
               >
                 View all shipments
-                <ArrowRight size={14} />
+                <ArrowRight size={15} />
               </Link>
             )}
           </div>
@@ -245,34 +245,34 @@ export default function Dashboard() {
                         <td>
                           <Link
                             to={`/my-shipments?search=${s.id}`}
-                            className="font-bold text-sm text-[var(--accent-cyan)] hover:underline font-mono"
+                            className="font-bold text-base text-[var(--accent-cyan)] hover:underline font-mono"
                           >
                             #{s.tracking_number || s.id}
                           </Link>
                         </td>
                         <td>
-                          <div className="font-semibold text-sm text-[var(--text-high-contrast)]">
+                          <div className="font-semibold text-base text-[var(--text-high-contrast)]">
                             {s.product}
                           </div>
-                          <div className="text-xs text-[var(--text-secondary)] mt-0.5">
+                          <div className="text-sm text-[var(--text-secondary)] mt-0.5">
                             {s.quantity} {s.quantity > 100 ? "crates/pallets" : "units"}
                           </div>
                         </td>
                         <td>
-                          <div className="font-medium text-sm text-[var(--text-high-contrast)] flex items-center gap-1.5">
+                          <div className="font-medium text-base text-[var(--text-high-contrast)] flex items-center gap-1.5">
                             <span>{s.origin_port?.split("(")[0]?.trim() || "Origin"}</span>
                             <span className="text-[var(--accent-cyan)]">→</span>
                             <span>{s.destination_port?.split("(")[0]?.split("/")[0]?.trim() || "Destination"}</span>
                           </div>
-                          <div className="text-xs text-[var(--text-dim)] mt-0.5">
+                          <div className="text-sm text-[var(--text-dim)] mt-0.5">
                             {s.carrier || "Standard Liner"}
                           </div>
                         </td>
                         <td>
-                          <div className="font-semibold text-sm text-[var(--text-high-contrast)]">
+                          <div className="font-semibold text-base text-[var(--text-high-contrast)]">
                             {s.expected_arrival}
                           </div>
-                          <div className="text-xs text-[var(--status-success)] capitalize mt-0.5 flex items-center gap-1 font-medium">
+                          <div className="text-sm text-[var(--status-success)] capitalize mt-0.5 flex items-center gap-1 font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success)]" />
                             {s.status.replace("_", " ")}
                           </div>
