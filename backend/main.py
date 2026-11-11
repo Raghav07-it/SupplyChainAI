@@ -126,6 +126,20 @@ def run_db_migrations():
                 )
             )
             conn.commit()
+
+        try:
+            from seed_data import seed_database
+            seed_database()
+
+            from disruptions.ingest import ingest_csv
+            from disruptions.ml_model import DATA_PATH
+            from database import SessionLocal
+            with SessionLocal() as db_session:
+                disruption_count = db_session.scalar(select(func.count(Disruption.id)))
+                if disruption_count == 0 and DATA_PATH.exists():
+                    ingest_csv(DATA_PATH, db_session)
+        except Exception:
+            pass
     except Exception:
         # Gracefully handle DB offline or permissions during startup/collection
         pass

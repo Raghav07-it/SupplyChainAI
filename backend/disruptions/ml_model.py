@@ -25,7 +25,11 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 # Paths
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = BASE_DIR.parent / "data" / "synthetic_disruptions.csv"
+DATA_PATH = (
+    BASE_DIR.parent / "data" / "synthetic_disruptions.csv"
+    if (BASE_DIR.parent / "data" / "synthetic_disruptions.csv").exists()
+    else BASE_DIR / "data" / "synthetic_disruptions.csv"
+)
 MODEL_DIR = BASE_DIR / "data" / "models"
 MODEL_FILE = MODEL_DIR / "disruption_model.joblib"
 
