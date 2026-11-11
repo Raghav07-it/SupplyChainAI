@@ -14,6 +14,7 @@ import RouteResult from "./pages/RouteResult";
 import AutonomousRerouting from "./pages/AutonomousRerouting";
 import AIAgents from "./pages/AIAgents";
 import LiveIntelligence from "./pages/LiveIntelligence";
+import GlobalIntelligence from "./pages/GlobalIntelligence";
 import Operations from "./pages/operations";
 import SystemHealth from "./pages/SystemHealth";
 import Settings from "./pages/Settings";
@@ -114,6 +115,7 @@ function App() {
             }
           >
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/intelligence" element={<GlobalIntelligence />} />
             <Route path="/products" element={<Products />} />
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/plan-shipment" element={<PlanShipment />} />

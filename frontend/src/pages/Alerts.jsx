@@ -15,6 +15,7 @@ import {
   Eye,
   EyeOff,
   CheckCheck,
+  Globe,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -160,21 +161,28 @@ export default function Alerts() {
 
         {/* Top Header Action Buttons */}
         <div className="flex items-center gap-3">
+          <Link
+            to="/intelligence"
+            className="cs-btn cs-btn-secondary text-xs sm:text-sm flex items-center gap-1.5"
+          >
+            <Globe size={15} />
+            View Map
+          </Link>
           <button
             type="button"
             onClick={() => setActiveTab(activeTab === "my-routes" ? "all" : "my-routes")}
-            className="cs-btn cs-btn-secondary text-xs"
+            className="cs-btn cs-btn-secondary text-xs sm:text-sm flex items-center gap-1.5"
           >
-            <Filter size={14} />
+            <Filter size={15} />
             {activeTab === "my-routes" ? "Show Global Advisories" : "Filter My Lanes"}
           </button>
           <button
             type="button"
             onClick={handleAcknowledgeAll}
             disabled={activeMyRoutes.length === 0}
-            className="cs-btn cs-btn-primary text-xs disabled:opacity-50"
+            className="cs-btn cs-btn-primary text-xs sm:text-sm font-semibold disabled:opacity-50 flex items-center gap-1.5"
           >
-            <CheckCheck size={14} />
+            <CheckCheck size={15} />
             {acknowledgedAll || activeMyRoutes.length === 0 ? "All Acknowledged" : "Acknowledge All"}
           </button>
         </div>

@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Anchor,
   Trash2,
+  Globe,
 } from "lucide-react";
 import { getShipments, deleteShipment } from "../api/shipments";
 import EmptyState from "../components/ui/EmptyState";
@@ -114,18 +115,18 @@ export default function MyShipments() {
   return (
     <div className="space-y-6 animate-fade-in font-sans">
       {/* Page Header */}
-      <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent-cyan)] flex items-center gap-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent-cyan)] flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[var(--accent-cyan)] animate-pulse" />
-              Cargo Tracker • Live Fleet
+              Cargo Tracker • Live Fleet Telemetry
             </span>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-high-contrast)]">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-high-contrast)]">
             My Shipments
           </h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
+          <p className="text-sm sm:text-base text-[var(--text-secondary)] mt-1 max-w-2xl leading-relaxed">
             Monitor all your active, booked, and delivered sea cargo in real time without confusing freight jargon.
           </p>
         </div>
@@ -133,11 +134,18 @@ export default function MyShipments() {
         {/* Action Buttons */}
         <div className="flex items-center gap-3">
           <Link
-            to="/plan-shipment"
-            className="cs-btn cs-btn-primary text-xs"
+            to="/intelligence"
+            className="cs-btn cs-btn-secondary text-sm px-4 py-2.5 font-medium flex items-center gap-1.5"
           >
-            <Plus size={14} />
-            Plan a new shipment
+            <Globe size={16} />
+            View Fleet on Map
+          </Link>
+          <Link
+            to="/plan-shipment"
+            className="cs-btn cs-btn-primary text-sm px-4 py-2.5 font-semibold"
+          >
+            <Plus size={16} />
+            + Plan a new shipment
           </Link>
         </div>
       </div>
@@ -149,8 +157,8 @@ export default function MyShipments() {
       ) : shipments.length === 0 ? (
         <div className="cs-card p-12">
           <EmptyState
-            icon={<Ship size={28} className="text-[var(--accent-cyan)]" />}
-            message="No Shipments Tracked Yet"
+            icon={<Ship size={32} className="text-[var(--accent-cyan)]" />}
+            title="No Shipments Tracked Yet"
             description="Your cargo tracker is clean. Plan your first shipment to establish automated sea lanes, carrier quotes, and live port telemetry."
             actionLabel="Plan a Shipment"
             onAction={() => navigate("/plan-shipment")}
@@ -159,41 +167,42 @@ export default function MyShipments() {
       ) : (
         <>
           {/* Top 3 Stat Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Card 1: Active at Sea */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Card 1: Active In-Transit */}
             <div className="cs-card p-5 flex items-start justify-between">
               <div>
                 <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                   Active in Transit
                 </span>
-                <div className="text-3xl font-bold text-[var(--text-high-contrast)] mt-2">
-                  {activeInTransit.length} Vessel{activeInTransit.length === 1 ? "" : "s"}
+                <div className="text-2xl sm:text-3xl font-bold text-[var(--text-high-contrast)] mt-2">
+                  {activeInTransit.length} at Sea
                 </div>
-                <p className="text-xs text-[var(--status-success)] mt-1.5 flex items-center gap-1">
+                <p className="text-xs text-[var(--status-success)] mt-2 flex items-center gap-1 font-medium">
                   <CheckCircle2 size={13} />
-                  {activeInTransit.length > 0 ? "Maintaining planned ocean tracks" : "No vessels currently underway"}
+                  Live GPS Tracking Active
                 </p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-[var(--accent-cyan-bg)] border border-[rgba(6,182,212,0.3)] flex items-center justify-center text-[var(--accent-cyan)]">
-                <Ship size={18} />
+              <div className="w-11 h-11 rounded-xl bg-[var(--accent-primary-bg)] border border-[rgba(99,102,241,0.3)] flex items-center justify-center text-[var(--accent-primary-light)] shrink-0">
+                <Ship size={20} />
               </div>
             </div>
 
-            {/* Card 2: Next Port Arrival */}
+            {/* Card 2: Awaiting Departure */}
             <div className="cs-card p-5 flex items-start justify-between">
               <div>
                 <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                  Next Scheduled Arrival
+                  Awaiting Departure
                 </span>
-                <div className="text-3xl font-bold text-[var(--text-high-contrast)] mt-2">
-                  {shipments.find((s) => s.expected_arrival)?.expected_arrival || "On Schedule"}
+                <div className="text-2xl sm:text-3xl font-bold text-[var(--text-high-contrast)] mt-2">
+                  {awaitingDeparture.length} at Quay
                 </div>
-                <p className="text-xs text-[var(--text-secondary)] mt-1.5">
-                  Berth window reserved under escrow
+                <p className="text-xs text-[var(--accent-cyan)] mt-2 flex items-center gap-1 font-medium">
+                  <Clock size={13} />
+                  Customs cleared &amp; sealed
                 </p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-[var(--accent-primary-bg)] border border-[rgba(99,102,241,0.3)] flex items-center justify-center text-[var(--accent-primary-light)]">
-                <Clock size={18} />
+              <div className="w-11 h-11 rounded-xl bg-[var(--accent-cyan-bg)] border border-[rgba(6,182,212,0.3)] flex items-center justify-center text-[var(--accent-cyan)] shrink-0">
+                <Clock size={20} />
               </div>
             </div>
 
@@ -203,44 +212,44 @@ export default function MyShipments() {
                 <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                   Delivered Cargo
                 </span>
-                <div className="text-3xl font-bold text-[var(--text-high-contrast)] mt-2">
+                <div className="text-2xl sm:text-3xl font-bold text-[var(--text-high-contrast)] mt-2">
                   {deliveredShipments.length} Completed
                 </div>
-                <p className="text-xs text-[var(--status-success)] mt-1.5 flex items-center gap-1">
+                <p className="text-xs text-[var(--status-success)] mt-2 flex items-center gap-1 font-medium">
                   ↗ 100% On-time guarantee
                 </p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-[var(--status-warning-bg)] border border-[var(--status-warning-border)] flex items-center justify-center text-[var(--status-warning)]">
-                <Award size={18} />
+              <div className="w-11 h-11 rounded-xl bg-[var(--status-warning-bg)] border border-[var(--status-warning-border)] flex items-center justify-center text-[var(--status-warning)] shrink-0">
+                <Award size={20} />
               </div>
             </div>
           </div>
 
           {/* Focused Shipment Banner */}
           {selectedShipment && (
-            <div className="cs-card p-6 space-y-5 bg-gradient-to-br from-[var(--surface-elevated)] to-[#151d2e] border-[var(--border-active)]">
+            <div className="cs-card p-6 space-y-5 bg-gradient-to-br from-[var(--surface-elevated)] via-[#151d2e] to-[var(--surface-base)] border-[var(--border-active)] rounded-2xl shadow-xl">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-[var(--accent-primary-bg)] border border-[rgba(99,102,241,0.3)] flex items-center justify-center text-[var(--accent-primary-light)] shrink-0">
-                    <Compass size={18} />
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-[var(--accent-primary-bg)] border border-[rgba(99,102,241,0.3)] flex items-center justify-center text-[var(--accent-primary-light)] shrink-0">
+                    <Compass size={22} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-[var(--text-high-contrast)]">
+                      <span className="font-bold text-base text-[var(--text-high-contrast)]">
                         Focused Shipment: #{selectedShipment.tracking_number || `CS-${selectedShipment.id}`}
                       </span>
-                      <span className="cs-pill cs-pill-green text-[10px] py-0 px-2 capitalize">
-                        ● {selectedShipment.status}
+                      <span className="cs-pill cs-pill-green text-xs py-0.5 px-2.5 capitalize font-semibold">
+                        ● {selectedShipment.status.replace("_", " ")}
                       </span>
                     </div>
-                    <div className="text-xs text-[var(--text-secondary)] mt-0.5">
+                    <div className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
                       {selectedShipment.product_name} • {selectedShipment.origin_port || "Origin"} to {selectedShipment.destination_port || "Destination Hub"}
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-xs font-mono text-[var(--accent-primary-light)]">
+                  <span className="text-xs font-mono font-bold text-[var(--accent-primary-light)] bg-[var(--surface-base)] px-3 py-1.5 rounded-lg border border-[var(--border-color)]">
                     {selectedShipment.carrier || "Dedicated Carrier"}
                   </span>
                 </div>
@@ -248,42 +257,42 @@ export default function MyShipments() {
 
               {/* Milestone Stepper */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-                <div className="p-3 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] space-y-1">
-                  <div className="flex items-center justify-between text-[10px] text-[var(--text-dim)] uppercase font-semibold">
+                <div className="p-3.5 rounded-xl bg-[var(--surface-base)] border border-[var(--border-color)] space-y-1">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-dim)] uppercase font-semibold">
                     <span>STEP 1</span>
                     <Check size={14} className="text-[var(--status-success)]" />
                   </div>
-                  <div className="font-bold text-xs text-[var(--text-high-contrast)]">Origin Dispatch</div>
-                  <div className="text-[11px] text-[var(--text-secondary)]">{selectedShipment.origin_port || "Factory Gate"}</div>
+                  <div className="font-bold text-sm text-[var(--text-high-contrast)]">Origin Dispatch</div>
+                  <div className="text-xs text-[var(--text-secondary)]">{selectedShipment.origin_port?.split("(")[0]?.trim() || "Factory Gate"}</div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] space-y-1">
-                  <div className="flex items-center justify-between text-[10px] text-[var(--text-dim)] uppercase font-semibold">
+                <div className="p-3.5 rounded-xl bg-[var(--surface-base)] border border-[var(--border-color)] space-y-1">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-dim)] uppercase font-semibold">
                     <span>STEP 2</span>
                     <Check size={14} className="text-[var(--status-success)]" />
                   </div>
-                  <div className="font-bold text-xs text-[var(--text-high-contrast)]">Port Clearance</div>
-                  <div className="text-[11px] text-[var(--text-secondary)]">Customs Sealed</div>
+                  <div className="font-bold text-sm text-[var(--text-high-contrast)]">Port Clearance</div>
+                  <div className="text-xs text-[var(--text-secondary)]">Customs Sealed</div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-[var(--surface-overlay)] border border-[var(--accent-primary)] shadow-[0_0_12px_rgba(99,102,241,0.25)] space-y-1">
-                  <div className="flex items-center justify-between text-[10px] text-[var(--accent-primary-light)] uppercase font-bold">
+                <div className="p-3.5 rounded-xl bg-[var(--surface-overlay)] border border-[var(--accent-primary)] shadow-[0_0_14px_rgba(99,102,241,0.3)] space-y-1">
+                  <div className="flex items-center justify-between text-xs text-[var(--accent-primary-light)] uppercase font-bold">
                     <span>STEP 3 • CURRENT</span>
                     <Ship size={14} />
                   </div>
-                  <div className="font-bold text-xs text-[var(--text-high-contrast)]">Ocean Transit</div>
-                  <div className="text-[11px] text-[var(--accent-cyan)] font-medium">
-                    {selectedShipment.status}
+                  <div className="font-bold text-sm text-[var(--text-high-contrast)]">Ocean Transit</div>
+                  <div className="text-xs text-[var(--accent-cyan)] font-semibold capitalize">
+                    {selectedShipment.status.replace("_", " ")}
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] space-y-1 opacity-75">
-                  <div className="flex items-center justify-between text-[10px] text-[var(--text-dim)] uppercase font-semibold">
+                <div className="p-3.5 rounded-xl bg-[var(--surface-base)] border border-[var(--border-color)] space-y-1 opacity-75">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-dim)] uppercase font-semibold">
                     <span>STEP 4</span>
                     <Clock size={14} />
                   </div>
-                  <div className="font-bold text-xs text-[var(--text-high-contrast)]">Destination Hub</div>
-                  <div className="text-[11px] text-[var(--text-secondary)]">ETA {selectedShipment.expected_arrival || "Pending"}</div>
+                  <div className="font-bold text-sm text-[var(--text-high-contrast)]">Destination Hub</div>
+                  <div className="text-xs text-[var(--text-secondary)]">ETA {selectedShipment.expected_arrival || "Pending"}</div>
                 </div>
               </div>
             </div>
@@ -297,7 +306,7 @@ export default function MyShipments() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors ${
+                    className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors ${
                       activeTab === tab.id
                         ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)] border border-[var(--border-active)]"
                         : "text-[var(--text-secondary)] hover:text-white"
@@ -308,17 +317,17 @@ export default function MyShipments() {
                 ))}
               </div>
 
-              <div className="relative w-full sm:w-64">
+              <div className="relative w-full sm:w-72">
                 <Search
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
                 />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Filter by product, route or carrier…"
-                  className="cs-input pl-9 py-1.5 text-xs"
+                  className="cs-input pl-10 py-2 text-sm"
                 />
               </div>
             </div>
@@ -332,7 +341,7 @@ export default function MyShipments() {
                       <th>TRACKING REF</th>
                       <th>CARGO / PRODUCT</th>
                       <th>ROUTE</th>
-                      <th>CARRIER & PLAN</th>
+                      <th>CARRIER &amp; PLAN</th>
                       <th>ESTIMATED ARRIVAL</th>
                       <th>STATUS</th>
                       <th className="text-right">ACTION</th>
@@ -341,7 +350,7 @@ export default function MyShipments() {
                   <tbody>
                     {filteredShipments.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="text-center py-10 text-[var(--text-secondary)]">
+                        <td colSpan={7} className="text-center py-12 text-[var(--text-secondary)] text-sm">
                           No shipments found matching "{searchQuery}".
                         </td>
                       </tr>
@@ -359,52 +368,52 @@ export default function MyShipments() {
                             }`}
                           >
                             <td>
-                              <span className="font-bold text-xs text-[var(--accent-cyan)] font-mono">
+                              <span className="font-bold text-sm text-[var(--accent-cyan)] font-mono">
                                 #{s.tracking_number || `CS-${s.id}`}
                               </span>
-                              <div className="text-[11px] text-[var(--text-dim)]">
+                              <div className="text-xs text-[var(--text-dim)] mt-0.5">
                                 {new Date(s.created_at).toLocaleDateString()}
                               </div>
                             </td>
                             <td>
-                              <div className="font-semibold text-xs text-[var(--text-high-contrast)]">
+                              <div className="font-semibold text-sm text-[var(--text-high-contrast)]">
                                 {s.product_name}
                               </div>
-                              <div className="text-[11px] text-[var(--text-secondary)]">
+                              <div className="text-xs text-[var(--text-secondary)] mt-0.5">
                                 {s.quantity} units
                               </div>
                             </td>
                             <td>
-                              <div className="font-medium text-xs text-[var(--text-high-contrast)]">
+                              <div className="font-medium text-sm text-[var(--text-high-contrast)]">
                                 {s.origin_port || "Origin"} → {s.destination_port || "Destination Hub"}
                               </div>
                             </td>
                             <td>
-                              <div className="font-semibold text-xs text-[var(--text-high-contrast)]">
+                              <div className="font-semibold text-sm text-[var(--text-high-contrast)]">
                                 {s.carrier || "Standard Carrier"}
                               </div>
-                              <div className="text-[11px] text-[var(--accent-primary-light)]">
+                              <div className="text-xs text-[var(--accent-primary-light)] mt-0.5">
                                 {s.route_type || "Direct Ocean"}
                               </div>
                             </td>
                             <td>
-                              <div className="font-semibold text-xs text-[var(--text-high-contrast)]">
+                              <div className="font-semibold text-sm text-[var(--text-high-contrast)]">
                                 {s.expected_arrival || "Scheduled"}
                               </div>
                             </td>
                             <td>
-                              <span className="cs-pill cs-pill-cyan text-[10px] capitalize">
-                                {s.status}
+                              <span className="cs-pill cs-pill-cyan text-xs capitalize">
+                                {s.status.replace("_", " ")}
                               </span>
                             </td>
                             <td className="text-right">
                               <button
                                 type="button"
                                 onClick={(e) => handleDelete(s.id, e)}
-                                className="p-1.5 rounded text-[var(--text-dim)] hover:text-[var(--status-critical)] hover:bg-[rgba(239,68,68,0.1)] transition-colors"
+                                className="p-2 rounded-lg text-[var(--text-dim)] hover:text-[var(--status-critical)] hover:bg-[rgba(239,68,68,0.1)] transition-colors"
                                 title="Cancel Shipment"
                               >
-                                <Trash2 size={14} />
+                                <Trash2 size={16} />
                               </button>
                             </td>
                           </tr>

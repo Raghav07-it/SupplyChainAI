@@ -162,6 +162,21 @@ def classify_news_article(
     elif location:
         confidence = 0.55
 
+    operational_impact = article.operational_impact
+    if not operational_impact:
+        if event_type == "geopolitical_conflict":
+            operational_impact = "Heightened security advisory; expect 8-14 day ocean transit diversions and bunker risk surcharges."
+        elif event_type == "port_congestion":
+            operational_impact = f"Quay dwell times extended at {location or 'berthing hub'}; advise pre-clearing manifests to avoid demurrage."
+        elif event_type == "severe_weather":
+            operational_impact = "Vessel anchorage holds and crane shutdowns expected; monitor feeder schedules for delay cascade."
+        elif event_type == "canal_transit":
+            operational_impact = "Canal booking slot constraints in effect; consider rail landbridge or alternative maritime corridors."
+        elif severity in ("high", "critical"):
+            operational_impact = f"Corridor advisory in {location or 'transit lane'}; potential delays of 24-48 hours on connected sailings."
+        else:
+            operational_impact = f"Active maritime signal for {location or 'global shipping lanes'}; current schedule variance remains within nominal tolerances."
+
     return article.model_copy(
         update={
             "location": location,
@@ -169,5 +184,6 @@ def classify_news_article(
             "event_type": event_type,
             "severity": severity,
             "confidence": confidence,
+            "operational_impact": operational_impact,
         }
     )

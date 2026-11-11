@@ -24,6 +24,7 @@ import {
   Loader2,
   Anchor,
   Box,
+  Globe,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { searchGlobal } from "../api/search";
@@ -138,6 +139,7 @@ export default function MainLayout() {
 
   const primaryNav = [
     { name: "Dashboard", path: "/dashboard", icon: LayoutGrid },
+    { name: "Global Intelligence", path: "/intelligence", icon: Globe },
     { name: "My Products", path: "/products", icon: Package },
     { name: "Plan Shipment", path: "/plan-shipment", icon: Ship },
     { name: "My Shipments", path: "/my-shipments", icon: Ship },

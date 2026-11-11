@@ -20,6 +20,7 @@ class NewsArticle(BaseModel):
         ge=0.0,
         le=1.0,
     )
+    operational_impact: Optional[str] = None
 
 
 class NewsResponse(BaseModel):

@@ -1,23 +1,33 @@
-import { PackageOpen } from 'lucide-react';
+import { PackageOpen } from "lucide-react";
 
-export const EmptyState = ({ message, description, actionLabel, onAction, icon }) => {
+export const EmptyState = ({
+  title,
+  message,
+  description,
+  actionLabel,
+  onAction,
+  icon,
+}) => {
+  const displayTitle = title || message || "No records found";
+
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center border border-dashed border-[var(--border-color)] rounded-xl bg-[var(--surface-base)]/50">
-      <div className="w-12 h-12 rounded-full bg-[var(--surface-overlay)] flex items-center justify-center text-[var(--text-secondary)] mb-3">
-        {icon || <PackageOpen size={24} />}
+    <div className="flex flex-col items-center justify-center py-14 px-6 text-center border border-dashed border-[var(--border-color)] rounded-2xl bg-[var(--surface-base)]/60">
+      <div className="w-14 h-14 rounded-2xl bg-[var(--surface-overlay)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent-primary-light)] mb-4 shadow-inner">
+        {icon || <PackageOpen size={28} />}
       </div>
-      <p className="text-sm font-semibold text-[var(--text-high-contrast)] mb-1">
-        {message || 'No records found'}
-      </p>
+      <h3 className="text-lg font-bold text-[var(--text-high-contrast)] mb-1.5">
+        {displayTitle}
+      </h3>
       {description && (
-        <p className="text-xs text-[var(--text-secondary)] max-w-sm mb-4">
+        <p className="text-sm text-[var(--text-secondary)] max-w-md mb-6 leading-relaxed">
           {description}
         </p>
       )}
       {actionLabel && onAction && (
         <button
+          type="button"
           onClick={onAction}
-          className="cs-btn cs-btn-primary text-xs"
+          className="cs-btn cs-btn-primary text-sm px-5 py-2.5 font-semibold"
         >
           {actionLabel}
         </button>

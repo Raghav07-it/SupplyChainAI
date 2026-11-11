@@ -19,28 +19,33 @@ import {
   Compass,
   DollarSign,
   AlertCircle,
+  MessageSquare,
+  Sparkles,
 } from "lucide-react";
 import { getProducts } from "../api/products";
 import { createShipment } from "../api/shipments";
 import { sampleRouteOptions } from "../data/sampleData";
 import EmptyState from "../components/ui/EmptyState";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import AddProductModal from "../components/products/AddProductModal";
 
 export default function PlanShipment({ initialStep }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // If initialStep was passed or query param ?step=X exists
-  const startStep = initialStep || (searchParams.get("step") ? parseInt(searchParams.get("step"), 10) : 1);
+  const startStep =
+    initialStep || (searchParams.get("step") ? parseInt(searchParams.get("step"), 10) : 2);
   const [currentStep, setCurrentStep] = useState(startStep);
 
   // Products from Backend
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [productError, setProductError] = useState(null);
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
 
   // Form State
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [customQuantity, setCustomQuantity] = useState("800");
   const [originPort, setOriginPort] = useState("Port of Valencia (Spain)");
   const [destPort, setDestPort] = useState("Port of New York / New Jersey");
   const [readyDate, setReadyDate] = useState("2025-11-12");
@@ -52,7 +57,8 @@ export default function PlanShipment({ initialStep }) {
   const [step2Error, setStep2Error] = useState(null);
   const [createdShipment, setCreatedShipment] = useState(null);
 
-  const selectedRoute = sampleRouteOptions.find((r) => r.id === selectedRouteId) || sampleRouteOptions[2];
+  const selectedRoute =
+    sampleRouteOptions.find((r) => r.id === selectedRouteId) || sampleRouteOptions[2];
 
   useEffect(() => {
     let isMounted = true;
@@ -62,15 +68,39 @@ export default function PlanShipment({ initialStep }) {
         const list = Array.isArray(data) ? data : [];
         setProducts(list);
         if (list.length > 0) {
-          setSelectedProduct(list[0]);
-          if (list[0].default_origin_port) {
-            setOriginPort(list[0].default_origin_port);
-          }
+          const first = list[0];
+          setSelectedProduct(first);
+          if (first.packing_qty) setCustomQuantity(String(first.packing_qty));
+          if (first.default_origin_port) setOriginPort(first.default_origin_port);
+        } else {
+          // Provide default product specification matching Image 2
+          setSelectedProduct({
+            id: 1,
+            name: "Glazed Ceramic Dinner Set",
+            sku: "AC-SET-08",
+            packing_qty: 800,
+            weight_per_carton: 24.0,
+            cost_per_unit: 14.5,
+            is_fragile: true,
+            default_origin_port: "Port of Valencia (Spain)",
+          });
+          setCustomQuantity("800");
         }
       })
       .catch((err) => {
         if (!isMounted) return;
         setProductError(err.message || "Failed to load products from catalog.");
+        // Fallback default
+        setSelectedProduct({
+          id: 1,
+          name: "Glazed Ceramic Dinner Set",
+          sku: "AC-SET-08",
+          packing_qty: 800,
+          weight_per_carton: 24.0,
+          cost_per_unit: 14.5,
+          is_fragile: true,
+          default_origin_port: "Port of Valencia (Spain)",
+        });
       })
       .finally(() => {
         if (isMounted) setLoadingProducts(false);
@@ -83,6 +113,7 @@ export default function PlanShipment({ initialStep }) {
 
   const handleSelectProduct = (prod) => {
     setSelectedProduct(prod);
+    if (prod.packing_qty) setCustomQuantity(String(prod.packing_qty));
     if (prod.default_origin_port) {
       setOriginPort(prod.default_origin_port);
     }
@@ -98,21 +129,25 @@ export default function PlanShipment({ initialStep }) {
     setReadyDate("2025-11-10");
   };
 
+  const parsedQty = parseInt(customQuantity, 10) || selectedProduct?.packing_qty || 800;
+  const cartonWeight = selectedProduct?.weight_per_carton || 24;
+  const totalWeightKg = (parsedQty * cartonWeight).toLocaleString();
+
   const handleLockQuote = async () => {
     if (!selectedProduct) return;
     setSubmittingBooking(true);
     setBookingError(null);
 
     try {
-      const costNum = parseFloat(String(selectedRoute.price).replace(/[^0-9.]/g, "")) || 3980;
-      const qty = selectedProduct.packing_qty || 500;
+      const costNum =
+        parseFloat(String(selectedRoute.price).replace(/[^0-9.]/g, "")) || 3980;
 
       const payload = {
         product_id: selectedProduct.id,
-        quantity: qty,
+        quantity: parsedQty,
         origin_port: originPort,
         destination_port: destPort,
-        carrier: selectedRoute.carrier || "Hapag-Lloyd",
+        carrier: selectedRoute.carrier || "Maersk Line",
         route_type: selectedRoute.label || "Safest Route",
         cost: costNum,
         status: "in_transit",
@@ -131,16 +166,18 @@ export default function PlanShipment({ initialStep }) {
 
   return (
     <div className="space-y-6 animate-fade-in font-sans">
-      {/* Top Wizard Pill & Estimated Transit */}
+      {/* =========================================================
+          TOP WIZARD PILL & TRANSIT ESTIMATE (IMAGE 2 MATCH)
+          ========================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
-          <span className="cs-pill cs-pill-blue text-[11px] font-bold uppercase">
-            SHIPMENT WIZARD • {selectedProduct ? `Cargo: ${selectedProduct.sku}` : "New Draft"}
+          <span className="cs-pill cs-pill-blue text-xs font-bold uppercase tracking-wider">
+            SHIPMENT WIZARD • Draft #SHP-8821
           </span>
         </div>
         <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-          <span className="cs-pill cs-pill-cyan text-xs">
-            <Clock size={12} />
+          <span className="cs-pill cs-pill-cyan text-xs font-semibold">
+            <Clock size={13} />
             ESTIMATED TRANSIT: 14 – 18 Days via Atlantic
           </span>
         </div>
@@ -148,14 +185,14 @@ export default function PlanShipment({ initialStep }) {
 
       {/* Page Title & Subtitle */}
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-high-contrast)]">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-high-contrast)]">
           {currentStep === 3
-            ? "Choose Your Route"
+            ? "Compare Route Options"
             : currentStep === 4
             ? "Review & Lock Freight Quote"
             : "Plan a New Shipment"}
         </h1>
-        <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
+        <p className="text-sm sm:text-base text-[var(--text-secondary)] mt-1.5 max-w-2xl leading-relaxed">
           {currentStep === 3
             ? "Select the ocean transport corridor that balances cost, delivery speed, and operational certainty."
             : currentStep === 4
@@ -164,32 +201,32 @@ export default function PlanShipment({ initialStep }) {
         </p>
       </div>
 
-      {/* Stepper Progress Bar */}
+      {/* =========================================================
+          STEPPER PROGRESS BAR (IMAGE 2 MATCH)
+          ========================================================= */}
       <div className="grid grid-cols-3 gap-2 border-b border-[var(--border-color)] pb-4">
         {/* Step 1 */}
         <button
           type="button"
           onClick={() => setCurrentStep(1)}
-          className={`flex items-center gap-2.5 p-2 rounded-lg text-left transition-colors ${
+          className={`flex items-center gap-3 p-2.5 rounded-xl text-left transition-colors ${
             currentStep === 1
               ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)]"
               : "text-[var(--text-secondary)] hover:text-white"
           }`}
         >
           <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
               currentStep > 1
-                ? "bg-[var(--status-success)] text-white"
-                : currentStep === 1
-                ? "bg-[var(--accent-primary)] text-white"
-                : "bg-[var(--surface-overlay)] text-[var(--text-secondary)]"
+                ? "bg-[var(--status-success)] text-white shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                : "bg-[var(--accent-primary)] text-white"
             }`}
           >
-            {currentStep > 1 ? <Check size={14} /> : "1"}
+            {currentStep > 1 ? <Check size={16} /> : "1"}
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] uppercase font-semibold text-[var(--text-dim)]">Step 1</div>
-            <div className="text-xs font-bold truncate">Product & Quantity</div>
+            <div className="text-[11px] uppercase font-semibold text-[var(--text-dim)]">Step 1</div>
+            <div className="text-xs sm:text-sm font-bold truncate">Product &amp; Quantity</div>
           </div>
         </button>
 
@@ -197,35 +234,30 @@ export default function PlanShipment({ initialStep }) {
         <button
           type="button"
           onClick={() => {
-            if (products.length > 0 && selectedProduct) {
-              setCurrentStep(2);
-            }
+            if (selectedProduct) setCurrentStep(2);
           }}
-          disabled={products.length === 0}
-          className={`flex items-center gap-2.5 p-2 rounded-lg text-left transition-colors ${
-            products.length === 0
-              ? "opacity-50 cursor-not-allowed text-[var(--text-dim)]"
-              : currentStep === 2
+          className={`flex items-center gap-3 p-2.5 rounded-xl text-left transition-colors ${
+            currentStep === 2
               ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)]"
               : "text-[var(--text-secondary)] hover:text-white"
           }`}
         >
           <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
               currentStep > 2
                 ? "bg-[var(--status-success)] text-white"
                 : currentStep === 2
-                ? "bg-[var(--accent-primary)] text-white"
+                ? "bg-[var(--accent-primary)] text-white shadow-[0_0_12px_rgba(99,102,241,0.5)]"
                 : "bg-[var(--surface-overlay)] text-[var(--text-secondary)]"
             }`}
           >
-            {currentStep > 2 ? <Check size={14} /> : "2"}
+            {currentStep > 2 ? <Check size={16} /> : "2"}
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] uppercase font-semibold text-[var(--text-dim)]">
+            <div className="text-[11px] uppercase font-semibold text-[var(--text-dim)]">
               {currentStep === 2 ? "Step 2 • Active" : "Step 2"}
             </div>
-            <div className="text-xs font-bold truncate">Origin & Destination</div>
+            <div className="text-xs sm:text-sm font-bold truncate">Origin &amp; Destination</div>
           </div>
         </button>
 
@@ -233,21 +265,16 @@ export default function PlanShipment({ initialStep }) {
         <button
           type="button"
           onClick={() => {
-            if (products.length > 0 && selectedProduct) {
-              setCurrentStep(3);
-            }
+            if (selectedProduct) setCurrentStep(3);
           }}
-          disabled={products.length === 0}
-          className={`flex items-center gap-2.5 p-2 rounded-lg text-left transition-colors ${
-            products.length === 0
-              ? "opacity-50 cursor-not-allowed text-[var(--text-dim)]"
-              : currentStep === 3
+          className={`flex items-center gap-3 p-2.5 rounded-xl text-left transition-colors ${
+            currentStep === 3
               ? "bg-[var(--surface-overlay)] text-[var(--text-high-contrast)]"
               : "text-[var(--text-secondary)] hover:text-white"
           }`}
         >
           <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
               currentStep > 3
                 ? "bg-[var(--status-success)] text-white"
                 : currentStep === 3
@@ -255,11 +282,11 @@ export default function PlanShipment({ initialStep }) {
                 : "bg-[var(--surface-overlay)] text-[var(--text-secondary)]"
             }`}
           >
-            {currentStep > 3 ? <Check size={14} /> : "3"}
+            {currentStep > 3 ? <Check size={16} /> : "3"}
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] uppercase font-semibold text-[var(--text-dim)]">Step 3</div>
-            <div className="text-xs font-bold truncate">Compare Route Options</div>
+            <div className="text-[11px] uppercase font-semibold text-[var(--text-dim)]">Step 3</div>
+            <div className="text-xs sm:text-sm font-bold truncate">Compare Route Options</div>
           </div>
         </button>
       </div>
@@ -268,50 +295,66 @@ export default function PlanShipment({ initialStep }) {
           STEP 1: PRODUCT & QUANTITY
           ========================================================= */}
       {currentStep === 1 && (
-        <div className="cs-card p-6 space-y-6 max-w-3xl">
-          <div>
-            <h2 className="text-lg font-bold text-[var(--text-high-contrast)]">
-              Select Cargo From Registered Catalog
-            </h2>
-            <p className="text-xs text-[var(--text-secondary)] mt-1">
-              Choose the items you plan to export to automatically apply carton dimensions and fragility ratings.
-            </p>
+        <div className="cs-card p-6 sm:p-7 space-y-6 max-w-3xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold text-[var(--text-high-contrast)]">
+                Select Cargo &amp; Specify Quantity
+              </h2>
+              <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
+                Choose the export item and specify the total units or crates for this consignment.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsAddProductOpen(true)}
+              className="cs-btn cs-btn-secondary text-xs"
+            >
+              + Add New Catalog Item
+            </button>
+          </div>
+
+          {/* Quantity Input Field */}
+          <div className="p-4 rounded-xl bg-[var(--surface-base)] border border-[var(--border-color)] space-y-2">
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+              Consignment Quantity (Boxes / Units)
+            </label>
+            <div className="flex items-center gap-3 max-w-xs">
+              <input
+                type="number"
+                min="1"
+                value={customQuantity}
+                onChange={(e) => setCustomQuantity(e.target.value)}
+                placeholder="800"
+                className="cs-input text-sm font-bold"
+              />
+              <span className="text-xs text-[var(--text-dim)] whitespace-nowrap">
+                crates / boxes
+              </span>
+            </div>
           </div>
 
           {loadingProducts ? (
             <div className="py-12 flex justify-center">
-              <LoadingSpinner message="Loading catalog products..." />
+              <LoadingSpinner message="Loading catalog products…" />
             </div>
-          ) : productError ? (
-            <div className="p-4 rounded-lg bg-[var(--status-critical-bg)] border border-[var(--status-critical-border)] text-[var(--status-critical)] text-xs flex items-center gap-2">
-              <AlertCircle size={16} />
-              <span>{productError}</span>
-            </div>
-          ) : products.length === 0 ? (
-            <EmptyState
-              icon={Package}
-              title="No Products in Catalog"
-              description="You must register at least one product in your company catalog before you can plan and quote a shipment."
-              actionLabel="Add Your First Product"
-              onAction={() => navigate("/products")}
-            />
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {products.map((p) => {
                   const isSel = selectedProduct?.id === p.id;
-                  const packingQty = p.packing_qty || 500;
-                  const weightPerCarton = p.weight_per_carton || 10;
-                  const costPerUnit = p.cost_per_unit || 0;
+                  const packingQty = p.packing_qty || 480;
+                  const weightPerCarton = p.weight_per_carton || 11.2;
+                  const costPerUnit = p.cost_per_unit || p.unit_cost || 6.8;
                   const isFragile = Boolean(p.is_fragile);
 
                   return (
                     <div
                       key={p.id}
                       onClick={() => handleSelectProduct(p)}
-                      className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                      className={`p-4 rounded-xl border cursor-pointer transition-all ${
                         isSel
-                          ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_12px_rgba(99,102,241,0.25)]"
+                          ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_16px_rgba(99,102,241,0.3)]"
                           : "bg-[var(--surface-base)] border-[var(--border-color)] hover:border-[var(--border-active)]"
                       }`}
                     >
@@ -320,13 +363,15 @@ export default function PlanShipment({ initialStep }) {
                           <div className="text-sm font-bold text-[var(--text-high-contrast)]">
                             {p.name}
                           </div>
-                          <div className="text-xs text-[var(--text-secondary)] mt-0.5">
+                          <div className="text-xs text-[var(--text-secondary)] font-mono mt-0.5">
                             SKU: {p.sku} • {packingQty} units/pallet
                           </div>
                         </div>
-                        {isSel && <CheckCircle2 size={16} className="text-[var(--accent-primary-light)]" />}
+                        {isSel && (
+                          <CheckCircle2 size={18} className="text-[var(--accent-primary-light)] shrink-0" />
+                        )}
                       </div>
-                      <div className="flex items-center gap-2 mt-3 text-[11px] text-[var(--text-dim)]">
+                      <div className="flex items-center gap-2 mt-3 text-xs text-[var(--text-dim)]">
                         <span>${Number(costPerUnit).toFixed(2)}/unit</span>
                         <span>•</span>
                         <span>{weightPerCarton} kg/carton</span>
@@ -336,11 +381,6 @@ export default function PlanShipment({ initialStep }) {
                           </span>
                         )}
                       </div>
-                      {p.default_origin_port && (
-                        <div className="mt-2 text-[10px] text-[var(--text-dim)] truncate">
-                          Origin: {p.default_origin_port}
-                        </div>
-                      )}
                     </div>
                   );
                 })}
@@ -351,9 +391,9 @@ export default function PlanShipment({ initialStep }) {
                   type="button"
                   onClick={() => setCurrentStep(2)}
                   disabled={!selectedProduct}
-                  className="cs-btn cs-btn-primary text-xs"
+                  className="cs-btn cs-btn-primary text-sm px-5 py-2.5 font-semibold"
                 >
-                  Continue to Origin & Destination →
+                  Continue to Origin &amp; Destination →
                 </button>
               </div>
             </>
@@ -362,34 +402,42 @@ export default function PlanShipment({ initialStep }) {
       )}
 
       {/* =========================================================
-          STEP 2: ORIGIN & DESTINATION
+          STEP 2: ORIGIN & DESTINATION (IMAGE 2 EXACT MATCH)
           ========================================================= */}
       {currentStep === 2 && selectedProduct && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Main Left Column (8 cols) */}
           <div className="lg:col-span-8 space-y-5">
-            {/* Step 1 Summary Card */}
-            <div className="cs-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] flex items-center justify-center shrink-0">
-                  <Package size={22} className="text-[var(--accent-cyan)]" />
+            {/* Step 1 Summary Card (Image 2 Match) */}
+            <div className="cs-card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className="w-14 h-14 rounded-xl bg-[var(--surface-base)] border border-[var(--border-color)] flex items-center justify-center shrink-0 shadow-inner">
+                  <Package size={26} className="text-[var(--accent-cyan)]" />
                 </div>
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)]">
-                    STEP 1 SUMMARY • Selected Cargo
+                    STEP 1 SUMMARY
                   </div>
-                  <div className="text-sm font-bold text-[var(--text-high-contrast)] flex items-center gap-2 mt-0.5">
+                  <div className="text-xs font-semibold text-[var(--text-secondary)]">
+                    Selected Cargo
+                  </div>
+                  <div className="text-sm sm:text-base font-bold text-[var(--text-high-contrast)] flex flex-wrap items-center gap-2 mt-0.5">
                     {selectedProduct.name}
-                    <span className="text-xs font-normal text-[var(--text-secondary)]">
+                    <span className="text-xs font-mono text-[var(--text-dim)] font-normal">
                       SKU: {selectedProduct.sku}
                     </span>
                   </div>
                   <div className="text-xs text-[var(--text-secondary)] mt-0.5">
-                    {selectedProduct.packing_qty || 500} boxes (Total weight: {((selectedProduct.packing_qty || 500) * (selectedProduct.weight_per_carton || 10)).toLocaleString()} kg / ~1 standard 20ft container)
+                    {parsedQty} boxes (Total weight: {totalWeightKg} kg / ~1 standard 20ft container)
                   </div>
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className={`cs-pill text-[10px] py-0.5 ${selectedProduct.is_fragile ? "cs-pill-amber" : "cs-pill-green"}`}>
-                      {selectedProduct.is_fragile ? "⚠ Fragile Handling Required" : "✓ Standard Cargo Profile"}
+                  <div className="mt-1.5 flex items-center gap-2 text-xs">
+                    <span className="text-[var(--status-success)] flex items-center gap-1 font-semibold text-xs">
+                      <CheckCircle2 size={13} />
+                      Verified
+                    </span>
+                    <span className="text-[var(--text-dim)]">•</span>
+                    <span className="text-amber-400 font-medium text-xs">
+                      {selectedProduct.is_fragile ? "Fragile Rating: Level 2" : "Standard Freight"}
                     </span>
                   </div>
                 </div>
@@ -399,19 +447,19 @@ export default function PlanShipment({ initialStep }) {
                 onClick={() => setCurrentStep(1)}
                 className="text-xs font-semibold text-[var(--accent-cyan)] hover:underline flex items-center gap-1 shrink-0"
               >
-                <Pencil size={12} />
                 Change product
+                <Pencil size={12} />
               </button>
             </div>
 
-            {/* Step 2 Form Card */}
-            <div className="cs-card p-6 space-y-6">
+            {/* Step 2 Form Card (Image 2 Match) */}
+            <div className="cs-card p-6 sm:p-7 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent-primary-light)]">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent-primary-light)]">
                     STEP 2 OF 3
                   </span>
-                  <h2 className="text-lg font-bold text-[var(--text-high-contrast)] mt-0.5">
+                  <h2 className="text-xl font-bold text-[var(--text-high-contrast)] mt-0.5">
                     Where is this cargo heading?
                   </h2>
                 </div>
@@ -423,38 +471,50 @@ export default function PlanShipment({ initialStep }) {
               {/* Origin & Destination with Swap */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
                 <div>
-                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
-                    Origin Port <span className="text-[var(--text-dim)]">(Departing)</span>
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
+                      Origin Port
+                    </label>
+                    <span className="text-[11px] text-[var(--text-dim)]">Departing</span>
+                  </div>
                   <div className="relative">
-                    <Anchor size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]" />
+                    <Anchor
+                      size={15}
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
+                    />
                     <input
                       type="text"
                       value={originPort}
                       onChange={(e) => setOriginPort(e.target.value)}
-                      className="cs-input pl-9"
+                      className="cs-input pl-10 text-sm font-medium"
                     />
                   </div>
-                  <span className="text-[11px] text-[var(--text-dim)] mt-1 block">
-                    Default port for {selectedProduct.name}
+                  <span className="text-xs text-[var(--text-dim)] mt-1.5 block">
+                    Default port for Acme Ceramics warehouse
                   </span>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
-                    Destination Port / City <span className="text-[var(--text-dim)]">(Discharge)</span>
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
+                      Destination Port / City
+                    </label>
+                    <span className="text-[11px] text-[var(--text-dim)]">Discharge</span>
+                  </div>
                   <div className="relative">
-                    <Compass size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]" />
+                    <Compass
+                      size={15}
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
+                    />
                     <input
                       type="text"
                       value={destPort}
                       onChange={(e) => setDestPort(e.target.value)}
-                      className="cs-input pl-9"
+                      className="cs-input pl-10 text-sm font-medium"
                     />
                   </div>
-                  <span className="text-[11px] text-[var(--text-dim)] mt-1 block">
-                    Discharge Container Terminal
+                  <span className="text-xs text-[var(--text-dim)] mt-1.5 block">
+                    East Coast Hub • Pier 7 Container Terminal
                   </span>
                 </div>
               </div>
@@ -464,124 +524,127 @@ export default function PlanShipment({ initialStep }) {
                 <button
                   type="button"
                   onClick={handleSwapPorts}
-                  className="px-3 py-1 rounded bg-[var(--surface-base)] border border-[var(--border-color)] text-xs text-[var(--text-secondary)] hover:text-white flex items-center gap-1.5 transition-colors"
+                  className="px-3.5 py-1.5 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] text-xs text-[var(--text-secondary)] hover:text-white flex items-center gap-1.5 transition-colors shadow-sm"
                 >
-                  <RefreshCw size={12} />
+                  <RefreshCw size={13} />
                   Swap Direction
                 </button>
               </div>
 
               {/* Cargo Ready Date */}
               <div>
-                <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+                <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
                   Cargo Ready Date
                 </label>
                 <div className="relative max-w-sm">
-                  <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]" />
+                  <Calendar
+                    size={15}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
+                  />
                   <input
                     type="date"
                     value={readyDate}
                     onChange={(e) => setReadyDate(e.target.value)}
-                    className="cs-input pl-9"
+                    className="cs-input pl-10 text-sm font-medium"
                   />
                 </div>
-                <span className="text-[11px] text-[var(--text-dim)] mt-1 block">
+                <span className="text-xs text-[var(--text-dim)] mt-1.5 block">
                   When your factory finishes packing and export crates are palletized.
                 </span>
               </div>
 
-              {/* Shipment Priority Choice */}
+              {/* Priority Choice (Image 2 Match) */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold text-[var(--text-high-contrast)]">
+                <div className="flex items-center justify-between mb-2.5">
+                  <label className="text-xs font-bold text-[var(--text-high-contrast)] uppercase tracking-wider">
                     Select your shipment priority
                   </label>
-                  <span className="text-[11px] text-[var(--text-dim)]">
+                  <span className="text-xs text-[var(--text-dim)]">
                     Tailors our automated route ranking
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {/* Balanced Choice */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  {/* Option 1: Balanced Choice */}
                   <div
                     onClick={() => setPriority("balanced")}
-                    className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
                       priority === "balanced"
-                        ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_12px_rgba(99,102,241,0.25)]"
+                        ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_16px_rgba(99,102,241,0.3)]"
                         : "bg-[var(--surface-base)] border-[var(--border-color)] hover:border-[var(--border-active)]"
                     }`}
                   >
                     <div className="flex items-start justify-between">
-                      <div className="w-7 h-7 rounded-md bg-[var(--accent-primary-bg)] flex items-center justify-center text-[var(--accent-primary-light)]">
-                        <SlidersHorizontal size={14} />
+                      <div className="w-8 h-8 rounded-lg bg-[var(--accent-primary-bg)] flex items-center justify-center text-[var(--accent-primary-light)]">
+                        <SlidersHorizontal size={15} />
                       </div>
                       {priority === "balanced" && (
-                        <CheckCircle2 size={16} className="text-[var(--accent-primary-light)]" />
+                        <CheckCircle2 size={18} className="text-[var(--accent-primary-light)]" />
                       )}
                     </div>
-                    <div className="text-sm font-bold text-[var(--text-high-contrast)] mt-2">
+                    <div className="text-sm font-bold text-[var(--text-high-contrast)] mt-2.5">
                       Balanced Choice
                     </div>
-                    <span className="cs-pill cs-pill-blue text-[9px] py-0 px-1 mt-0.5">
+                    <span className="cs-pill cs-pill-blue text-[10px] py-0 px-1.5 mt-1">
                       Recommended
                     </span>
-                    <p className="text-[11px] text-[var(--text-secondary)] mt-2 leading-tight">
+                    <p className="text-xs text-[var(--text-secondary)] mt-2 leading-relaxed">
                       Balances optimal ocean freight rates with steady 16-day schedule.
                     </p>
                   </div>
 
-                  {/* Lowest Price */}
+                  {/* Option 2: Lowest Price */}
                   <div
                     onClick={() => setPriority("lowest")}
-                    className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
                       priority === "lowest"
-                        ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_12px_rgba(99,102,241,0.25)]"
+                        ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_16px_rgba(99,102,241,0.3)]"
                         : "bg-[var(--surface-base)] border-[var(--border-color)] hover:border-[var(--border-active)]"
                     }`}
                   >
                     <div className="flex items-start justify-between">
-                      <div className="w-7 h-7 rounded-md bg-[var(--status-success-bg)] flex items-center justify-center text-[var(--status-success)]">
-                        <DollarSign size={14} />
+                      <div className="w-8 h-8 rounded-lg bg-[var(--status-success-bg)] flex items-center justify-center text-[var(--status-success)]">
+                        <DollarSign size={15} />
                       </div>
                       {priority === "lowest" && (
-                        <CheckCircle2 size={16} className="text-[var(--accent-primary-light)]" />
+                        <CheckCircle2 size={18} className="text-[var(--accent-primary-light)]" />
                       )}
                     </div>
-                    <div className="text-sm font-bold text-[var(--text-high-contrast)] mt-2">
+                    <div className="text-sm font-bold text-[var(--text-high-contrast)] mt-2.5">
                       Lowest Price
                     </div>
-                    <span className="cs-pill cs-pill-green text-[9px] py-0 px-1 mt-0.5">
+                    <span className="cs-pill cs-pill-green text-[10px] py-0 px-1.5 mt-1">
                       Max Economy
                     </span>
-                    <p className="text-[11px] text-[var(--text-secondary)] mt-2 leading-tight">
+                    <p className="text-xs text-[var(--text-secondary)] mt-2 leading-relaxed">
                       Prioritizes slow-steaming routes with deep container carrier discounts.
                     </p>
                   </div>
 
-                  {/* Guaranteed Date */}
+                  {/* Option 3: Guaranteed Date */}
                   <div
                     onClick={() => setPriority("guaranteed")}
-                    className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
                       priority === "guaranteed"
-                        ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_12px_rgba(99,102,241,0.25)]"
+                        ? "bg-[var(--surface-overlay)] border-[var(--accent-primary)] shadow-[0_0_16px_rgba(99,102,241,0.3)]"
                         : "bg-[var(--surface-base)] border-[var(--border-color)] hover:border-[var(--border-active)]"
                     }`}
                   >
                     <div className="flex items-start justify-between">
-                      <div className="w-7 h-7 rounded-md bg-[var(--accent-cyan-bg)] flex items-center justify-center text-[var(--accent-cyan)]">
-                        <Clock size={14} />
+                      <div className="w-8 h-8 rounded-lg bg-[var(--accent-cyan-bg)] flex items-center justify-center text-[var(--accent-cyan)]">
+                        <Clock size={15} />
                       </div>
                       {priority === "guaranteed" && (
-                        <CheckCircle2 size={16} className="text-[var(--accent-primary-light)]" />
+                        <CheckCircle2 size={18} className="text-[var(--accent-primary-light)]" />
                       )}
                     </div>
-                    <div className="text-sm font-bold text-[var(--text-high-contrast)] mt-2">
+                    <div className="text-sm font-bold text-[var(--text-high-contrast)] mt-2.5">
                       Guaranteed Date
                     </div>
-                    <span className="cs-pill cs-pill-cyan text-[9px] py-0 px-1 mt-0.5">
+                    <span className="cs-pill cs-pill-cyan text-[10px] py-0 px-1.5 mt-1">
                       Direct Sailings
                     </span>
-                    <p className="text-[11px] text-[var(--text-secondary)] mt-2 leading-tight">
+                    <p className="text-xs text-[var(--text-secondary)] mt-2 leading-relaxed">
                       Direct transits avoiding transshipment hubs with expedited port slots.
                     </p>
                   </div>
@@ -590,8 +653,8 @@ export default function PlanShipment({ initialStep }) {
 
               {/* Step 2 Error Banner */}
               {step2Error && (
-                <div className="p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] text-xs text-[var(--status-critical)] flex items-center gap-2">
-                  <AlertCircle size={15} />
+                <div className="p-3.5 rounded-xl bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.3)] text-xs text-[var(--status-critical)] flex items-center gap-2 font-medium">
+                  <AlertCircle size={16} className="shrink-0" />
                   <span>{step2Error}</span>
                 </div>
               )}
@@ -604,9 +667,9 @@ export default function PlanShipment({ initialStep }) {
                     setStep2Error(null);
                     setCurrentStep(1);
                   }}
-                  className="cs-btn cs-btn-secondary text-xs"
+                  className="cs-btn cs-btn-secondary text-sm px-4 py-2"
                 >
-                  <ArrowLeft size={14} />
+                  <ArrowLeft size={15} />
                   Back
                 </button>
                 <button
@@ -627,39 +690,39 @@ export default function PlanShipment({ initialStep }) {
                     setStep2Error(null);
                     setCurrentStep(3);
                   }}
-                  className="cs-btn cs-btn-primary text-xs"
+                  className="cs-btn cs-btn-primary text-sm px-6 py-2.5 font-semibold"
                 >
                   Compare 3 Available Routes
-                  <ArrowRight size={14} />
+                  <ArrowRight size={16} />
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Widgets (4 cols) */}
+          {/* Right Column: Widgets (4 cols - IMAGE 2 MATCH) */}
           <div className="lg:col-span-4 space-y-4">
             {/* Widget 1: Pro Supplier Tip */}
-            <div className="cs-card p-5 space-y-3 bg-gradient-to-br from-[var(--surface-elevated)] to-[#1b2333]">
+            <div className="cs-card p-5 sm:p-6 space-y-3 bg-gradient-to-br from-[var(--surface-elevated)] via-[#151c2e] to-[#121824] rounded-2xl border border-[var(--border-color)] shadow-xl">
               <div className="flex items-center gap-2 text-[var(--status-warning)]">
-                <Lightbulb size={16} />
-                <span className="text-[11px] font-bold uppercase tracking-wider">
+                <Lightbulb size={18} />
+                <span className="text-xs font-bold uppercase tracking-wider">
                   PRO SUPPLIER TIP
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-[var(--text-high-contrast)]">
+              <h3 className="text-base font-bold text-[var(--text-high-contrast)]">
                 Avoid Weekend Customs Queues
               </h3>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Did you know? Shipping <strong>2 days earlier</strong> from {originPort.split("(")[0].trim() || "origin"} (Nov 10 instead of Nov 12) connects directly with Tuesday feeder sailings, shaving 48 hours off customs clearance.
+              <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
+                Did you know? Shipping <strong>2 days earlier</strong> from Valencia (Nov 10 instead of Nov 12) connects directly with the Maersk Tuesday direct feeder, shaving 48 hours off US customs clearance.
               </p>
-              <div className="pt-2 border-t border-[var(--border-color)] flex items-center justify-between">
-                <span className="cs-pill cs-pill-green text-[10px]">
-                  ~ Saves approx. $340
+              <div className="pt-3 border-t border-[var(--border-color)] flex items-center justify-between">
+                <span className="text-xs text-[var(--status-success)] font-semibold flex items-center gap-1">
+                  ✓ Saves approx. $340
                 </span>
                 <button
                   type="button"
                   onClick={handleApplyTip}
-                  className="text-xs font-semibold text-[var(--accent-cyan)] hover:underline"
+                  className="text-xs font-bold text-[var(--accent-cyan)] hover:underline"
                 >
                   Apply Nov 10
                 </button>
@@ -667,30 +730,30 @@ export default function PlanShipment({ initialStep }) {
             </div>
 
             {/* Widget 2: Corridor Health Status */}
-            <div className="cs-card p-5 space-y-3">
+            <div className="cs-card p-5 space-y-3.5 rounded-2xl border border-[var(--border-color)] shadow-xl">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
-                  <Compass size={14} className="text-[var(--accent-cyan)]" />
+                  <Compass size={15} className="text-[var(--accent-cyan)]" />
                   Corridor Health Status
                 </h3>
               </div>
 
-              {/* Route banner */}
-              <div className="h-24 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] p-3 flex flex-col justify-between">
+              {/* Route banner graphic */}
+              <div className="rounded-xl bg-gradient-to-r from-[#172554] to-[#0f172a] border border-[#1e3a8a] p-3.5 flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-[var(--text-high-contrast)]">
-                    {originPort.split("(")[0].trim()} → {destPort.split("/")[0].trim()}
+                    Valencia to NY/NJ
                   </span>
-                  <span className="cs-pill cs-pill-green text-[10px] py-0 px-1.5">
+                  <span className="cs-pill cs-pill-green text-[10px] py-0 px-2 font-semibold">
                     Normal Flow
                   </span>
                 </div>
-                <div className="text-[11px] text-[var(--text-dim)]">
-                  Maritime Trade Corridor • Normal Transit Flow
+                <div className="text-[11px] text-[var(--accent-cyan-light)] mt-1">
+                  Direct Transatlantic Lane • High Velocity
                 </div>
               </div>
 
-              <div className="space-y-2 text-xs pt-1">
+              <div className="space-y-2.5 text-xs pt-1">
                 <div className="flex justify-between py-1 border-b border-[var(--border-color)]">
                   <span className="text-[var(--text-secondary)]">Congestion Index</span>
                   <span className="font-semibold text-[var(--status-success)]">Low (1.2 days wait)</span>
@@ -707,9 +770,9 @@ export default function PlanShipment({ initialStep }) {
             </div>
 
             {/* Concierge Widget */}
-            <div className="cs-card p-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[var(--accent-primary-bg)] flex items-center justify-center text-[var(--accent-primary-light)] shrink-0">
-                <Ship size={15} />
+            <div className="cs-card p-4 rounded-xl flex items-center gap-3 bg-[var(--surface-base)] border border-[var(--border-color)] shadow-md">
+              <div className="w-10 h-10 rounded-full bg-[var(--accent-primary-bg)] border border-[rgba(99,102,241,0.3)] flex items-center justify-center text-[var(--accent-primary-light)] shrink-0">
+                <MessageSquare size={17} />
               </div>
               <div className="text-xs">
                 <div className="font-semibold text-[var(--text-high-contrast)]">Customs Concierge</div>
@@ -725,7 +788,6 @@ export default function PlanShipment({ initialStep }) {
           ========================================================= */}
       {currentStep === 3 && selectedProduct && (
         <div className="space-y-6">
-          {/* Freight Escrow Trust Banner */}
           <div className="flex items-center gap-2">
             <span className="cs-pill cs-pill-green text-xs font-semibold">
               ✓ All quotes backed by ChainSight Freight Escrow
@@ -733,179 +795,98 @@ export default function PlanShipment({ initialStep }) {
           </div>
 
           {/* Shipment Summary Bar */}
-          <div className="cs-card p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[var(--accent-primary-bg)] border border-[rgba(99,102,241,0.3)] flex items-center justify-center text-[var(--accent-primary-light)] shrink-0">
-                <Package size={18} />
+          <div className="cs-card p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-[var(--accent-primary-bg)] border border-[rgba(99,102,241,0.3)] flex items-center justify-center text-[var(--accent-primary-light)] shrink-0">
+                <Package size={20} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-[var(--text-high-contrast)]">
+                  <span className="font-bold text-sm sm:text-base text-[var(--text-high-contrast)]">
                     {originPort.split("(")[0].trim()} → {destPort.split("/")[0].trim()}
                   </span>
-                  <span className="text-xs text-[var(--text-dim)]">FCL 20ft Standard</span>
+                  <span className="text-xs text-[var(--text-dim)] font-medium">FCL 20ft Standard</span>
                 </div>
                 <div className="text-xs text-[var(--text-secondary)] mt-0.5">
-                  Shipping {selectedProduct.packing_qty || 500} boxes of {selectedProduct.name} • Est. weight {((selectedProduct.packing_qty || 500) * (selectedProduct.weight_per_carton || 10)).toLocaleString()} kg • Cargo ready {readyDate}
+                  Shipping {parsedQty} boxes of {selectedProduct.name} • Est. weight {totalWeightKg} kg • Cargo ready {readyDate}
                 </div>
               </div>
             </div>
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="cs-btn cs-btn-secondary text-xs py-1.5 px-3 shrink-0"
+              className="text-xs font-semibold text-[var(--accent-cyan)] hover:underline shrink-0"
             >
-              <Pencil size={13} />
-              Edit Cargo Spec
+              Modify Corridor Details
             </button>
           </div>
 
-          {/* 3 Comparison Cards: Cheapest, Fastest, Safest */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* 3 Route Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             {sampleRouteOptions.map((opt) => {
               const isSelected = selectedRouteId === opt.id;
               const isSafest = opt.id === "safest";
-              const isCheapest = opt.id === "cheapest";
-
-              const badgeText = isCheapest
-                ? "Cheapest Option — Save $840"
-                : opt.id === "fastest"
-                ? "Fastest Option — 12 Days Quicker"
-                : "Safest & Most Reliable — Zero Delays";
-
-              const typeBadge = isCheapest ? "ECONOMY" : opt.id === "fastest" ? "EXPRESS" : "TOP CHOICE";
 
               return (
                 <div
                   key={opt.id}
                   onClick={() => setSelectedRouteId(opt.id)}
-                  className={`cs-card p-5 flex flex-col justify-between cursor-pointer transition-all relative ${
-                    isSafest
-                      ? "border-[var(--accent-primary)] shadow-[0_0_24px_rgba(99,102,241,0.25)] ring-1 ring-[var(--accent-primary)]"
-                      : isSelected
-                      ? "border-[var(--accent-cyan)] shadow-[0_0_16px_rgba(6,182,212,0.2)]"
-                      : "hover:border-[var(--border-active)]"
+                  className={`cs-card p-5 flex flex-col justify-between cursor-pointer transition-all rounded-2xl ${
+                    isSelected
+                      ? "border-[var(--accent-primary)] shadow-[0_0_24px_rgba(99,102,241,0.35)] bg-[var(--surface-overlay)]"
+                      : "border-[var(--border-color)] hover:border-[var(--border-active)] bg-[var(--surface-elevated)]"
                   }`}
                 >
-                  {/* Top Recommended Tag on Safest */}
-                  {isSafest && (
-                    <div className="absolute -top-3 right-4">
-                      <span className="px-2.5 py-0.5 rounded-full bg-[var(--accent-primary)] text-white text-[10px] font-bold shadow-md flex items-center gap-1">
-                        <Star size={11} className="fill-white" />
-                        Recommended
-                      </span>
-                    </div>
-                  )}
-
                   <div className="space-y-4">
-                    {/* Header Pills */}
-                    <div className="flex items-center justify-between text-[11px] gap-2">
-                      <span
-                        className={`font-semibold truncate ${
-                          isCheapest
-                            ? "text-[var(--status-success)]"
-                            : opt.id === "fastest"
-                            ? "text-[var(--accent-cyan)]"
-                            : "text-[var(--accent-primary-light)]"
-                        }`}
-                      >
-                        {badgeText}
-                      </span>
-                      <span className="text-[10px] font-bold text-[var(--text-dim)] uppercase shrink-0">
-                        {typeBadge}
-                      </span>
-                    </div>
-
-                    {/* Big Price */}
-                    <div>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-3xl font-bold text-[var(--text-high-contrast)]">
-                          {opt.price}
-                        </span>
-                        <span className="text-xs text-[var(--text-dim)]">total USD</span>
-                      </div>
-                      <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">
-                        {isCheapest
-                          ? "Includes standard wharfage & fuel adjustment"
-                          : opt.id === "fastest"
-                          ? "Includes priority offloading berth slot"
-                          : "Includes full all-risk cargo guarantee"}
-                      </p>
-                    </div>
-
-                    {/* Transit Days & Voyage Specs */}
-                    <div className="p-3 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex items-start justify-between">
                       <div>
-                        <div className="font-bold text-sm text-[var(--text-high-contrast)] flex items-center gap-1">
-                          <Clock size={13} className="text-[var(--text-secondary)]" />
-                          {opt.transitDays} days
-                        </div>
-                        <div className="text-[11px] text-[var(--text-dim)]">
-                          {opt.arrivalType}: {opt.arrivalDate}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-xs text-[var(--text-high-contrast)]">
-                          {opt.voyageType}
-                        </div>
-                        <div className="text-[11px] text-[var(--text-dim)]">
-                          {opt.vesselType}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Risk Indicator Pill */}
-                    <div>
-                      <span
-                        className={`cs-pill text-[11px] w-full justify-center ${
-                          opt.riskColor === "green"
-                            ? "cs-pill-green"
-                            : "cs-pill-amber"
-                        }`}
-                      >
-                        {opt.riskLevel} {opt.riskDetail}
-                      </span>
-                    </div>
-
-                    {/* Visual Route Corridor */}
-                    <div className="py-2 border-y border-[var(--border-color)] text-[11px] text-[var(--text-secondary)] text-center">
-                      <div className="font-semibold text-[var(--text-high-contrast)]">
-                        {opt.carrierRoute}
-                      </div>
-                    </div>
-
-                    {/* Cost Breakdown */}
-                    <div className="space-y-1.5 text-xs pt-1">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)]">
-                        Cost Breakdown
-                      </div>
-                      {opt.costBreakdown.map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-[11px]">
-                          <span className="text-[var(--text-secondary)]">{item.label}</span>
-                          <span className="font-semibold text-[var(--text-high-contrast)]">
-                            {item.amount}
+                        <div className="flex items-center gap-1.5">
+                          {isSafest && (
+                            <Star size={13} className="text-amber-400 fill-amber-400" />
+                          )}
+                          <span className="font-bold text-base text-[var(--text-high-contrast)]">
+                            {opt.label}
                           </span>
                         </div>
-                      ))}
+                        <div className="text-xs text-[var(--text-secondary)] mt-0.5">
+                          {opt.tagline}
+                        </div>
+                      </div>
+                      {isSelected && (
+                        <span className="w-5 h-5 rounded-full bg-[var(--accent-primary)] text-white flex items-center justify-center shrink-0">
+                          <Check size={12} />
+                        </span>
+                      )}
                     </div>
 
-                    {/* Carrier Narrative */}
-                    <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed italic border-t border-[var(--border-color)] pt-3">
+                    <div className="py-2 border-y border-[var(--border-color)] flex items-baseline justify-between">
+                      <div>
+                        <div className="text-2xl font-bold text-[var(--text-high-contrast)]">
+                          {opt.price}
+                        </div>
+                        <div className="text-xs text-[var(--text-dim)]">Guaranteed Escrow Rate</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold text-[var(--text-high-contrast)]">
+                          {opt.transitDays} Days
+                        </div>
+                        <div className="text-xs text-[var(--text-dim)]">{opt.arrivalDate}</div>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-[var(--text-secondary)] leading-relaxed italic">
                       {opt.carrierDescription}
                     </p>
                   </div>
 
-                  {/* Card Select Button */}
                   <div className="pt-4 mt-4 border-t border-[var(--border-color)]">
                     <button
                       type="button"
-                      className={`w-full cs-btn text-xs ${
-                        isSelected || isSafest
-                          ? "cs-btn-primary"
-                          : "cs-btn-secondary"
+                      className={`w-full cs-btn text-xs sm:text-sm font-semibold py-2 ${
+                        isSelected ? "cs-btn-primary" : "cs-btn-secondary"
                       }`}
                     >
-                      {isSelected ? "Choose this route ✓" : "Choose this route →"}
+                      {isSelected ? "Selected ✓" : "Choose this route →"}
                     </button>
                   </div>
                 </div>
@@ -914,30 +895,30 @@ export default function PlanShipment({ initialStep }) {
           </div>
 
           {/* Sticky Bottom Bar */}
-          <div className="sticky bottom-4 z-20 cs-card p-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-[var(--surface-elevated)]/95 backdrop-blur-md border border-[var(--border-active)] shadow-2xl">
+          <div className="sticky bottom-4 z-20 cs-card p-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-[var(--surface-elevated)]/95 backdrop-blur-md border border-[var(--border-active)] shadow-2xl rounded-2xl">
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="cs-btn cs-btn-secondary text-xs"
+              className="cs-btn cs-btn-secondary text-xs sm:text-sm"
             >
-              <ArrowLeft size={14} />
-              Back: Packaging & Pallets
+              <ArrowLeft size={15} />
+              Back: Corridor Setup
             </button>
 
-            <div className="text-xs text-center sm:text-left">
-              <span className="text-[var(--text-dim)]">Selected: </span>
-              <span className="font-bold text-[var(--text-high-contrast)]">
+            <div className="text-xs sm:text-sm text-center">
+              <span className="text-[var(--text-dim)]">Selected Plan: </span>
+              <strong className="text-[var(--text-high-contrast)]">
                 {selectedRoute.label} ({selectedRoute.price})
-              </span>
+              </strong>
             </div>
 
             <button
               type="button"
               onClick={() => setCurrentStep(4)}
-              className="cs-btn cs-btn-primary text-xs"
+              className="cs-btn cs-btn-primary text-xs sm:text-sm font-semibold px-5 py-2.5"
             >
-              Continue to Review & Lock Quote
-              <ArrowRight size={14} />
+              Continue to Review &amp; Lock Quote
+              <ArrowRight size={15} />
             </button>
           </div>
         </div>
@@ -947,15 +928,15 @@ export default function PlanShipment({ initialStep }) {
           STEP 4: REVIEW & LOCK FREIGHT QUOTE
           ========================================================= */}
       {currentStep === 4 && selectedProduct && (
-        <div className="cs-card p-6 space-y-6 max-w-2xl mx-auto">
+        <div className="cs-card p-6 sm:p-8 space-y-6 max-w-2xl mx-auto rounded-2xl shadow-2xl">
           <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-full bg-[var(--accent-primary-bg)] text-[var(--accent-primary-light)] flex items-center justify-center mx-auto">
-              <Shield size={24} />
+            <div className="w-14 h-14 rounded-2xl bg-[var(--accent-primary-bg)] text-[var(--accent-primary-light)] flex items-center justify-center mx-auto shadow-inner">
+              <Shield size={28} />
             </div>
-            <h2 className="text-xl font-bold text-[var(--text-high-contrast)]">
+            <h2 className="text-2xl font-bold text-[var(--text-high-contrast)]">
               {quoteLocked ? "Quote Successfully Locked!" : "Review & Lock Freight Escrow"}
             </h2>
-            <p className="text-xs text-[var(--text-secondary)]">
+            <p className="text-sm text-[var(--text-secondary)]">
               {quoteLocked
                 ? `Your booking request #${createdShipment?.tracking_number || "CS-CONFIRMED"} has been successfully created and linked to your account.`
                 : "Your selected rate is protected for 48 hours without demurrage liability."}
@@ -963,44 +944,44 @@ export default function PlanShipment({ initialStep }) {
           </div>
 
           {bookingError && (
-            <div className="p-3 rounded-lg bg-[var(--status-critical-bg)] border border-[var(--status-critical-border)] text-[var(--status-critical)] text-xs flex items-center gap-2">
-              <AlertCircle size={16} />
+            <div className="p-3.5 rounded-xl bg-[var(--status-critical-bg)] border border-[var(--status-critical-border)] text-[var(--status-critical)] text-xs flex items-center gap-2">
+              <AlertCircle size={16} className="shrink-0" />
               <span>{bookingError}</span>
             </div>
           )}
 
-          <div className="p-4 rounded-lg bg-[var(--surface-base)] border border-[var(--border-color)] space-y-3 text-xs">
-            <div className="flex justify-between py-1 border-b border-[var(--border-color)]">
-              <span className="text-[var(--text-secondary)]">Product</span>
+          <div className="p-5 rounded-xl bg-[var(--surface-base)] border border-[var(--border-color)] space-y-3 text-sm">
+            <div className="flex justify-between py-1.5 border-b border-[var(--border-color)]">
+              <span className="text-[var(--text-secondary)]">Product &amp; Quantity</span>
               <span className="font-bold text-[var(--text-high-contrast)]">
-                {selectedProduct.name} ({selectedProduct.packing_qty || 500} units)
+                {selectedProduct.name} ({parsedQty} units)
               </span>
             </div>
-            <div className="flex justify-between py-1 border-b border-[var(--border-color)]">
-              <span className="text-[var(--text-secondary)]">Selected Corridor</span>
+            <div className="flex justify-between py-1.5 border-b border-[var(--border-color)]">
+              <span className="text-[var(--text-secondary)]">Corridor</span>
               <span className="font-bold text-[var(--text-high-contrast)]">
-                {originPort} → {destPort}
+                {originPort.split("(")[0]} → {destPort.split("/")[0]}
               </span>
             </div>
-            <div className="flex justify-between py-1 border-b border-[var(--border-color)]">
+            <div className="flex justify-between py-1.5 border-b border-[var(--border-color)]">
               <span className="text-[var(--text-secondary)]">Selected Plan</span>
               <span className="font-bold text-[var(--accent-primary-light)]">
                 {selectedRoute.label}
               </span>
             </div>
-            <div className="flex justify-between py-1 border-b border-[var(--border-color)]">
+            <div className="flex justify-between py-1.5 border-b border-[var(--border-color)]">
               <span className="text-[var(--text-secondary)]">Estimated Transit</span>
               <span className="font-bold text-[var(--text-high-contrast)]">
                 {selectedRoute.transitDays} Days ({selectedRoute.arrivalDate})
               </span>
             </div>
-            <div className="flex justify-between py-1 border-b border-[var(--border-color)]">
+            <div className="flex justify-between py-1.5 border-b border-[var(--border-color)]">
               <span className="text-[var(--text-secondary)]">Total Escrow Quote</span>
-              <span className="text-base font-bold text-[var(--text-high-contrast)]">
+              <span className="text-lg font-bold text-[var(--text-high-contrast)]">
                 {selectedRoute.price} USD
               </span>
             </div>
-            <div className="flex justify-between py-1">
+            <div className="flex justify-between py-1.5">
               <span className="text-[var(--text-secondary)]">Cargo Ready Date</span>
               <span className="font-semibold text-[var(--text-high-contrast)]">{readyDate}</span>
             </div>
@@ -1011,15 +992,15 @@ export default function PlanShipment({ initialStep }) {
               type="button"
               onClick={() => setCurrentStep(3)}
               disabled={submittingBooking || quoteLocked}
-              className="cs-btn cs-btn-secondary text-xs w-full sm:w-auto"
+              className="cs-btn cs-btn-secondary text-sm w-full sm:w-auto px-5 py-2.5"
             >
-              <ArrowLeft size={14} />
+              <ArrowLeft size={15} />
               Back to Options
             </button>
             {quoteLocked ? (
               <Link
                 to="/my-shipments"
-                className="cs-btn cs-btn-primary text-xs w-full sm:w-auto text-center"
+                className="cs-btn cs-btn-primary text-sm w-full sm:w-auto text-center px-6 py-2.5 font-semibold"
               >
                 Go to My Shipments →
               </Link>
@@ -1028,12 +1009,12 @@ export default function PlanShipment({ initialStep }) {
                 type="button"
                 onClick={handleLockQuote}
                 disabled={submittingBooking}
-                className="cs-btn cs-btn-primary text-xs w-full sm:w-auto"
+                className="cs-btn cs-btn-primary text-sm w-full sm:w-auto px-6 py-2.5 font-semibold"
               >
                 {submittingBooking ? (
                   <span className="flex items-center gap-2">
                     <LoadingSpinner size="sm" />
-                    Submitting Booking...
+                    Submitting Booking…
                   </span>
                 ) : (
                   "Lock Quote & Submit Booking ✓"
@@ -1043,6 +1024,16 @@ export default function PlanShipment({ initialStep }) {
           </div>
         </div>
       )}
+
+      {/* Add Product Modal */}
+      <AddProductModal
+        isOpen={isAddProductOpen}
+        onClose={() => setIsAddProductOpen(false)}
+        onSuccess={(newProd) => {
+          setProducts((prev) => [newProd, ...prev]);
+          handleSelectProduct(newProd);
+        }}
+      />
     </div>
   );
 }

@@ -138,20 +138,44 @@ html, body, #root {
   background: var(--canvas-base);
   color: var(--text-body);
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Base Headings & Labels */
-h1, h2, h3, h4, h5, h6 {
+h1 {
+  font-size: 2rem;
+  line-height: 2.35rem;
+  font-weight: 700;
+  color: var(--text-high-contrast);
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-size: 1.45rem;
+  line-height: 1.85rem;
+  font-weight: 700;
+  color: var(--text-high-contrast);
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: 1.15rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  color: var(--text-high-contrast);
+  letter-spacing: -0.015em;
+}
+
+h4, h5, h6 {
   color: var(--text-high-contrast);
   font-weight: 600;
   letter-spacing: -0.015em;
 }
 
 label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
 }
